@@ -59,7 +59,7 @@ class EntryCreate(LoginRequiredMixin, CreateView):
         return context
 
     def get_success_url(self, **kwargs):
-        return reverse_lazy('entry-list')
+        return reverse_lazy('dkht:entry-list')
 
     def form_valid(self, form):
         # form.save(commit=True)
@@ -89,7 +89,7 @@ class EntryUpdate(LoginRequiredMixin, UpdateView):
         return context
 
     def get_success_url(self, **kwargs):
-        return reverse_lazy('entry-detail', kwargs={
+        return reverse_lazy('dkht:entry-detail', kwargs={
             'pk': self.kwargs['pk'],
         })
 
@@ -102,7 +102,7 @@ class EntryDelete(LoginRequiredMixin, DeleteView):
     model = Entry
 
     def get_success_url(self, *args, **kwargs):
-        return reverse_lazy('entry-list')
+        return reverse_lazy('dkht:entry-list')
 
 
 class BlergList(ListView):
@@ -151,7 +151,7 @@ class ClimateScrapeCreate(CreateView):
         return context
 
     def get_success_url(self, **kwargs):
-        return reverse_lazy('climate-scrape-results', kwargs={'pk': self.object.id, })
+        return reverse_lazy('dkht:climate-scrape-results', kwargs={'pk': self.object.id, })
 
     def form_valid(self, form):
         return super(ClimateScrapeCreate, self).form_valid(form)
@@ -184,7 +184,7 @@ class ClimateScrapeResults(DetailView):
         return context
 
     def get_success_url(self, **kwargs):
-        return reverse_lazy('climate-scrape-results', kwargs={'pk': self.object.id, })
+        return reverse_lazy('dkht:climate-scrape-results', kwargs={'pk': self.object.id, })
 
     def form_valid(self, form):
         # form.save(commit=True)
@@ -192,12 +192,18 @@ class ClimateScrapeResults(DetailView):
         return super(ClimateScrapeResults, self).form_valid(form)
 
 
-def ClimateScrapeExport(request, start_year, end_year, station_ID):
+def ClimateScrapeExport(request, station_ID, start_year, end_year):
     # def get(self, request), station_ID, start_year, end_year):
     # stn_id = request.GET.get('station_ID')
     # start_year = request.GET.get('start_year')
     # end_year = request.GET.get('end_year')
     # Create the HttpResponse object with the appropriate CSV header.
+    print('EXPORT')
+    print(station_ID)
+    print(start_year)
+    print(end_year)
+    print('')
+    print('###########3')
     data, filename = station_search.make_dataframe(
         station_ID, start_year, end_year)
 

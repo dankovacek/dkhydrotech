@@ -10,7 +10,9 @@ https://docs.djangoproject.com/en/2.0/howto/deployment/wsgi/
 import os
 import sys
 
-path = os.path.expanduser('~/django')
+path = os.path.expanduser('~/DKHydrotech')
+print('path ====================================')
+print(path)
 if path not in sys.path:
     sys.path.append(path)
 

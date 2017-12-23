@@ -1,4 +1,4 @@
-{% extends "portfolio/base.html" %}
+{% extends "dkht/base.html" %}
 {% block content %}
 {{ block.super }}
 <div id="background-image">
@@ -30,7 +30,7 @@
                     <td>{{ station.distance_to_target|floatformat:1 }}</td>
                     <td>{{ station.start_year }}</td>
                     <td>{{ station.end_year }}</td>
-                    <td><a href="{% url 'climate-scrape-export' station_ID=station.station_ID start_year=station.start_year end_year=station.end_year %}">
+                    <td><a href="{% url 'dkht:climate-scrape-export' station_ID=station.station_ID start_year=station.start_year end_year=station.end_year %}">
                       <i class="material-icons">cloud_download</i>
                     </a></td>
                   </tr>
