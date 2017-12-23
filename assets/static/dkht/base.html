@@ -1,0 +1,89 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="{% static 'css/materialize.min.css' %}">
+  <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+  <link rel="shortcut icon" type="image/png" href="{% static 'icons/favicon.ico' %}">
+  <script type="text/javascript" src="{% static 'js/jquery-3.2.1.min.js' %}"></script>
+  <title>DK Hydro / tech - Multi-disciplinary Data Analysis and Hydrotechnical Engineering</title>
+</head>
+<body>
+    {% block javascripts %}
+        <script src="{% static 'js/materialize.min.js' %}"></script>
+        <script src="{% static 'js/masonry.min.js' %}"></script>
+        <script src="{% static 'js/dkht.js' %}"></script>
+    {% endblock javascripts %}
+
+{% block navcontent %}
+
+<div class="navbar-fixed">
+    <nav class="grey darken-3">
+        <div class="nav-wrapper">
+            <a href="{% url 'entry-list' %}" class="brand-logo left">
+                <ul>
+                    <li class="white-text text-darken-2 logo-word">POST</li>
+                    <li class="white-text logo-word">NO</li>
+                    <li class="white-text text-lighten-2 logo-word">STILLS</li>
+                </ul>
+            </a>
+            <a href="#" data-activates="mobile-demo" class="button-collapse right">
+                <i class="material-icons white-text text-lighten-1">menu</i>
+            </a>
+            <ul id="nav-mobile" class="right hide-on-med-and-down">
+                <li><a class="white-text text-lighten-1" href="{% url 'blerg-list' %}">BLERG</a></li>
+            </ul>
+        </div>
+    </nav>
+</div>
+
+<ul class="side-nav grey darken-3" id="mobile-demo">
+    <li><a class="grey darken-3 white-text text-lighten-1" href="{% url 'blerg-list' %}">BLERG</a></li>
+</ul>
+
+{% endblock navcontent %}
+
+    <main>
+        {% block content %}{% endblock content %}
+    </main>
+
+    <footer class="page-footer grey darken-3">
+        <div class="container">
+            <div class="row">
+                <div class="col 14 s6 m3 center">
+                    <span class="flow-text">
+                        <a href="https://github.com/dankovacek" class="white-text text-lighten-1 social">GITHUB</a>
+                    </span>
+                </div>
+                <div class="col 14 s6 m3 center">
+                    <span class="flow-text">
+                        <a href="https://www.linkedin.com/in/dankovacek/" class="white-text text-lighten-1 social">LINKEDIN</a>
+                    </span>
+                </div>
+                <div class="col 14 s6 m3 center">
+                    <span class="flow-text">
+                        <a href="https://google.com/+DanKovacek" class="white-text text-lighten-1 social">GOOGLE +</a>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="footer copyright">
+            <div class="container">
+                <div class="col 16 s12 center license">
+                    <span class="flow-text">
+                        <h6>
+                            <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"
+                            class="white-text text-lighten-1">Creative Commons 4.0 License</a>
+                        </h6>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>

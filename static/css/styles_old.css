@@ -1,0 +1,105 @@
+a {
+    text-decoration: none;
+}
+
+body {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+}
+
+main {
+    flex: 1 0 auto;
+}
+nav {
+    height: 65px;
+    -webkit-transition: all 0.4s ease-in-out;
+    -moz-transition: all 0.4s ease-in-out;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+}
+
+textarea {
+  height: 25vh;
+}
+
+.add-btn {
+    padding: 1em;
+}
+
+.brand-logo {
+	margin-left: 1vw;
+}
+
+.card {
+    margin: 0;
+}
+
+.license {
+    padding: 0.75em;
+}
+
+.logo-word {
+    margin: 0;
+}
+
+.shrink {
+    top: -68px;
+}
+
+.social {
+    display: inline-block;
+    margin: 0.5em 0 0 0;
+}
+
+/* ---- grid ---- */
+
+/* clear fix */
+.grid:after {
+  content: '';
+  display: block;
+  clear: both;
+}
+
+/* ---- .grid-item ---- */
+
+.grid-sizer,
+.grid-item {
+  width: 100%;
+  padding: 1em 0 0.25em 0;
+}
+
+.grid-item {
+  float: left;
+}
+
+.grid-item img {
+  display: block;
+  max-width: 100%;
+}
+
+.main-img {
+    margin-top: 1em;
+}
+
+.card .card-reveal {
+    padding: 16px;
+}
+
+@media screen and (min-width: 500px) {
+  /* 2 columns for phablets / tablets */
+  .grid-sizer, .grid-item { width: 50%; }
+  .grid-sizer, .grid-item { padding: 0.5em; }
+  .card .card-reveal { padding: 24px;  }
+}
+
+@media screen and (min-width: 768px) {
+  /* 3 columns for tablets or small screens */
+  .grid-sizer, .grid-item { width: 33.333%; }
+}
+
+@media screen and (min-width: 1400px) {
+  /* 5 columns for larger screens */
+  .grid-sizer, .grid-item { width: 20%; }
+}
