@@ -1,0 +1,65 @@
+{% extends 'dkht/base.html' %}
+{% load static %}
+{% block content %}
+
+
+{{ block.super }}
+<div id="background-image">
+    <div class="grid container">
+        <div class="grid-sizer"></div>
+        {% if object_list %}
+            {% for entry in object_list %}
+            <div class="grid-item">
+                <div class="card grey lighten-5 hoverable">
+                    {% if entry.image %}
+                    <div class="card-image waves-effect waves-block waves-light">
+                        {% if entry.img_thumb %}
+                        <img class="activator" src="{{ entry.img_thumb.url }}">
+                        {% else %}
+                        NONE
+                        <img class="activator" src="{{ entry.image.url }}">
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                    <div class="card-reveal" style="overflow: hidden;">
+                        <div class="card-title right">
+                            <i class="material-icons">close</i>
+                        </div>
+                        <a href="{% url 'entry-detail' pk=entry.id %}">
+                            <h5 class="grey-text text-darken-3">
+                                {{ entry.title }}
+                            </h5>
+
+                            <p class="grey-text text-darken-2 flow-text truncate">
+                                {{ entry.byline }}
+                            </p>
+
+                            <div class="card-action grey-text text-darken-1 flow-text right">
+                                {{ entry.created.date }}
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+        <p>
+            <a class="subheader">You haven't added any content yet.</a>
+        </p>
+        {% endif %}
+    </div>
+
+    {% if user.is_authenticated %}
+    <div class="row">
+        <div class="col s12">
+            <div class="add-btn">
+                <a class="waves-effect waves-light btn grey darken-3 white-text text-lighten-2" href="{% url 'entry-create' %}">
+                    <i class="material-icons right">add</i>Content
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+{% endblock content %}

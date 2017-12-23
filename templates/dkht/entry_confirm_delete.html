@@ -1,0 +1,26 @@
+{% extends "dkht/base.html" %}
+<!-- {# {% load render_bundle from webpack_loader %} #}-->
+
+{% block content %}
+{{ block.super }}
+<div id="background-image">
+    <div class="row">
+        <div class="col s12">
+            <h5>Confirm Delete Entry <em>{{ entry.title }}</em></h5>
+            <form action="" method="post">{% csrf_token %}
+                <p class="red-text text-darken-2">
+                    Are you sure you want to delete the Entry from {{ object.created }}?
+                </p>
+                <a href="{% url 'entry-detail' pk=object.id %}" class="btn-floating btn-large waves-effect waves-light">
+                    <i class="large material-icons grey darken-3">clear</i>
+                </a>
+                <button type="submit" class="btn-floating btn-large waves-effect waves-light red">
+                    <i class="large material-icons">delete</i>
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+    <!--{# {% render_bundle 'vendors' %}#}
+    {# {% render_bundle 'App1' %}  #} -->
+{% endblock content %}

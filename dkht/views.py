@@ -16,11 +16,18 @@ from io import StringIO
 
 from bokeh.embed import server_document
 
-from .climatescrape import station_search
+from climatescrape import station_search
 
 import logging
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
+
+
+class Main(TemplateView):
+    """
+    View for default landing page.
+    """
+    template_name = 'dkht/frontpage.html'
 
 
 class EntryList(ListView):
@@ -98,57 +105,6 @@ class EntryDelete(LoginRequiredMixin, DeleteView):
         return reverse_lazy('entry-list')
 
 
-class PhotoList(ListView):
-    """
-    Will need to change implementation of stations once
-    organization and user are incorporated.
-    """
-    model = Entry
-
-    def get_queryset(self):
-        qs = super().get_queryset()
-        # if self.request.user
-        qs = Entry.objects.filter(type='photo').order_by('created')[:5]
-
-        return qs
-
-
-class VideoList(ListView):
-    """
-    Will need to change implementation of stations once
-    organization and user are incorporated.
-    """
-    model = Entry
-
-    # def get_context_data(self, *args, **kwargs):
-    #     context = super()
-
-    def get_queryset(self):
-        qs = super().get_queryset()
-        # if self.request.user
-        qs = Entry.objects.filter(type='video').order_by('created')[:5]
-
-        return qs
-
-
-class DrawingList(ListView):
-    """
-    Will need to change implementation of stations once
-    organization and user are incorporated.
-    """
-    model = Entry
-
-    # def get_context_data(self, *args, **kwargs):
-    #     context = super()
-
-    def get_queryset(self):
-        qs = super().get_queryset()
-        # if self.request.user
-        qs = Entry.objects.filter(type='drawing').order_by('created')[:5]
-
-        return qs
-
-
 class BlergList(ListView):
     """
     Will need to change implementation of stations once
@@ -187,7 +143,7 @@ class TagList(ListView):
 
 class ClimateScrapeCreate(CreateView):
     model = StationSearchTarget
-    template_name = "portfolio/climatescrape_form.html"
+    template_name = "dkht/climatescrape_form.html"
     fields = ['lat', 'lon', 'search_radius']
 
     def get_context_data(self, *args, **kwargs):
@@ -203,7 +159,7 @@ class ClimateScrapeCreate(CreateView):
 
 class ClimateScrapeResults(DetailView):
     model = StationSearchTarget
-    template_name = "portfolio/climatescrape_list.html"
+    template_name = "dkht/climatescrape_list.html"
     fields = ['lat', 'lon', 'search_radius']
 
     def get_context_data(self, *args, **kwargs):
@@ -260,7 +216,7 @@ def ClimateScrapeExport(request, start_year, end_year, station_ID):
 
 class DataVizDetail(TemplateView):
     model = Entry
-    template_name = "portfolio/entry_detail.html"
+    template_name = "dkht/entry_detail.html"
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(**kwargs)

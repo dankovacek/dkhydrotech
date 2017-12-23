@@ -1,0 +1,113 @@
+{% extends 'dkht/base.html' %}
+{% load static %}
+{% load embed_video_tags %}
+
+
+{% block content %}
+    {{ block.super }}
+    <script type="text/javascript" src="{% static 'js/post_markdown.js' %}"></script>
+    <!-- <link
+    href="https://cdn.pydata.org/bokeh/release/bokeh-0.12.13.min.css"
+    rel="stylesheet" type="text/css">
+    <link
+        href="https://cdn.pydata.org/bokeh/release/bokeh-widgets-0.12.13.min.css"
+        rel="stylesheet" type="text/css">
+    <link
+        href="https://cdn.pydata.org/bokeh/release/bokeh-tables-0.12.13.min.css"
+        rel="stylesheet" type="text/css">
+
+    <script src="https://cdn.pydata.org/bokeh/release/bokeh-0.12.13.min.js"></script>
+    <script src="https://cdn.pydata.org/bokeh/release/bokeh-widgets-0.12.13.min.js"></script>
+    <script src="https://cdn.pydata.org/bokeh/release/bokeh-tables-0.12.13.min.js"></script> -->
+
+    <div id="background-image">
+        <div class="container">
+          {% if bk_script %}
+          <div class="row">
+            <div class="col s12">
+
+              {{ bk_script|safe }}
+            </div>
+          </div>
+          {% else %}
+            <!-- START VIDEO LAYOUT -->
+            {% if entry.type == 'video' %}
+                {%  if entry.video %}
+                    <div class="row">
+                        <div class="col s12">
+                            <div class="video-container">
+                                {% video entry.video %}
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            {% else %}
+            <!-- END VIDEO LAYOUT -->
+                <!-- START PHOTO/BLEG/ILLUSTRATION LAYOUT -->
+                {% if entry.image %}
+                    <div class="row">
+                        <div class="col s12 center-align">
+                            <img class="responsive-img main-img" src="{{ entry.image.url }}">
+                        </div>
+                    </div>
+                {% endif %}
+            {% endif %}
+            <!-- END PHOTO LAYOUT -->
+
+            <div class="row">
+                <div class="col s12">
+                    <h3>{{ entry.title }}</h3>
+                </div>
+
+                <div class="col s12">
+                    <h5>
+                        {{ entry.byline }}
+                    </h5>
+                </div>
+
+                <div class="col s12">
+                    {% if entry.text_body %}
+                        <p class="flow-text">
+                            {{ entry.formatted_markdown|safe }}
+                        </p>
+                    {% endif %}
+                </div>
+
+                <div class="col s12">
+                    <h5 class="right"><em>Posted: {{ entry.created.date }}</em></em></h5>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col s12 m8 l10">
+                    {% if entry.tags %}
+
+                        {% for tag in entry.tags_as_list %}
+                            <div class="chip grey darken-3 green-text text-lighten-2">
+                                <a href="{% url 'tag-list' pk=tag %}">{{ tag }}</a>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                </div>
+            </div>
+
+            {% if  user.is_authenticated %}
+                <div class="row">
+                    <div class="col s6 center">
+                        <a href="{% url 'entry-update' pk=entry.id %}">
+                            <i class="material-icons medium green-text text-darken-3">edit</i></a>
+                    </div>
+                    <div class="col s6 center">
+                        <a href="{% url 'entry-delete' pk=entry.id %}">
+                            <i class="material-icons medium green-text text-darken-3">delete</i></a>
+                    </div>
+                </div>
+            {% endif %}
+
+          {% endif %}
+
+        </div>
+    </div>
+
+{% endblock content %}
