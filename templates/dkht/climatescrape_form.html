@@ -1,4 +1,4 @@
-{% extends "portfolio/base.html" %}
+{% extends "dkht/base.html" %}
 {% block content %}
 {{ block.super }}
 <div id="background-image">
@@ -6,10 +6,23 @@
     <div class="row">
         <div class="col s12">
         	  <h4>Search and Acquire Climate Data (Canada)</h4>
-                <p class="subheader flow-text">Following a few conversations with friends and colleagues, I realized that I'm not alone in thinking that too much time is spent acquiring and formatting data, at the expense of doing real analysis work.  I hope the simple application I've created here shortens the time it takes practitioners to begin real analysis.</p>
-                <p class="subheader flow-text">Simply enter the lat/lon (in decimal degrees), choose a search radius, and submit.  The code will return all stations within the specified search radius from the target location.  Results of the search are summarized in the subsequent view where you can download the resultant measured records in their entirety.</p>
-                <p class="subheader flow-text">In the process of developing this application, I realized I had to place a few restrictions on the search, so my little server doesn't get overrun.</p>
-                <p class="subheader flow-text">For this reason, the largest search radius is set to 40km.  If you'd like a custom query, either for a larger search area, for hourly climate data, or for any other large data manipulation tasks, feel free to contact me at dan[at]dkhydrotech[dot]com, or reach out to me through the LinkedIn, Github, or Google+ links in the footer.</p>
+                <p class="subheader flow-text">Following a few conversations with friends and colleagues,
+                  I realized that I'm not alone in thinking that too much time is spent acquiring and formatting data,
+                  at the expense of doing real analysis work.  I hope the simple application I've created here shortens
+                  the time it takes practitioners to begin real analysis.</p>
+                <p class="subheader flow-text">Simply enter the lat/lon (in decimal degrees),
+                  choose a search radius, and submit.  The code will return all stations within
+                  the specified search radius from the target location.  Results of the search
+                  are summarized in the subsequent view where you can download the resultant
+                  measured records in their entirety.</p>
+                <p class="subheader flow-text">In the process of developing this application,
+                  I realized I had to place a few restrictions on the search, so my little server
+                  doesn't get overrun.</p>
+                <p class="subheader flow-text">For this reason, the largest search
+                  radius is set to 40km.  If you'd like a custom query, either for a
+                  larger search area, for hourly climate data, or for any other large
+                  data manipulation tasks, feel free to contact me at dan[at]dkhydrotech[dot]com,
+                  or reach out to me through the LinkedIn, Github, or Google+ links in the footer.</p>
             <form action="{{ action }}" method="POST" class="post-form" enctype="multipart/form-data">{% csrf_token %}
                 {{ form.as_p }}
                 <button type="submit" class="btn-floating btn-large waves-effect waves-light" onclick="Materialize.toast('Search Submitted!', 4000)">
@@ -20,10 +33,13 @@
     </div>
     <div class="row">
       <div class="col s12">
-        <p class="subheader flow-text">This tool retrieves and concatenates data collected, reviewed, and published by <a href="http://climate.weather.gc.ca/">Environment Canada</a>.  The author of this software does not guarantee the accuracy of any data, and this application is provided WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the <a href="http://www.gnu.org/licenses/">GNU General Public License</a> for more details.</p>
+        <p class="subheader flow-text">This tool retrieves and concatenates data collected, reviewed, and published by
+          <a href="http://climate.weather.gc.ca/">Environment Canada</a>.  The author of this software
+          does not guarantee the accuracy of any data, and this application is provided WITHOUT ANY WARRANTY;
+          without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+          <a href="http://www.gnu.org/licenses/">GNU General Public License</a> for more details.</p>
       </div>
     </div>
 </div>
-    <!--{# {% render_bundle 'vendors' %}#}
-    {# {% render_bundle 'App1' %}  #} -->
+
 {% endblock content %}
