@@ -17,9 +17,14 @@ nav a {
 	min-width: 48px;
 	min-height: 48px;
 	text-decoration: none;
+	color: rgba(60,60,60,0.8);
 	background-color: rgba(0,0,0,0);
 	margin: 0 0.5em 0 0.5em;
 	font-size: 1.75em;
+}
+
+nav a:visited, nav a:link, footer a:visited, footer a:link {
+	color: rgba(60,60,60,0.8);
 }
 
 a {
@@ -27,17 +32,17 @@ a {
 }
 
 a:link {
-	color: rgba(60,60,60,1);
+	color: rgb(104, 162, 106);
 	text-decoration: none;
 }
 
 a:visited {
-	color: rgba(60,60,60,1);
+	color: rgb(104, 162, 106);
 	text-decoration: none;
 }
 
 a:hover {
-	color: rgba(60,60,60,0.8);
+	color: rgb(129, 199, 132);
 	background-color: rgba(0,0,0,0);
 	text-decoration: none;
 }
