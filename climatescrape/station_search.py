@@ -83,6 +83,9 @@ def get_stations(lat, lon, radius):
     stn_df['distance_to_target'] = np.sqrt((stn_df['utm_E'] - target_loc[0])**2 +
                                            (stn_df['utm_N'] - target_loc[1])**2)
 
+    print('what are calculated distances?')
+    print(radius)
+
     # enter the distance from the target to search for stations
     search_radius = radius * 1000
     # pull the station IDs for all stations within 10km of stations
