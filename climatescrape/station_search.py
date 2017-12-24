@@ -78,8 +78,6 @@ def get_stations(lat, lon, radius):
     target_loc = utm.from_latlon(lat, lon)
     # squamish_utm_loc = utm.from_latlon(49.796, -123.203)
 
-    print('target loc E = ', target_loc[0])
-    print('target loc N = ', target_loc[1])
     target_zone = str(target_loc[-2]) + str(target_loc[-1])
 
     stn_df['distance_to_target'] = np.sqrt((stn_df['utm_E'] - target_loc[0])**2 +
@@ -87,9 +85,6 @@ def get_stations(lat, lon, radius):
 
     # enter the distance from the target to search for stations
     search_radius = radius * 1000
-
-    print('search radius = ', search_radius)
-
     # pull the station IDs for all stations within 10km of stations
     target_stns = stn_df[stn_df['distance_to_target'] <= search_radius]
     target_stns = target_stns.dropna(axis=0, how='any', subset=[
@@ -100,9 +95,6 @@ def get_stations(lat, lon, radius):
                                for e in target_stns['utm_latlon']]
 
     target_stns = target_stns[target_stns['UTM_Zone'] == target_zone]
-
-    print('station df = ')
-    print(target_stns.head(10))
 
     results = []
 
