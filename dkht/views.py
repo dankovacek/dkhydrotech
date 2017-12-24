@@ -30,6 +30,13 @@ class Main(TemplateView):
     template_name = 'dkht/frontpage.html'
 
 
+class Contact(TemplateView):
+    """
+    View for default landing page.
+    """
+    template_name = 'dkht/contact.html'
+
+
 class EntryList(ListView):
     """
     Will need to change implementation of stations once
