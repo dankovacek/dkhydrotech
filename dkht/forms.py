@@ -27,14 +27,11 @@ class ClimateScrapeForm(forms.ModelForm):
 
     class Meta:
         model = StationSearchTarget
-        fields = ('lat', 'lon', 'search_radius')
+        fields = ['lat', 'lon', 'search_radius']
 
     def __init__(self, *args, **kwargs):
         # Call to ModelForm constructor
         super(ClimateScrapeForm, self).__init__(*args, **kwargs)
-        self.fields['lat'].widget.attrs['width'] = '200px'
-        self.fields['lon'].widget.attrs['width'] = '200px'
-        self.fields['search_radius'].widget.attrs['width'] = '200px'
 
     # def __init__(self, *args, **kwargs):
     #     # Call to ModelForm constructor

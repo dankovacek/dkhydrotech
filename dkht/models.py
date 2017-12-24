@@ -87,11 +87,9 @@ class Entry(models.Model):
         return True
 
     def tags_as_list(self):
-        print('before = ', self.tags)
         tags = [e.strip().replace(' ', '_') for e in self.tags.split(',')]
         self.tags = ','.join(tags)
         self.save()
-        print('after = ', self.tags)
         return tags
 
 
@@ -111,11 +109,14 @@ class StationSearchTarget(models.Model):
     id_prefix = 'TARGET-'
     # models.DateField(default=timezone.now)
     lat = models.DecimalField(
-        max_digits=9, decimal_places=4, null=False, blank=False, verbose_name="Target Latitude [decimal degrees]")
+        max_digits=9, decimal_places=4, null=False, blank=False,
+        verbose_name="Target Latitude [decimal degrees]")
     lon = models.DecimalField(
-        max_digits=9, decimal_places=4, null=False, blank=False, verbose_name="Target Lontigude [decimal degrees]")
+        max_digits=9, decimal_places=4, null=False, blank=False,
+        verbose_name="Target Lontigude [decimal degrees]")
     search_radius = models.DecimalField(
-        max_digits=3, decimal_places=1, choices=SEARCH_DIST_CHOICES, default='1km', null=False, blank=False, verbose_name="Search Radius [km]")
+        max_digits=3, decimal_places=1, choices=SEARCH_DIST_CHOICES,
+        default='1km', null=False, blank=False, verbose_name="Search Radius [km]")
 
 
 class ClimateStation(models.Model):
@@ -124,7 +125,8 @@ class ClimateStation(models.Model):
     """
     id_prefix = 'STN-'
     latlon = models.CharField(
-        max_length=30, verbose_name="Lat/Lon [decimal degrees]", blank=True, null=True)
+        max_length=30, verbose_name="Lat/Lon [decimal degrees]",
+        blank=True, null=True)
 
     start_year = models.CharField(
         max_length=30, verbose_name="Record Start Year", blank=True, null=True)
