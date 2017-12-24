@@ -167,6 +167,12 @@ class ClimateScrapeResults(DetailView):
         target = get_object_or_404(
             StationSearchTarget, id=self.kwargs['pk'])
 
+        print('=======================')
+        print('results:')
+        print('lat = ', target.lat)
+        print('lon = ', target.lon)
+        print('search rad = ', target.search_radius)
+
         results = station_search.get_stations(
             target.lat, target.lon, target.search_radius)
 
@@ -198,6 +204,12 @@ def ClimateScrapeExport(request, station_ID, start_year, end_year):
     # start_year = request.GET.get('start_year')
     # end_year = request.GET.get('end_year')
     # Create the HttpResponse object with the appropriate CSV header.
+    print('=======================')
+    print('results:')
+    print('station id = ', station_ID)
+    print('start year = ', start_year)
+    print('end year = ', end_year)
+
     data, filename = station_search.make_dataframe(
         station_ID, start_year, end_year)
 

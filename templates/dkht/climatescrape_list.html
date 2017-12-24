@@ -5,7 +5,8 @@
     <div class="row">
         <div class="col s12">
         	  <h4>Search and Acquire Climate Data</h4>
-            <p class="subheader flow-text">In the process of developing this application, I realized I had to place a few restrictions on the search, so my little server doesn't get overrun.</p>
+            <p class="subheader flow-text">In the process of developing this application,
+              I realized I had to place a few restrictions on the search to avoid some risk of racking up large server charges.</p>
             <p class="subheader flow-text">For this reason, the largest search radius is set to 40km.  If you'd like a custom query, either for a larger search area, for hourly climate data, or for any other large data manipulation tasks, feel free to contact me at dan[at]dkhydrotech[dot]com, or reach out to me through the LinkedIn, Github, or Google+ links in the footer.</p>
             <h4>Results</h4>
           {% if stations %}
@@ -30,8 +31,6 @@
                     <td>{{ station.distance_to_target|floatformat:1 }}</td>
                     <td>{{ station.start_year }}</td>
                     <td>{{ station.end_year }}</td>
-
-                    <td><a href="{% url 'climate-scrape-export' station_ID=station.station_ID start_year=station.start_year end_year=station.end_year %}">
 
                     <td><a href="{% url 'dkht:climate-scrape-export' station_ID=station.station_ID start_year=station.start_year end_year=station.end_year %}">
 
