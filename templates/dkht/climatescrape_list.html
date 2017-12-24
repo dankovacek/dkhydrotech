@@ -31,7 +31,7 @@
                     <td>{{ station.start_year }}</td>
                     <td>{{ station.end_year }}</td>
 
-                    <td><a href="{% url 'climate-scrape-export' station_ID=station.station_ID start_year=station.start_year end_year=station.end_year %}">
+                    <td><a href="{% url 'dkht:climate-scrape-export' station_ID=station.station_ID start_year=station.start_year end_year=station.end_year %}">
 
                     <td><a href="{% url 'dkht:climate-scrape-export' station_ID=station.station_ID start_year=station.start_year end_year=station.end_year %}">
 
