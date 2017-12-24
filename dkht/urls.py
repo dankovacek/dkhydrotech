@@ -28,10 +28,10 @@ urlpatterns = [
     #     DataVizDetail.as_view(), name="data-viz"),
     # url('tags/<int:pk>/',
     #     TagList.as_view(), name="tag-list"),
-    # url('tools/climate_data_finder/results/<int:pk>/',
-    #     ClimateScrapeResults.as_view(), name="climate-scrape-results"),
-    # url('tools/climate_data_finder/output/<station_ID>/<start_year>/<end_year>/',
-    #     ClimateScrapeExport, name="climate-scrape-export"),
+    path('tools/climate_data_finder/results/<int:pk>/',
+        ClimateScrapeResults.as_view(), name="climate-scrape-results"),
+    path('tools/climate_data_finder/output/<station_ID>/<start_year>/<end_year>/',
+        ClimateScrapeExport, name="climate-scrape-export"),
 
 ] #+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + 
 #static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
