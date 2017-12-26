@@ -3,7 +3,7 @@ from django.views.generic.edit import FormView, UpdateView, CreateView, DeleteVi
 from django.views.generic import ListView, View, TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic.detail import DetailView, SingleObjectMixin
-from .models import Entry, StationSearchTarget, ClimateStation
+from .models import Entry, StationSearchTarget, ClimateStation, Donation
 from .forms import EntryForm, ClimateScrapeForm
 from django.urls import reverse_lazy, reverse
 from django.conf import settings
@@ -17,6 +17,9 @@ from io import StringIO
 from bokeh.embed import server_document
 
 from climatescrape import station_search
+
+import stripe
+stripe.api_key = settings.STRIPE_SECRET_KEY
 
 import logging
 logger = logging.getLogger(__name__)
@@ -35,6 +38,43 @@ class Contact(TemplateView):
     View for default landing page.
     """
     template_name = 'dkht/contact.html'
+
+
+# amount = models.DecimalField(
+#     max_digits=9, decimal_places=2, null=False, blank=False,
+#     verbose_name="Donation Amount")
+# tool_name = models.CharField(max_length=50)
+# charge_id = models.CharField(max_length=234)
+
+
+def DonateCheckout(request):
+
+    new_donation = Donation(
+        tool_name="Climate Data Wrangler",
+    )
+
+    if request.method == "POST":
+        token = request.POST.get("stripeToken")
+        amount = request.POST.get("data-amount")
+
+    try:
+        charge = stripe.Charge.create(
+            amount=amount,
+            currency="cdn",
+            source=token,
+            description="The product charged to the user"
+        )
+
+        new_donation.charge_id = charge.id
+
+    except stripe.error.CardError as ce:
+        return False, ce
+
+    else:
+        new_car.save()
+        return redirect("thank_you_page")
+        # The payment was successfully processed, the user's card was charged.
+        # You can now redirect the user to another page or whatever you want
 
 
 class EntryList(ListView):
@@ -155,6 +195,7 @@ class ClimateScrapeCreate(CreateView):
 
     def get_context_data(self, *args, **kwargs):
         context = super(ClimateScrapeCreate, self).get_context_data(**kwargs)
+        context['stripe_key'] = settings.STRIPE_PUBLIC_KEY
         return context
 
     def get_success_url(self, **kwargs):
@@ -174,12 +215,6 @@ class ClimateScrapeResults(DetailView):
         target = get_object_or_404(
             StationSearchTarget, id=self.kwargs['pk'])
 
-        print('=======================')
-        print('results:')
-        print('lat = ', target.lat)
-        print('lon = ', target.lon)
-        print('search rad = ', target.search_radius)
-
         results = station_search.get_stations(
             target.lat, target.lon, target.search_radius)
 
@@ -193,6 +228,8 @@ class ClimateScrapeResults(DetailView):
             context['stations'] = stations
         else:
             context['stations'] = None
+
+        context['stripe_key'] = settings.STRIPE_PUBLIC_KEY
 
         return context
 

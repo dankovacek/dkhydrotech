@@ -145,3 +145,16 @@ class ClimateStation(models.Model):
 
     new_file_name = models.CharField(
         max_length=30, verbose_name="File Name (for csv writing)", blank=True, null=True)
+
+
+class Donation(models.Model):
+    """
+    A model instance to manage donations for tools used.
+    """
+    id_prefix = 'DON-'
+    created = models.DateTimeField(default=timezone.now)
+    amount = models.DecimalField(
+        max_digits=9, decimal_places=2, null=False, blank=False,
+        verbose_name="Donation Amount")
+    tool_name = models.CharField(max_length=50)
+    charge_id = models.CharField(max_length=234)

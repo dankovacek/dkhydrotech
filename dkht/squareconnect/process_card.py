@@ -1,0 +1,69 @@
+#!/usr/bin/env python
+# coding: utf-8
+from __future__ import print_function
+import uuid
+import cgi
+
+import squareconnect
+from squareconnect.rest import ApiException
+from squareconnect.apis.transactions_api import TransactionsApi
+from squareconnect.apis.locations_api import LocationsApi
+
+from django.conf import settings
+
+
+def sq_payment_processing():
+    # Create instance of FieldStorage
+    form = cgi.FieldStorage()
+    # Get data from fields
+    nonce = form.getvalue('nonce')
+
+    # The access token to use in all Connect API requests. Use your *sandbox* access
+    # token if you're just testing things out.
+    squareconnect.configuration.access_token = 'sandbox-sq0atb-2OMnI3sy7fHeILacBQdBUA'
+
+    # The ID of the business location to associate processed payments with.
+    # See [Retrieve your business's locations]
+    # (https://docs.connect.squareup.com/articles/getting-started/#retrievemerchantprofile)
+    # for an easy way to get your business's location IDs.
+    # If you're testing things out, use a sandbox location ID.
+    location_id = settings.SQ_LOC_KEY
+
+    api_instance = TransactionsApi()
+
+    # Every payment you process with the SDK must have a unique idempotency key.
+    # If you're unsure whether a particular payment succeeded, you can reattempt
+    # it with the same idempotency key without worrying about double charging
+    # the buyer.
+    idempotency_key = str(uuid.uuid1())
+
+    # Monetary amounts are specified in the smallest unit of the applicable currency.
+    # This amount is in cents. It's also hard-coded for $1.00, which isn't very useful.
+    amount = {'amount': 100, 'currency': 'USD'}
+
+    # To learn more about splitting transactions with additional recipients,
+    # see the Transactions API documentation on our [developer site]
+    # (https://docs.connect.squareup.com/payments/transactions/overview#mpt-overview).
+    body = {'idempotency_key': idempotency_key,
+            'card_nonce': nonce, 'amount_money': amount}
+
+    # The SDK throws an exception if a Connect endpoint responds with anything besides
+    # a 200-level HTTP code. This block catches any exceptions that occur from the request.
+    try:
+        api_response = api_instance.charge(location_id, body)
+        res = api_response.transaction
+    except ApiException as e:
+        res = "Exception when calling TransactionApi->charge: {}".format(e)
+
+    # Display the result
+    output = '''Content-type:text/html\r\n\r\n
+            <html>
+            <head>
+            <title>Square Payment</title>
+            </head>
+            <body>
+            <h2>Result: </h2>'''
+    output += '<p>{}</p>'.format(res))
+    output += '''</body>
+                </html>'''
+    return output
