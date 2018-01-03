@@ -69,6 +69,7 @@ def DonateCheckout(request):
                 currency=currency,
                 source=token,
                 description=tool_name,
+                receipt_email=user_email,
             )
 
             new_donation.charge_id = charge.id

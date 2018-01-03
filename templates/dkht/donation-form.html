@@ -2,7 +2,7 @@
 
 <div class="row center">
   <div class="col s8 push-s2 m6 push-m3 green lighten-4">
-    <p class="flow-text center">If this tool has saved you some time, consider making a donation!</p>
+    <p class="flow-text center">If this tool has saved you or your organization some time, consider making a donation!</p>
     <div class="row">
       <div class="col s12">
         <a class="waves-effect waves-light btn modal-trigger green darken-3 white-text flow-text" href="#modal1" id="donateButton">Donate</a>
@@ -35,29 +35,41 @@
 
 <form action="{% url 'dkht:donate-checkout' %}" method="POST" id="payment-form">
   {% csrf_token %}
-  <div class="col s4 input-field">
-    <i class="material-icons prefix">attach_money</i>
-    <input type="number" value="10" min="5" step="1"
-    class="validate flow-text" name="data-amount" required />
-    <label>Amount</label>
-  </div>
-  <div class="input-field col s4">
-     <select name="data-currency">
-       <option value="cad">CAD</option>
-       <option value="usd">USD</option>
-     </select>
-     <label>Currency</label>
-  </div>
   <div class="row">
-    <div id="card-element" class="col s12">
-      <!-- a Stripe Element will be inserted here. -->
+    <div class="col s6 m4 push-m2 input-field">
+      <i class="material-icons prefix">attach_money</i>
+      <input type="number" value="10" min="5" step="1"
+      class="validate flow-text" name="data-amount" required />
+      <label>Amount</label>
     </div>
-    <div id="card-errors" class="col s12">
-      <!-- a Stripe card errors will be inserted here. -->
+    <div class="col s6 m4  push-m2 input-field">
+       <select name="data-currency">
+         <option value="cad">CAD</option>
+         <option value="usd">USD</option>
+       </select>
+       <label>Currency</label>
     </div>
   </div>
   <div class="row">
-    <div class="col s4">
+    <div class="col s12 l8 push-l2">
+      <label>Credit Card Info.</label>
+      <div id="card-element" class="col s12 input-field">
+        <!-- a Stripe Element will be inserted here. -->
+      </div>
+      <div id="card-errors" class="col s12 input-field">
+        <!-- a Stripe card errors will be inserted here. -->
+      </div>
+
+    </div>
+  </div>
+  <div class="row">
+    <div class="col s12 m8 l6 push-l2">
+      <label>Email for electronic receipt only.</label>
+      <input type="email" placeholder="example@email.com" id="data-email"/>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col s4 push-l6">
       <button type="submit" class="waves-effect waves-light btn green darken-2 white-text">Process Payment</a>
     </div>
   </div>
