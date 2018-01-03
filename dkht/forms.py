@@ -1,12 +1,13 @@
 from django import forms
 from django.utils import timezone
-from .models import Entry, StationSearchTarget  # , EntryImage
+from .models import Entry, StationSearchTarget, Donation  # , EntryImage
 
 
 class EntryForm(forms.ModelForm):
 
     def save(self, commit=True):
         self.instance.entry = self.entry
+
         return super().save(commit)
 
     class Meta:
@@ -22,8 +23,13 @@ class EntryForm(forms.ModelForm):
 
 class ClimateScrapeForm(forms.ModelForm):
 
-    # def save(self, commit=True):
-    #     self.instance. = self.ent
+    def save(self, commit=True):
+        self.instance.stationsearchtarget = self.stationsearchtarget
+        print('what is latitude?')
+        print(self.instance.stationsearchtarget)
+        print('')
+        print("$$$$$$$$$$$$$$$")
+        return super().save(commit)
 
     class Meta:
         model = StationSearchTarget

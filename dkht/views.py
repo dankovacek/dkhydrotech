@@ -7,7 +7,7 @@ from .models import Entry, StationSearchTarget, ClimateStation, Donation
 from .forms import EntryForm, ClimateScrapeForm
 from django.urls import reverse_lazy, reverse
 from django.conf import settings
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
 from django.utils import timezone
 from django.db import transaction
 from django.forms.models import inlineformset_factory
@@ -19,7 +19,7 @@ from bokeh.embed import server_document
 from climatescrape import station_search
 
 import stripe
-stripe.api_key = settings.STRIPE_SECRET_KEY
+stripe.api_key = "sk_test_8g8nvltRaAs2BmxRoXseEOfs"  # settings.STRIPE_SECRET_KEY
 
 import logging
 logger = logging.getLogger(__name__)
@@ -46,7 +46,6 @@ class Contact(TemplateView):
 # tool_name = models.CharField(max_length=50)
 # charge_id = models.CharField(max_length=234)
 
-
 def DonateCheckout(request):
 
     new_donation = Donation(
@@ -56,25 +55,54 @@ def DonateCheckout(request):
     if request.method == "POST":
         token = request.POST.get("stripeToken")
         amount = request.POST.get("data-amount")
+        currency = request.POST.get("data-currency")
+        tool_name = request.POST.get("tool-name")
+        user_email = request.POST.get("data-email")
 
-    try:
-        charge = stripe.Charge.create(
-            amount=amount,
-            currency="cdn",
-            source=token,
-            description="The product charged to the user"
-        )
+        try:
+            # amount must be in smallest units of currency (i.e. cents)
+            amount = int(amount) * 100
 
-        new_donation.charge_id = charge.id
+            charge = stripe.Charge.create(
+                api_key=stripe.api_key,
+                amount=amount,
+                currency=currency,
+                source=token,
+                description=tool_name,
+            )
 
-    except stripe.error.CardError as ce:
-        return False, ce
+            new_donation.charge_id = charge.id
+            new_donation.amount = amount / 100
+            new_donation.currency = currency
+            new_donation.tool_name = tool_name
+            new_donation.email = user_email
 
-    else:
-        new_car.save()
-        return redirect("thank_you_page")
-        # The payment was successfully processed, the user's card was charged.
-        # You can now redirect the user to another page or whatever you want
+        except stripe.error.CardError as ce:
+            return False, ce
+
+        else:
+            new_donation.save()
+            return HttpResponseRedirect(
+                reverse('dkht:payment-success',
+                        kwargs={'pk': new_donation.charge_id})
+            )
+            # The payment was successfully processed, the user's card was charged.
+            # You can now redirect the user to another page or whatever you want
+
+
+class PaymentSuccess(TemplateView):
+    """
+    View for successful payment.
+    """
+    model = Donation
+    template_name = 'dkht/payment-success.html'
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(**kwargs)
+        print('transaction object pk = ', self.kwargs['pk'])
+        context['donation'] = get_object_or_404(
+            Donation, charge_id=self.kwargs['pk'])
+        return context
 
 
 class EntryList(ListView):
@@ -248,11 +276,6 @@ def ClimateScrapeExport(request, station_ID, start_year, end_year):
     # start_year = request.GET.get('start_year')
     # end_year = request.GET.get('end_year')
     # Create the HttpResponse object with the appropriate CSV header.
-    print('=======================')
-    print('results:')
-    print('station id = ', station_ID)
-    print('start year = ', start_year)
-    print('end year = ', end_year)
 
     data, filename = station_search.make_dataframe(
         station_ID, start_year, end_year)
@@ -277,8 +300,7 @@ class DataVizDetail(TemplateView):
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(**kwargs)
         data_viz_id = context['viz_url']
-        dataviz_url = settings.BOKEH_BASE_URL + \
-            context['viz_url']
+        dataviz_url = settings.BOKEH_BASE_URL + context['viz_url']
         print('dataviz url = ', dataviz_url)
         try:
             bk_script = server_document(dataviz_url)

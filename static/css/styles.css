@@ -9,6 +9,10 @@ body {
 	flex-direction: column;
 }
 
+button#donateButton {
+	padding: 0.5em 2em 0.5em 
+}
+
 main {
 	flex: 1 0 auto;
 }
