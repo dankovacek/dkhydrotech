@@ -20,9 +20,6 @@ from django.core.wsgi import get_wsgi_application
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "mainsite.settings")
 
-os.environ["STRIPE_SECRET_KEY"] = "sk_live_lRU6sNYzkOMON6yp3Sofc0z2"
-os.environ["STRIPE_PUBLIC_KEY"] = "pk_live_Qrco2r4crZC0YeV3Si3npcjT"
-
 from django.contrib.staticfiles.handlers import StaticFilesHandler
 
 application = StaticFilesHandler(get_wsgi_application())
