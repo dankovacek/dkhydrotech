@@ -4,6 +4,7 @@ from django.utils import timezone
 from django.conf import settings
 from embed_video.fields import EmbedVideoField
 from django.core.files.base import ContentFile
+from django.core.validators import MaxValueValidator, MinValueValidator
 from PIL import Image
 from io import BytesIO
 import os.path
@@ -96,8 +97,8 @@ class Entry(models.Model):
 SEARCH_DIST_CHOICES = (
     (5.0, '5km'),
     (10.0, '10km'),
-    (20.0, '20km'),
-    (40.0, '40km'),
+    (25.0, '25km'),
+    (50.0, '50km'),
 )
 
 
@@ -110,10 +111,12 @@ class StationSearchTarget(models.Model):
     # models.DateField(default=timezone.now)
     lat = models.DecimalField(
         max_digits=9, decimal_places=4, null=False, blank=False,
-        verbose_name="Target Latitude [decimal degrees]")
+        verbose_name="Target Latitude [decimal degrees]",
+        validators=[MinValueValidator(float(-80)), MaxValueValidator(int(84))])
     lon = models.DecimalField(
         max_digits=9, decimal_places=4, null=False, blank=False,
-        verbose_name="Target Lontigude [decimal degrees]")
+        verbose_name="Target Lontigude [decimal degrees]",
+        validators=[MinValueValidator(int(-180)), MaxValueValidator(int(180))])
     search_radius = models.DecimalField(
         max_digits=3, decimal_places=1, choices=SEARCH_DIST_CHOICES,
         default='1km', null=False, blank=False, verbose_name="Search Radius [km]")
@@ -145,3 +148,19 @@ class ClimateStation(models.Model):
 
     new_file_name = models.CharField(
         max_length=30, verbose_name="File Name (for csv writing)", blank=True, null=True)
+
+
+class Donation(models.Model):
+    """
+    A model instance to manage donations for tools used.
+    """
+    id_prefix = 'DON-'
+    #email = EmaiField(max_length=50, null=True, blank=True)
+    created = models.DateTimeField(default=timezone.now)
+    amount = models.DecimalField(
+        max_digits=9, decimal_places=2, null=False, blank=False,
+        verbose_name="Donation Amount")
+    tool_name = models.CharField(max_length=50)
+    charge_id = models.CharField(max_length=234)
+    currency = models.CharField(max_length=3)
+    email = models.EmailField(max_length=254, blank=True, null=True)

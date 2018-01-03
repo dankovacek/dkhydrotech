@@ -141,18 +141,20 @@ def get_stations(lat, lon, radius):
 
     # enter the distance from the target to search for stations
     search_radius = radius * 1000
-    # pull the station IDs for all stations within 10km of stations
     target_stns = stn_df[stn_df['distance_to_target'] <= search_radius]
     target_stns = target_stns.dropna(axis=0, how='any', subset=[
-        'MLY First Year', 'MLY Last Year'])
+        'MLY First Year', 'MLY Last Year', 'distance_to_target'])
 
     # filter out results in different utm zones
     target_stns['UTM_Zone'] = [str(e[-2]) + str(e[-1])
                                for e in target_stns['utm_latlon']]
 
-    target_stns = target_stns[target_stns['UTM_Zone'] == target_zone]
-
     results = []
+
+    try:
+        target_stns = target_stns[target_stns['UTM_Zone'] == target_zone]
+    except TypeError as e:
+        return results
 
     for index, row in target_stns.iterrows():
         rec_start = int(row['MLY First Year'])

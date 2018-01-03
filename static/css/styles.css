@@ -9,6 +9,10 @@ body {
 	flex-direction: column;
 }
 
+button#donateButton {
+	padding: 0.5em 2em 0.5em 
+}
+
 main {
 	flex: 1 0 auto;
 }
@@ -23,7 +27,7 @@ nav a {
 	font-size: 1.75em;
 }
 
-nav a:visited, nav a:link, footer a:visited, footer a:link {
+nav a:visited, nav a:link, footer a:visited, footer a:link, p.flow-text a {
 	color: rgba(60,60,60,0.8);
 }
 

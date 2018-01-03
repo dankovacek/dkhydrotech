@@ -8,6 +8,7 @@ from django.conf.urls.static import static
 from .views import EntryList, EntryCreate, EntryDetail, EntryUpdate, EntryDelete
 from .views import TagList, BlergList, Main, Contact
 from .views import DataVizDetail
+from .views import DonateCheckout, PaymentSuccess
 from .views import ClimateScrapeCreate, ClimateScrapeResults, ClimateScrapeExport
 
 app_name = 'dkht'
@@ -28,7 +29,9 @@ urlpatterns = [
     path('tools/climate_data_finder/results/<pk>/',
          ClimateScrapeResults.as_view(), name="climate-scrape-results"),
     path('tools/climate_data_finder/output/<station_ID>/<start_year>/<end_year>/',
-         ClimateScrapeExport, name="climate-scrape-export")
+         ClimateScrapeExport, name="climate-scrape-export"),
+    path('donation-checkout/', DonateCheckout, name="donate-checkout"),
+    path('payment-success/<pk>/', PaymentSuccess.as_view(), name="payment-success")
 
 ]  # + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) +
 #static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

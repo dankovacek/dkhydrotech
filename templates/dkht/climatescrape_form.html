@@ -1,30 +1,22 @@
 {% extends "dkht/base.html" %}
+{% load static %}
 {% block content %}
 {{ block.super }}
-<div id="background-image">
 
+<div id="background-image">
     <div class="row">
         <div class="col s12">
-        	  <h4>Search and Acquire Climate Data (Canada)</h4>
-                <p class="subheader flow-text">Following a few conversations with friends and colleagues,
-                  I realized that I'm not alone in thinking that too much time is spent acquiring and formatting data,
-                  at the expense of doing real analysis work.  I hope the simple application I've created here shortens
-                  the time it takes practitioners to begin real analysis.</p>
-                <p class="subheader flow-text">Simply enter the lat/lon (in decimal degrees),
+          <h3>Canadian Climate Data Wrangler</h3>
+        	  <h4>Search and Acquire Formatted Historical Climate Data</h4>
+            <blockquote class="subheader flow-text"><em>New!</em> Queries are now multithreaded to allow longer
+            records to be retrieved without the server timing out.</blockquote>
+                <p class="subheader flow-text">Enter the lat/lon (in decimal degrees),
                   choose a search radius, and submit.  The code will return all stations within
                   the specified search radius from the target location.  Results of the search
                   are summarized in the subsequent view where you can download the resultant
                   measured records in their entirety.</p>
-                <p class="subheader flow-text">In the process of developing this application,
-                  I realized I had to place a few restrictions on the search to avoid some risk
-                  of racking up large server charges.</p>
-                <p class="subheader flow-text">For this reason, the largest search
-                  radius is set to 40km.  If you'd like a custom query, either for a
-                  larger search area, for hourly climate data, or for any other large
-                  data manipulation tasks, feel free to <a href="{% url 'dkht:contact-view' %}">contact me</a>,
-                  or reach out to me through the LinkedIn, Github, or Google+ links in the footer.</p>
-                <p class="subheader flow-text"><em>New!</em> Queries are now multithreaded to allow longer
-                records to be retrieved without the server timing out.</p>
+        </div>
+        <div class="col s12 m8 push-m2 l6 push-l3 green lighten-4">
             <form action="{{ action }}" method="POST" class="post-form" enctype="multipart/form-data">{% csrf_token %}
                 {{ form.as_p }}
                 <button type="submit" class="btn-floating btn-large waves-effect waves-light" onclick="Materialize.toast('Search Submitted!', 4000)">
@@ -33,15 +25,21 @@
     		    </form>
         </div>
     </div>
+
     <div class="row">
       <div class="col s12">
-        <p class="subheader flow-text">This tool retrieves and concatenates data collected, reviewed, and published by
-          <a href="http://climate.weather.gc.ca/">Environment Canada</a>.  The author of this software
-          does not guarantee the accuracy of any data, and this application is provided WITHOUT ANY WARRANTY;
-          without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-          <a href="http://www.gnu.org/licenses/">GNU General Public License</a> for more details.</p>
+        <p class="flow-text">The largest search
+          radius is currently set to 50km, and the available frequency is limited to daily records.
+          If you'd like a custom query, either for a larger search area, for hourly climate data, or for any other large
+          data manipulation tasks, feel free to <a href="{% url 'dkht:contact-view' %}">contact me</a>.
+          I can also be reached via the LinkedIn, Github, and Google+ links in the footer.</p>
       </div>
     </div>
+
+    {% block payment %}
+      {% include 'dkht/donation-form.html' %}
+    {% endblock payment %}
+
 </div>
 
 {% endblock content %}
