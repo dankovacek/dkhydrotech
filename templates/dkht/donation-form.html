@@ -36,13 +36,13 @@
 <form action="{% url 'dkht:donate-checkout' %}" method="POST" id="payment-form">
   {% csrf_token %}
   <div class="row">
-    <div class="col s6 m4 push-m2 input-field">
+    <div class="col s6 m5 push-m1 input-field">
       <i class="material-icons prefix">attach_money</i>
       <input type="number" value="10" min="5" step="1"
       class="validate flow-text" name="data-amount" required />
       <label>Amount</label>
     </div>
-    <div class="col s6 m4  push-m2 input-field">
+    <div class="col s6 m5 push-m1 input-field">
        <select name="data-currency">
          <option value="cad">CAD</option>
          <option value="usd">USD</option>
@@ -50,6 +50,7 @@
        <label>Currency</label>
     </div>
   </div>
+
   <div class="row">
     <div class="col s12 l8 push-l2">
       <label>Credit Card Info.</label>
@@ -62,17 +63,20 @@
 
     </div>
   </div>
+
   <div class="row">
     <div class="col s12 m8 l6 push-l2">
-      <label>Email for electronic receipt only.</label>
-      <input type="email" placeholder="example@email.com" id="data-email"/>
+      <label>Email (optional, used once to send electronic receipt).</label>
+      <input type="email" placeholder="example@email.com" name="data-email" />
     </div>
   </div>
+
   <div class="row">
     <div class="col s4 push-l6">
       <button type="submit" class="waves-effect waves-light btn green darken-2 white-text">Process Payment</a>
     </div>
   </div>
+
 </form>
 </div>
 </div>
