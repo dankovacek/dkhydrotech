@@ -79,7 +79,7 @@ def DonateCheckout(request):
             new_donation.email = user_email
 
         except stripe.error.CardError as ce:
-            return False, ce
+            return HttpResponse(ce)
 
         else:
             new_donation.save()
