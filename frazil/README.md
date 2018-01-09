@@ -27,6 +27,24 @@ Once you have addressed all of the input parameters in `Setup`:
   * `>>python main.py`
 
 
+### Setting up realtime retrieval of new data as it is published (AMQP)
+
+Format your command parameters by looking at the folder structure in:
+http://dd.weather.gc.ca/
+
+
+Example config file for SWOB (file named swob.conf)
+https://sourceforge.net/p/metpx/git/ci/master/tree/sarracenia/samples/config/swob.conf
+
+broker amqp://dd.weather.gc.ca/
+# All stations
+# subtopic observations.swob-ml.#
+
+# Only station CMML (Whistler)
+subtopic observations.swob-ml.*.CMML.#
+accept .*
+
+
 
 ### License
 
