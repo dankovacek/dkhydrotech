@@ -8,7 +8,7 @@
             <form action="{{ action }}" method="POST" class="post-form" enctype="multipart/form-data">{% csrf_token %}
                 {{ form.as_p }}
 
-                <a href="{% url 'entry-list' %}" class="btn-floating btn-large waves-effect waves-light">
+                <a href="{% url 'dkht:entry-list' %}" class="btn-floating btn-large waves-effect waves-light">
                     <i class="large material-icons grey darken-3 green-text text-lighten-2">clear</i>
                 </a>
                 <button type="submit" class="btn-floating btn-large waves-effect waves-light" onclick="Materialize.toast('Post Created!', 4000)">
@@ -18,7 +18,7 @@
                 </a>
 
     		</form>
-             {{ form.media }}
+              {# {{ form.media }} #}
         </div>
     </div>
 </div>

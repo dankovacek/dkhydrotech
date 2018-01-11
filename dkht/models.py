@@ -12,10 +12,7 @@ from markdownx.models import MarkdownxField
 from markdownx.utils import markdownify
 
 ENTRY_CHOICES = (
-    ('photo', 'PHOTO'),
-    ('drawing', 'DRAWING'),
-    ('video', 'VIDEO'),
-    ('post', 'POST'),
+    ('project', 'PROJECT'),
 )
 
 
@@ -38,8 +35,8 @@ class Entry(models.Model):
         verbose_name="Video Link (optional)", blank=True, null=True)
     tags = models.CharField(max_length=500, blank=True,
                             null=True, verbose_name="Tags (comma separated)")
-    type = models.CharField(
-        max_length=7, choices=ENTRY_CHOICES, default='POST')
+    post_type = models.CharField(
+        max_length=7, choices=ENTRY_CHOICES, default='PROJECT')
 
     def save(self, *args, **kwargs):
         if not self.image.closed:
