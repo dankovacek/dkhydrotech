@@ -108,8 +108,7 @@ class PaymentSuccess(TemplateView):
 
 class EntryList(ListView):
     """
-    Will need to change implementation of stations once
-    organization and user are incorporated.
+    View for Project Entries (Work Portfolio List view)
     """
     model = Entry
 
@@ -128,7 +127,8 @@ class EntryCreate(LoginRequiredMixin, CreateView):
     organization and user are incorporated.
     """
     model = Entry
-    fields = ['type', 'title', 'byline', 'text_body', 'image', 'tags', 'video']
+    fields = ['post_type', 'title', 'byline',
+              'text_body', 'image', 'tags', 'video']
 
     def get_context_data(self, *args, **kwargs):
         context = super(EntryCreate, self).get_context_data(**kwargs)
@@ -157,7 +157,8 @@ class EntryUpdate(LoginRequiredMixin, UpdateView):
     organization and user are incorporated.
     """
     model = Entry
-    fields = ['type', 'title', 'byline', 'text_body', 'image', 'tags', 'video']
+    fields = ['post_type', 'title', 'byline',
+              'text_body', 'image', 'tags', 'video']
 
     def get_context_data(self, *args, **kwargs):
         context = super(EntryUpdate, self).get_context_data(**kwargs)
@@ -181,28 +182,9 @@ class EntryDelete(LoginRequiredMixin, DeleteView):
         return reverse_lazy('dkht:entry-list')
 
 
-class BlergList(ListView):
-    """
-    Will need to change implementation of stations once
-    organization and user are incorporated.
-    """
-    model = Entry
-
-    # def get_context_data(self, *args, **kwargs):
-    #     context = super()
-
-    def get_queryset(self):
-        qs = super().get_queryset()
-        # if self.request.user
-        qs = Entry.objects.filter(type='post').order_by('created')
-
-        return qs
-
-
 class TagList(ListView):
     """
-    Will need to change implementation of stations once
-    organization and user are incorporated.
+    Possibly redundant view.
     """
     model = Entry
 

@@ -12,7 +12,7 @@ class EntryForm(forms.ModelForm):
 
     class Meta:
         model = Entry
-        fields = ('type', 'title', 'byline',
+        fields = ('post_type', 'title', 'byline',
                   'text_body', 'image', 'tags', 'video')
 
     def __init__(self, *args, **kwargs):
@@ -25,10 +25,6 @@ class ClimateScrapeForm(forms.ModelForm):
 
     def save(self, commit=True):
         self.instance.stationsearchtarget = self.stationsearchtarget
-        print('what is latitude?')
-        print(self.instance.stationsearchtarget)
-        print('')
-        print("$$$$$$$$$$$$$$$")
         return super().save(commit)
 
     class Meta:

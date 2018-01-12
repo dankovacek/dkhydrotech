@@ -29,7 +29,7 @@
               </div>
 
               <div class="col s7 m4 pull-m3 pull-l2">
-                  <h4 class="green-text text-darken-4">DK Hydro/Tech</h4>
+                  <h4 class="light-green-text text-darken-3">DK Hydro/Tech</h4>
                   <ul class="contact-list grey-text text-darken-4">
                       <li>Data Analysis</li>
                       <li>Fullstack Development</li>
@@ -46,12 +46,12 @@
 
             <!-- <img src="{% static 'images/sub-zero_water.JPG' %}" class="responsive"> -->
           </div>
-          <div class="col s12">
-            <h2>Data Analysis</h2>
-            <blockquote class="flow-text">
+          <div class="col s12 m10 push-m1">
+            <h2 class="light-green-text text-darken-3">Data Analysis</h2>
+            <blockquote class="flow-text light-green-text text-darken-2">
               Don't repeat routine data manipulation tasks.  Instead, automate.
             </blockquote>
-            <p class="flow-text">
+            <p class="flow-text grey-text text-darken-1">
               Organizations are managing ever-greater amounts of data.
               Most professionals working with data will attest that the
               amount of time spent collecting and organizing data greatly outweighs
@@ -62,13 +62,13 @@
               improving, and providing interesting new ways to manage, analyse, and present data.
               Call for a consultation on your data goals in any discipline.
             </p>
-              <div class="chip green darken-2 white-text">Statistical Modelling</div>
-              <div class="chip green darken-2 white-text">Python</div>
-              <div class="chip green darken-2 white-text">Django</div>
-              <div class="chip green darken-2 white-text">Javascript</div>
-              <div class="chip green darken-2 white-text">Interactive Data Visualization</div>
-              <div class="chip green darken-2 white-text">Data Acquisition</div>
-              <div class="chip green darken-2 white-text">Multithreading / Parallel Computing</div>
+              <div class="chip light-green lighten-3 grey-text text-darken-3">Statistical Modelling</div>
+              <div class="chip light-green lighten-3 grey-text text-darken-3">Python</div>
+              <div class="chip light-green lighten-3 grey-text text-darken-3">Django</div>
+              <div class="chip light-green lighten-3 grey-text text-darken-3">Javascript</div>
+              <div class="chip light-green lighten-3 grey-text text-darken-3">Interactive Data Visualization</div>
+              <div class="chip light-green lighten-3 grey-text text-darken-3">Data Acquisition</div>
+              <div class="chip light-green lighten-3 grey-text text-darken-3">Multithreading / Parallel Computing</div>
           </div>
         </div>
         <br>
@@ -87,12 +87,12 @@
 </div>
 
 <div class="row">
-    <div class="col s12">
-      <h2>Hydrotechnical Engineering</h2>
-      <blockquote class="flow-text">
+    <div class="col s12 m10 push-m1">
+      <h2 class="light-green-text text-darken-3">Hydrotechnical Engineering</h2>
+      <blockquote class="flow-text light-green-text text-darken-2">
         Engineering Consulting in water resources, value engineering.
       </blockquote>
-      <p class="flow-text">
+      <p class="flow-text grey-text text-darken-1">
         I'm a registered professional mechanical engineer in British Columbia with ten years
         experience in hydropower, mining, and water resource management.
         In both owner's and contractor's engineer roles, I've worked on brownfield
@@ -107,11 +107,11 @@
         experience.
         </thead>
       </p>
-        <div class="chip green darken-2 white-text">Hydraulics</div>
-        <div class="chip green darken-2 white-text">Value Engineering</div>
-        <div class="chip green darken-2 white-text">Hydrology</div>
-        <div class="chip green darken-2 white-text">Climatology</div>
-        <div class="chip green darken-2 white-text">Technical Writing</div>
+        <div class="chip light-green lighten-3 grey-text text-darken-3">Hydraulics</div>
+        <div class="chip light-green lighten-3 grey-text text-darken-3">Value Engineering</div>
+        <div class="chip light-green lighten-3 grey-text text-darken-3">Hydrology</div>
+        <div class="chip light-green lighten-3 grey-text text-darken-3">Climatology</div>
+        <div class="chip light-green lighten-3 grey-text text-darken-3">Technical Writing</div>
     </div>
 </div>
 <br>
@@ -126,17 +126,5 @@
     <img src="{% static 'images/intake.jpg' %}" alt="Unsplashed background img 1">
   </div>
 </div>
-
-{% if user.is_authenticated %}
-<div class="row">
-    <div class="col s12">
-        <div class="add-btn">
-            <a class="waves-effect waves-light btn grey darken-3 white-text text-lighten-2" href="{% url 'dkht:entry-create' %}">
-                <i class="material-icons right">add</i>Content
-            </a>
-        </div>
-    </div>
-</div>
-{% endif %}
 
 {% endblock content %}
