@@ -89,8 +89,20 @@
 
                 </div>
             </div>
+            {% if  user.is_authenticated %}
+                <div class="row">
+                    <div class="col s6 center">
+                        <a href="{% url 'dkht:entry-update' pk=entry.id %}">
+                            <i class="material-icons medium light-green-text text-darken-2">edit</i></a>
+                    </div>
+                    <div class="col s6 center">
+                        <a href="{% url 'dkht:entry-delete' pk=entry.id %}">
+                            <i class="material-icons medium light-green-text text-darken-2">delete</i></a>
+                    </div>
+                </div>
             {% endif %}
-          {% endif %}            
+          {% endif %}
+        {% endif %}
         </div>
     </div>
 
