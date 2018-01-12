@@ -30,14 +30,23 @@
 	<li><a href="{% url 'dkht:climate-scrape' %}">Climate Data Wrangler</a></li>
 </ul>
 
-<nav class="green lighten-2">
+<nav class="grey lighten-3">
     <div class="nav-wrapper">
 
-			<a id="logo-container" href="{% url 'dkht:main-view' %}" class="brand-logo svg-logo-wrapper left hide-on-med-and-down">
-				<img src="{% static 'images/dkhydrotech1.3.1.svg' %}" class="shadow">
+			<a href="{% url 'dkht:main-view' %}" class="brand-logo svg-logo-wrapper hide-on-med-and-down">
+				<img src="{% static 'images/dkhydrotech1.3.1.svg' %}" class="shadow ">
 			</a>
+			<a href="{% url 'dkht:main-view' %}" class="brand-logo hide-on-small-only grey-text text-darken-3 left" style="margin-left: 75px;">DK HYDROTECH</h4>
+			<a href="{% url 'dkht:main-view' %}" class="brand-logo hide-on-med-and-up grey-text text-darken-3 right">DK HYDROTECH</h4>
 
-      <ul class="right hide-on-med-and-down">
+
+			<ul class="right hide-on-med-and-down">
+				{% if user.is_authenticated %}
+				<li>
+					<a href="{% url 'dkht:entry-create' %}">
+							<i class="material-icons left">add</i>CONTENT</a>
+				</li>
+				{% endif %}
         <li>
 					<a class="dropdown-button" href="#!" data-activates="dropdown2">TOOLS
 						<i class="material-icons right">arrow_drop_down</i>
@@ -48,12 +57,19 @@
       </ul>
 
       <ul class="side-nav" id="mobile-demo">
+				<li><a href="{% url 'dkht:main-view' %}">HOME</a></li>
 				<li>
 					<a class="dropdown-button" href="#!" data-activates="dropdown1">TOOLS
 					<i class="material-icons right">arrow_drop_down</i></a>
 				</li>
 				<li><a href="{% url 'dkht:entry-list' %}">PROJECTS</a></li>
 				<li><a href="{% url 'dkht:contact-view' %}">CONTACT</a></li>
+				{% if user.is_authenticated %}
+					<li>
+						<a href="{% url 'dkht:entry-create' %}" class="grey-text text-darken-2">
+							<i class="material-icons left">add</i>CONTENT</a>
+					</li>
+				{% endif %}
       </ul>
 
       <a href="#" data-activates="mobile-demo" class="button-collapse"><i class="material-icons">menu</i></a>
@@ -67,7 +83,7 @@
 
 {% block content %}{% endblock content %}
 
-<footer class="page-footer green lighten-2">
+<footer class="page-footer grey lighten-3">
     <div class="container">
         <div class="row">
             <div class="col s12 m4 center">

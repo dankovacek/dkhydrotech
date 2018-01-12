@@ -9,7 +9,7 @@
     <div class="container-fluid">
         <div class="row">
           <div class="col s12 m10 push-m1 l8 push-l2">
-              <h2 class="green-text text-darken-4">Projects</h2>
+              <h2 class="light-green-text text-darken-3">Projects</h2>
           </div>
         </div>
 
@@ -18,20 +18,26 @@
             {% for entry in object_list %}
 
             <div class="col s12 m10 push-m1 l8 push-l2">
-                <div class="card green-grey darken-1">
-                  <div class="card-content black-text">
-                    <a href="{% url 'dkht:entry-detail' pk=entry.id %}">
-                        <span class="card-title grey-text text-darken-3 flow-text left">
-                            {{ entry.title }}
-                        </span>
-                        <p class="right">{{ entry.created.date }}</p>
+              <a href="{% url 'dkht:entry-detail' pk=entry.id %}">
+                  <div class="card hoverable">
+                      <div class="card-content black-text">
 
-                        <p class="flow-text truncate">
-                            {{ entry.byline }}
-                        </p>
-                    </a>
+                          <span class="right light-green-text text-darken-2">{{ entry.created.date }}</span>
+                          <h4 class="grey-text text-darken-3">
+                              {{ entry.title }}
+                          </h4>
+
+                          <p class="flow-text truncate grey-text">
+                            {{ entry.text_body|safe }}
+                          </p>
+
+                          <blockquote class="flow-text light-green-text text-darken-3">
+                              {{ entry.byline }}
+                          </blockquote>
+
+                      </div>
                   </div>
-                </div>
+                </a>
             </div>
 
             {% endfor %}
@@ -64,7 +70,7 @@
     </div>
 
     <div class="col s7 m4 pull-m3 pull-l2">
-        <h4 class="green-text text-darken-4">DK Hydro/Tech</h4>
+        <h4 class="light-green-text text-darken-4">DK Hydro/Tech</h4>
         <ul class="contact-list grey-text text-darken-4">
             <li>Data Analysis</li>
             <li>Fullstack Development</li>
@@ -76,16 +82,5 @@
 
 </div>
 
-{% if user.is_authenticated %}
-<div class="row">
-    <div class="col s12">
-        <div class="add-btn">
-            <a class="waves-effect waves-light btn grey darken-3 white-text text-lighten-2" href="{% url 'dkht:entry-create' %}">
-                <i class="material-icons right">add</i>Content
-            </a>
-        </div>
-    </div>
-</div>
-{% endif %}
 
 {% endblock content %}

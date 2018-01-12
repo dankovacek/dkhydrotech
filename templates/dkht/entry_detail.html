@@ -24,7 +24,7 @@
         <div class="container">
           {% if bk_script %}
           <div class="row">
-            <div class="col s12">
+            <div class="col s12 m10 push-m1 l8 push-l2">
 
               {{ bk_script|safe }}
             </div>
@@ -34,7 +34,7 @@
             {% if entry.type == 'video' %}
                 {%  if entry.video %}
                     <div class="row">
-                        <div class="col s12">
+                        <div class="col s12 m10 push-m1">
                             <div class="video-container">
                                 {% video entry.video %}
                             </div>
@@ -43,29 +43,28 @@
                 {% endif %}
             {% else %}
             <!-- END VIDEO LAYOUT -->
+
+            <div class="row">
+                <div class="col s12 light-green-text text-darken-3">
+                    <h3>{{ entry.title }}</h3>
+                </div>
+
                 <!-- START PHOTO/BLEG/ILLUSTRATION LAYOUT -->
                 {% if entry.image %}
                     <div class="row">
-                        <div class="col s12 center-align">
+                        <div class="col s12 m10 push-m1 center-align">
                             <img class="responsive-img main-img" src="{{ entry.image.url }}">
                         </div>
                     </div>
                 {% endif %}
-            {% endif %}
-            <!-- END PHOTO LAYOUT -->
 
-            <div class="row">
-                <div class="col s12">
-                    <h3>{{ entry.title }}</h3>
-                </div>
-
-                <div class="col s12">
-                    <h5>
+                <div class="col s12 m10 push-m1">
+                    <blockquote class="flow-text light-green-text text-darken-3">
                         {{ entry.byline }}
-                    </h5>
+                    </blockquote>
                 </div>
 
-                <div class="col s12">
+                <div class="col s12 m10 push-m1">
                     {% if entry.text_body %}
                         <p class="flow-text">
                             {{ entry.formatted_markdown|safe }}
@@ -73,40 +72,25 @@
                     {% endif %}
                 </div>
 
-                <div class="col s12">
-                    <h5 class="right"><em>Posted: {{ entry.created.date }}</em></em></h5>
+                <div class="col s12 m10 push-m1">
+                    <h5 class="right light-green-text text-darken-3">Posted: {{ entry.created.date }}</h5>
                 </div>
             </div>
 
             <div class="row">
-                <div class="col s12 m8 l10">
+                <div class="col s12 m10 push-m1">
                     {% if entry.tags %}
-
                         {% for tag in entry.tags_as_list %}
-                            <div class="chip grey darken-3 green-text text-lighten-2">
-                                <a href="{% url 'dkht:tag-list' pk=tag %}">{{ tag }}</a>
+                            <div class="chip light-green lighten-2 hoverable">
+                                <a href="{% url 'dkht:tag-list' pk=tag %}" class="grey-text text-darken-3 ">{{ tag }}</a>
                             </div>
                         {% endfor %}
                     {% endif %}
 
                 </div>
             </div>
-
-            {% if  user.is_authenticated %}
-                <div class="row">
-                    <div class="col s6 center">
-                        <a href="{% url 'dkht:entry-update' pk=entry.id %}">
-                            <i class="material-icons medium green-text text-darken-3">edit</i></a>
-                    </div>
-                    <div class="col s6 center">
-                        <a href="{% url 'dkht:entry-delete' pk=entry.id %}">
-                            <i class="material-icons medium green-text text-darken-3">delete</i></a>
-                    </div>
-                </div>
             {% endif %}
-
-          {% endif %}
-
+          {% endif %}            
         </div>
     </div>
 
