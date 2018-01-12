@@ -35,4 +35,4 @@ urlpatterns = [
     path('donation-checkout/', DonateCheckout, name="donate-checkout"),
     path('payment-success/<pk>/', PaymentSuccess.as_view(), name="payment-success")
 
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+]  # + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
