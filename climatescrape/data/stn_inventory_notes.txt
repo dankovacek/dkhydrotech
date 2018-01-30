@@ -1,0 +1,2 @@
+Where to check station inventory file:
+ftp://ftp.tor.ec.gc.ca/Pub/Get_More_Data_Plus_de_donnees/
