@@ -157,8 +157,8 @@ def get_stations(lat, lon, radius):
         return results
 
     for index, row in target_stns.iterrows():
-        rec_start = int(row['MLY First Year'])
-        rec_end = int(row['MLY Last Year'])
+        rec_start = int(row['First Year'])
+        rec_end = int(row['Last Year'])
         years = [e for e in range(rec_start, rec_end + 1)]
 
         stn_latlon = str(stn_df[stn_df['Station ID'] ==
