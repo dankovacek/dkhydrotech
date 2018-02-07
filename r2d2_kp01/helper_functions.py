@@ -9,6 +9,23 @@ import utm
 import requests
 from html.parser import HTMLParser
 
+from bokeh.plotting import figure
+
+
+def set_up_bokeh_ts_figure(width, height, y_label):
+    TOOLS = "pan,wheel_zoom,box_zoom,box_select,lasso_select,reset"
+    fig = figure(plot_width=width, plot_height=height,
+                 tools=TOOLS, toolbar_location="above",
+                 toolbar_sticky=False, x_axis_type="datetime")
+
+    fig.xaxis.axis_label = 'Date'
+    fig.yaxis.axis_label = y_label
+    fig.xaxis.axis_label_text_font_size = '10pt'
+    fig.yaxis.axis_label_text_font_size = '10pt'
+    fig.xaxis.major_label_text_font_size = '10pt'
+    fig.yaxis.major_label_text_font_size = '10pt'
+    return fig
+
 
 def load_data(attachment):
     """
@@ -29,11 +46,11 @@ def find_newest_message(all_messages):
     and 'msg' <-- the entire message object
     (needed for retrieving attachment)
     """
-    newMessage = None
-    for msg in all_messages:
+    newestMessage = None
+    for message in all_messages:
         current_message = {}
         # make a dict object of the massage payload
-        for e in msg['payload']['headers']:
+        for e in message['payload']['headers']:
             current_message[e['name']] = e['value']
         # get the datetime value of the message from string
         datetime_object = time.strptime(
@@ -42,14 +59,15 @@ def find_newest_message(all_messages):
         current_message['id'] = message['id']
         current_message['msg'] = message
 
-        if newMessage:
+        if newestMessage:
             # if the newest message has been set, check if
             # the current message is newer and update newest message
-            if newMessage['datetime'] < datetime_object:
-                newMessage = current_message
+            if newestMessage['datetime'] < datetime_object:
+                newestMessage = current_message
         else:
             # set the newest message initially
-            newMessage = current_message
+            newestMessage = current_message
+    return newestMessage
 
 
 def color_negative_red(val):
