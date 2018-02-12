@@ -306,10 +306,10 @@ footer = Div(
 layout = column(header, column(site_data_rows), body_text, footer)
 
 # show the report in a browser
-show(layout)
+# show(layout)
 
 # Convert the layout to an html document for sending as email and converting to pdf for document
-# html = file_html(layout, CDN, "Automated Report from DKHydrotech")
+html = file_html(layout, CDN, "Automated Report from DKHydrotech")
 
 #
 # # only include the first table in the frame
@@ -354,7 +354,7 @@ The data are presented as-is, and are not modified or reviewed by the author of 
 # Conver the layout for sending pdf attachment with email
 # report_pdf = pdfkit.from_string(html, False)
 #
-# # pdfkit.from_string(html, os.path.join(REPORT_DIR, 'report_{}'.format(d)))
+pdfkit.from_string(html, os.path.join(REPORT_DIR, 'report_{}.pdf'.format(d)))
 #
 # # email parameters: separate multiple recipients by comma
 # recipient = 'dan@dkhydrotech.com'

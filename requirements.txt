@@ -7,7 +7,6 @@ django-allauth==0.34.0
 django-embed-video==1.1.2
 django-markdownx==2.0.21
 django-materializecss-form==1.0.1
-gdbm==0.0.0
 gunicorn==19.7.1
 idna==2.6
 Jinja2==2.10
@@ -26,8 +25,6 @@ requests==2.18.4
 requests-oauthlib==0.8.0
 six==1.11.0
 sorl-thumbnail==12.4.1
-sqlite3==0.0.0
-Tkinter==0.0.0
 tornado==4.5.2
 urllib3==1.22
 utm==0.4.2
