@@ -108,6 +108,9 @@ def resample_data(df):
     df['batt_delta'] = (df['External Supply(AVG) (V )'] -
                         df['External Supply(AVG) (V )'].shift(1))
 
+    # convert to mV / day equivalent
+    df['batt_q_rate_daily'] = df['batt_delta'] * 1000 * (24 / sample_period)
+
     df['timedelta'] = df['DateTime'] - df['DateTime'].shift(1)
 
     # add column for timedelta between steps
@@ -129,54 +132,22 @@ def resample_data(df):
 ########################################
 #  Functions for OLS best-fit
 ########################################
-def update_time_best_fit(df, x_param, y_param):
+def update_best_fit(df, x_param, y_param):
+
     # fit the depletion based on time vs. delta V
-
     best_fit = scipy.stats.linregress(df[x_param], df[y_param])
-    time_start = df['elapsed_time'].iloc[0]
-    time_end = df['elapsed_time'].iloc[-1]
 
-    min_x_param = time_start  # df[x_param].min()
-    # elapsed_time.seconds  # df[x_param].max()
-    max_x_param = time_end
+    min_x_param = df[x_param].min()
+    max_x_param = df[x_param].max()
 
-    timestep = (max_x_param - min_x_param) / len(df.index.values)
-
-    x_param_domain = np.arange(min_x_param, max_x_param, timestep)
-    # x_param_domain = np.linspace(min_x_param, max_x_param)
+    x_param_domain = np.linspace(
+        min_x_param, max_x_param, num=len(df.index.values))
 
     y_param_range = np.array(
         x_param_domain * best_fit.slope + best_fit.intercept)
 
     if len(df.index.values) != len(x_param_domain):
-        print('CAUGHT')
-        print(len(x_param_domain))
-        x_param_domain = x_param_domain[:-1]
-        y_param_range = y_param_range[:-1]
-        print(len(x_param_domain))
-
-    reg_df = pd.DataFrame({y_param: y_param_range,
-                           'DateTime': df['DateTime']})
-
-    return best_fit, reg_df
-
-
-def update_temp_best_fit(df, x_param, y_param):
-
-    # fit the depletion based on time vs. delta V
-    best_fit = scipy.stats.linregress(df[x_param], df[y_param])
-
-    min_x_param = df[x_param].min() * 0.95
-    max_x_param = df[x_param].max() * 1.05
-
-    timestep = (max_x_param - min_x_param) / len(df.index.values)
-
-    x_param_domain = np.arange(min_x_param, max_x_param, timestep)
-    y_param_range = np.array(
-        x_param_domain * best_fit.slope + best_fit.intercept)
-
-    if len(df.index.values) != len(x_param_domain):
-        print('CAUGHT')
+        print('CAUGHT MISMATCHED INDEX LENGTHS')
         print(len(x_param_domain))
         x_param_domain = x_param_domain[:-1]
         y_param_range = y_param_range[:-1]
@@ -194,12 +165,14 @@ def update_temp_best_fit(df, x_param, y_param):
 ###################################
 temp_results_text = Div(text='', width=550)
 time_results_text = Div(text='', width=550)
+batt_q_results_text = Div(text='', width=550)
 
 source = ColumnDataSource(data=dict())
 source_static = ColumnDataSource(data=dict())
 
 temp_reg_source = ColumnDataSource(data=dict())
 time_reg_source = ColumnDataSource(data=dict())
+batt_q_reg_source = ColumnDataSource(data=dict())
 
 
 def selection_change(attrname, old, new):
@@ -207,13 +180,9 @@ def selection_change(attrname, old, new):
     data = resample_data(data)
     selected = source.selected['1d']['indices']
 
-    # if selected:
-    data = data.iloc[sorted(selected), :]
-    update_regression_and_stats(data)
-
-
-def update_time_frequency(attrname, old, new):
-    update()
+    if selected:
+        data = data.iloc[sorted(selected), :]
+        update_regression_and_stats(data)
 
 
 def calculate_depletion_time(df, best_fit):
@@ -236,11 +205,14 @@ def calculate_depletion_time(df, best_fit):
 
 
 def update_regression_and_stats(df):
-    temp_best_fit, temp_reg_df, = update_temp_best_fit(
+    time_best_fit, time_reg_df = update_best_fit(
+        df, 'elapsed_time', 'External Supply(AVG) (V )')
+
+    temp_best_fit, temp_reg_df, = update_best_fit(
         df, 'Temperature(RAW) (Deg C )', 'batt_delta')
 
-    time_best_fit, time_reg_df = update_time_best_fit(
-        df, 'elapsed_time', 'External Supply(AVG) (V )')
+    batt_q_best_fit, batt_q_reg_df = update_best_fit(
+        df, 'External Supply(AVG) (V )', 'batt_q_rate_daily')
 
     depletion_time = calculate_depletion_time(df, time_best_fit)
 
@@ -248,20 +220,14 @@ def update_regression_and_stats(df):
 
     update_time_stats(time_best_fit, depletion_time)
     update_temp_stats(temp_best_fit, time_step_factor)
+    update_batt_q_stats(batt_q_best_fit, time_step_factor)
 
     temp_reg_source.data = temp_reg_source.from_df(temp_reg_df)
     time_reg_source.data = time_reg_source.from_df(time_reg_df)
+    batt_q_reg_source.data = batt_q_reg_source.from_df(batt_q_reg_df)
 
     # source.data = source.from_df(df)
     # source_static.data = source.data
-
-
-def update():
-    df = load_data()
-    df = resample_data(df)
-    source.data = source.from_df(df)
-    source_static.data = source.data
-    update_regression_and_stats(df)
 
 
 def update_time_stats(fit_fn, depletion_time):
@@ -285,8 +251,34 @@ def update_temp_stats(fit_fn, time_period_factor):
     <h4>Power Supply Discharge Rate:</h4>
     <p>{:2.2f} mV / day / (degree Celsius)</p>
     <p><em>R^2 = </em>{:2.2f}</p>
+    <p><em>How is the battery discharge rate
+    affected by temperature?</em></p>
     """.format(1000 * fit_fn.slope,
                fit_fn.rvalue**2)
+
+
+def update_batt_q_stats(fit_fn, time_period_factor):
+    time_step = resample_slider.value
+    batt_q_results_text.text = """
+    <h4>Power Supply Discharge Rate:</h4>
+    <p>{:2.2f} mV / day / [V]</p>
+    <p><em>R^2 = </em>{:2.2f}</p>
+    <p><em>How does the battery discharge rate change
+    with voltage?</em></p>
+    """.format(1000 * fit_fn.slope,
+               fit_fn.rvalue**2)
+
+
+def update_time_frequency(attrname, old, new):
+    update()
+
+
+def update():
+    df = load_data()
+    df = resample_data(df)
+    source.data = source.from_df(df)
+    source_static.data = source.data
+    update_regression_and_stats(df)
 
 
 source.on_change('selected', selection_change)
@@ -296,7 +288,9 @@ source.on_change('selected', selection_change)
 ###########################
 batt_series_name = 'External Supply(AVG) (V )'
 batt_delta_series_name = 'batt_delta'
+batt_q_rate_series_name = 'batt_q_rate_daily'
 temp_series_name = 'Temperature(RAW) (Deg C )'
+
 
 TOOLS = "pan,wheel_zoom,box_zoom,reset"
 
@@ -346,23 +340,46 @@ battery_regression_fig = figure(plot_width=500, plot_height=300,
                                 tools=TOOLS, toolbar_location="above",
                                 toolbar_sticky=False)
 
-battery_regression_fig.xaxis.axis_label = "Air Temp [C]"
-battery_regression_fig.yaxis.axis_label = "Voltage delta [V]"
+battery_regression_fig.xaxis.axis_label = "Voltage delta [V]"
+battery_regression_fig.yaxis.axis_label = "Air Temp [C]"
 battery_regression_fig.title.text = "delta Battery [V] vs. Temperature [C]"
 
 
 # add a series corresponding to the line at 12.1 V
-battery_regression_fig.circle(temp_series_name, batt_delta_series_name,
+battery_regression_fig.circle(batt_delta_series_name, temp_series_name,
                               source=source, color=Spectral11[2],
                               selection_color='orange')
 
 
-battery_regression_fig.line(temp_series_name, batt_delta_series_name,
+battery_regression_fig.line(batt_delta_series_name, temp_series_name,
                             source=temp_reg_source, legend='Best Fit',
                             line_color=Spectral11[0], line_width=2, line_alpha=0.6)
 
-battery_level_fig.legend.location = "top_left"
-battery_level_fig.legend.click_policy = "hide"
+battery_regression_fig.legend.location = "top_left"
+battery_regression_fig.legend.click_policy = "hide"
+
+# Battery Level vs. discharge rate Fig
+
+battery_level_vs_q_fig = figure(plot_width=500, plot_height=300,
+                                tools=TOOLS, toolbar_location="above",
+                                toolbar_sticky=False)
+
+battery_level_vs_q_fig.xaxis.axis_label = "Battery Level [V]"
+battery_level_vs_q_fig.yaxis.axis_label = "Rate of Battery Discharge [mV / day]"
+battery_level_vs_q_fig.title.text = "Battery Level vs. Discharge Rate"
+
+
+# add a series corresponding to the line at 12.1 V
+battery_level_vs_q_fig.circle(batt_series_name, batt_q_rate_series_name,
+                              source=source, color=Spectral11[2],
+                              selection_color='orange')
+
+battery_level_vs_q_fig.line(batt_series_name, batt_q_rate_series_name,
+                            source=batt_q_reg_source, legend='Best Fit',
+                            line_color=Spectral11[0], line_width=2, line_alpha=0.6)
+
+battery_level_vs_q_fig.legend.location = "top_left"
+battery_level_vs_q_fig.legend.click_policy = "hide"
 
 ##########################
 #  Plug everything into bokeh curdoc
@@ -370,11 +387,13 @@ battery_level_fig.legend.click_policy = "hide"
 
 update()
 
-time_fig_row = row(battery_level_fig, column(
+row1 = row(battery_level_fig, column(
     resample_slider, time_results_text))  # reset_button
-temp_fig_row = row(battery_regression_fig, temp_results_text)
 
-layout = column(time_fig_row, temp_fig_row)
+row2 = row(column(battery_regression_fig, temp_results_text),
+           column(battery_level_vs_q_fig, batt_q_results_text))
+
+layout = column(row1, row2)
 
 curdoc().add_root(layout)
 curdoc().title = "Battery Example"

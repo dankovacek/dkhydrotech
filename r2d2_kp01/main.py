@@ -357,7 +357,7 @@ The data are presented as-is, and are not modified or reviewed by the author of 
 pdfkit.from_string(html, os.path.join(REPORT_DIR, 'report_{}.pdf'.format(d)))
 #
 # # email parameters: separate multiple recipients by comma
-# recipient = 'dan@dkhydrotech.com'
+# recipient = 'dan@dkhydrotech.com,tfurst@innergex.com'
 # subject = "Automated Neon Telemetry Report from DKHydrotech"
 # message_text_html = email_html
 # message_text_plain = "Images cannot be displayed in email body, please refer to the attached pdf for the 72 hour forecast report for {} at {}.".format(

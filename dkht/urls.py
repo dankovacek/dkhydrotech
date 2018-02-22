@@ -1,7 +1,8 @@
 """
 URLS for dkht App.
 """
-from django.urls import include, path
+from django.conf.urls import include, url
+from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -11,12 +12,14 @@ from .views import DataVizDetail
 from .views import DonateCheckout, PaymentSuccess
 from .views import ClimateScrapeCreate, ClimateScrapeResults, ClimateScrapeExport
 
+from markdownx import urls as markdownx
+
 app_name = 'dkht'
 
 urlpatterns = [
     path('', Main.as_view(), name="main-view"),
     path('contact/', Contact.as_view(), name="contact-view"),
-    path('markdownx/', include('markdownx.urls')),
+    path('markdownx/', include(markdownx)),
     path('projects/', EntryList.as_view(), name="entry-list"),
     path('create_entry/', EntryCreate.as_view(), name="entry-create"),
     path('entry/<int:pk>/', EntryDetail.as_view(), name="entry-detail"),
@@ -35,4 +38,4 @@ urlpatterns = [
     path('donation-checkout/', DonateCheckout, name="donate-checkout"),
     path('payment-success/<pk>/', PaymentSuccess.as_view(), name="payment-success")
 
-]  # + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
