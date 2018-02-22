@@ -1,0 +1,166 @@
+<script src="https://js.stripe.com/v3/"></script>
+
+<div class="row center">
+  <div class="col s8 push-s2 m6 push-m3 green lighten-4">
+    <p class="flow-text center">If this tool has saved you or your organization some time, consider making a donation!</p>
+    <div class="row">
+      <div class="col s12">
+        <a class="waves-effect waves-light btn modal-trigger green darken-3 white-text flow-text" href="#modal1" id="donateButton">Donate</a>
+      </div>
+    </div>
+
+      <div class="row">
+        <div class="col s12">
+          <p class="flow-text center">Payment is processed securely through <a href="https://stripe.com/ca">Stripe</a></p>
+        </div>
+      </div>
+
+    </div>
+</div>
+
+<div class="row">
+  <div class="col s12">
+    <p class="subheader flow-text">The Canadian Climate Data Wrangler tool retrieves and concatenates data collected, reviewed, and published by
+      <a href="http://climate.weather.gc.ca/">Environment Canada</a>.  The author of this software
+      does not guarantee the accuracy of any data, and this application is provided WITHOUT ANY WARRANTY;
+      without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+      <a href="http://www.gnu.org/licenses/">GNU General Public License</a> for more details.</p>
+  </div>
+</div>
+
+<!-- Modal Structure -->
+<div id="modal1" class="modal">
+<div class="modal-content">
+<h4>Make a Donation</h4>
+
+<form action="{% url 'dkht:donate-checkout' %}" method="POST" id="payment-form">
+  {% csrf_token %}
+  <div class="row">
+    <div class="col s6 m5 push-m1 input-field">
+      <i class="material-icons prefix">attach_money</i>
+      <input type="number" value="10" min="5" step="1"
+      class="validate flow-text" name="data-amount" required />
+      <label>Amount</label>
+    </div>
+    <div class="col s6 m5 push-m1 input-field">
+       <select name="data-currency">
+         <option value="cad">CAD</option>
+         <option value="usd">USD</option>
+       </select>
+       <label>Currency</label>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col s12 l8 push-l2">
+      <label>Credit Card Info.</label>
+      <div id="card-element" class="col s12 input-field">
+        <!-- a Stripe Element will be inserted here. -->
+      </div>
+      <div id="card-errors" class="col s12 input-field">
+        <!-- a Stripe card errors will be inserted here. -->
+      </div>
+
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col s12 m8 l6 push-l2">
+      <label>Email (optional, used once to send electronic receipt).</label>
+      <input type="email" placeholder="example@email.com" name="data-email" />
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col s4 push-l6">
+      <button type="submit" class="waves-effect waves-light btn green darken-2 white-text">Process Payment</a>
+    </div>
+  </div>
+
+</form>
+</div>
+</div>
+
+<script>
+$(document).ready(function(){
+
+$('.modal').modal();
+
+function stripeTokenHandler(token) {
+// Insert the token ID into the form so it gets submitted to the server
+var form = document.getElementById('payment-form');
+var hiddenInput = document.createElement('input');
+hiddenInput.setAttribute('type', 'hidden');
+hiddenInput.setAttribute('name', 'stripeToken');
+hiddenInput.setAttribute('value', token.id);
+form.appendChild(hiddenInput);
+
+var hiddenNameInput = document.createElement('input');
+hiddenNameInput.setAttribute('type', 'hidden');
+hiddenNameInput.setAttribute('name', 'tool-name');
+hiddenNameInput.setAttribute('value', "Climate Data Wrangler");
+form.appendChild(hiddenNameInput);
+
+// Submit the form
+form.submit()
+
+}
+
+// the "href" attribute of the modal trigger must specify the modal ID that wants to be triggered
+
+var stripe = Stripe("{{ stripe_key }}");
+var elements = stripe.elements();
+
+// Custom styling can be passed to options when creating an Element.
+var style = {
+base: {
+  color: '#32325d',
+  lineHeight: '18px',
+  fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
+  fontSmoothing: 'antialiased',
+  fontSize: '16px',
+  '::placeholder': {
+    color: '#aab7c4'
+  }
+},
+invalid: {
+  color: '#fa755a',
+  iconColor: '#fa755a'
+}
+};
+
+// Create an instance of the card Element
+var card = elements.create('card', {style: style});
+
+// Add an instance of the card Element into the `card-element` <div>
+card.mount('#card-element');
+
+card.addEventListener('change', function(event) {
+var displayError = document.getElementById('card-errors');
+if (event.error) {
+  displayError.textContent = event.error.message;
+} else {
+  displayError.textContent = '';
+}
+});
+
+// Create a token or display an error when the form is submitted.
+
+var form = document.getElementById('payment-form');
+form.addEventListener('submit', function(event) {
+event.preventDefault();
+
+stripe.createToken(card).then(function(result) {
+  if (result.error) {
+    // Inform the customer that there was an error
+    var errorElement = document.getElementById('card-errors');
+    errorElement.textContent = result.error.message;
+  } else {
+    // Send the token to your server
+    stripeTokenHandler(result.token);
+  }
+});
+});
+});
+
+</script>

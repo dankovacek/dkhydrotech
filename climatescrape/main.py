@@ -10,9 +10,16 @@ import utm
 
 from helper_functions import load_data
 
+import logging
+logging.config.fileConfig(os.path.join(LOGGING_DIR, 'logging.conf'))
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(BASE_DIR, 'data/')
+LOGGING_DIR = os.path.join(BASE_DIR, 'logging/')
+
 
 stn_df = load_data('Station_Inventory_EN.csv', DATA_DIR)
 
@@ -63,6 +70,8 @@ def get_stations(lat, lon, radius):
 
         stn_name = str(stn_df[stn_df['Station ID'] ==
                               row['Station ID']].Name.item())
+
+        print('record for {} = {} to {}'.format(stn_name, rec_start, rec_end))
 
         results[stn_name] = {}
 

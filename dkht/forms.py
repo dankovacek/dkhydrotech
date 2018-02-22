@@ -2,6 +2,8 @@ from django import forms
 from django.utils import timezone
 from .models import Entry, StationSearchTarget, Donation  # , EntryImage
 
+#from markdownx.fields import MarkdownxWidget
+
 
 class EntryForm(forms.ModelForm):
 
