@@ -300,7 +300,7 @@ resample_slider = Slider(start=1 / 12, end=48, value=1 / 6, step=0.2,
 resample_slider.on_change('value', update_time_frequency)
 
 # figure for battery level
-battery_level_fig = figure(plot_width=500, plot_height=300,
+battery_level_fig = figure(plot_width=800, plot_height=400,
                            tools=TOOLS + ',lasso_select,box_select',
                            toolbar_location="above",
                            toolbar_sticky=False, x_axis_type="datetime")
