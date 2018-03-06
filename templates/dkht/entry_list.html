@@ -20,22 +20,31 @@
             <div class="col s12 m10 push-m1 l8 push-l2">
               <a href="{% url 'dkht:entry-detail' pk=entry.id %}">
                   <div class="card hoverable">
-                      <div class="card-content black-text">
-
-                          <span class="right light-green-text text-darken-2">{{ entry.created.date }}</span>
-                          <h4 class="grey-text text-darken-3">
-                              {{ entry.title }}
-                          </h4>
-
-                          <p class="flow-text truncate grey-text">
-                            {{ entry.text_body|safe }}
-                          </p>
-
-                          <blockquote class="flow-text light-green-text text-darken-3">
-                              {{ entry.byline }}
-                          </blockquote>
-
+                    <div class="row valign-wrapper">
+                      <div class="col s12 m3 l2">
+                        <img src="{{ entry.img_thumb.url }}">
                       </div>
+                      <div class="col s12 m9 l10">
+                        <div class="card-content black-text">
+
+                            <span class="right light-green-text text-darken-2">{{ entry.created.date }}</span>
+                            <h4 class="grey-text text-darken-3">
+                                {{ entry.title }}
+                            </h4>
+
+                            <blockquote class="flow-text light-green-text text-darken-3">
+                                {{ entry.byline }}
+                            </blockquote>
+
+                            <p class="flow-text truncate grey-text">
+                              {{ entry.text_body|safe }}
+                            </p>
+
+
+
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </a>
             </div>
