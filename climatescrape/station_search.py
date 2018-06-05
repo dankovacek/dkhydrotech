@@ -51,7 +51,7 @@ def web_query(ec_url):
     print('querying url: {}'.format(ec_url))
     df = pd.DataFrame()
     try:
-        df = pd.read_csv(ec_url, header=23, parse_dates=['Date/Time'])
+        df = pd.read_csv(ec_url, header=22, parse_dates=['Date/Time'])
     except Exception:
         print('No result returned for requested timeframe.')
     return df
@@ -75,7 +75,7 @@ def crawl(q, result, index):
     while not q.empty():
         work = q.get()
         try:
-            data = pd.read_csv(ec_url, header=13, parse_dates=['Date/Time'])
+            data = pd.read_csv(ec_url, header=22, parse_dates=['Date/Time'])
             print("Requested... " + work[1])
             result[work[0]] = data
         except:
