@@ -8,9 +8,9 @@ from django.conf.urls.static import static
 
 from .views import EntryList, EntryCreate, EntryDetail, EntryUpdate, EntryDelete
 from .views import TagList, Main, Contact
-from .views import DataVizDetail
-from .views import DonateCheckout, PaymentSuccess
+from .views import DataVizDetail, PaymentSuccess
 from .views import ClimateScrapeCreate, ClimateScrapeResults, ClimateScrapeExport
+from .stripe_payment import DonateCheckout
 
 from markdownx import urls as markdownx
 

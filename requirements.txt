@@ -1,4 +1,4 @@
-bokeh==0.12.14
+bokeh==0.12.16
 certifi==2017.11.5
 chardet==3.0.4
 defusedxml==0.5.0
@@ -14,11 +14,11 @@ idna==2.6
 Jinja2==2.10
 Markdown==2.6.11
 MarkupSafe==1.0
-numpy==1.14.0
+numpy==1.14.3
 oauth2client==4.1.2
 oauthlib==2.0.6
 olefile==0.44
-packaging==16.8
+packaging==17.1
 pandas==0.21.1
 patsy==0.5.0
 pdfkit==0.6.1
@@ -26,7 +26,7 @@ Pillow==5.0.0
 pyasn1==0.4.2
 pyasn1-modules==0.2.1
 pyparsing==2.2.0
-python-dateutil==2.6.1
+python-dateutil==2.7.3
 python3-openid==3.1.0
 pytz==2018.3
 PyYAML==3.12
@@ -39,7 +39,7 @@ sorl-thumbnail==12.4.1
 squareconnect==2.5.1
 statsmodels==0.8.0
 stripe==1.78.0
-tornado==4.5.3
+tornado==5.0.2
 uritemplate==3.0.0
 urllib3==1.22
 utm==0.4.2

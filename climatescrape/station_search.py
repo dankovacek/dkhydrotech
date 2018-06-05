@@ -75,7 +75,7 @@ def crawl(q, result, index):
     while not q.empty():
         work = q.get()
         try:
-            data = pd.read_csv(ec_url, header=23, parse_dates=['Date/Time'])
+            data = pd.read_csv(ec_url, header=13, parse_dates=['Date/Time'])
             print("Requested... " + work[1])
             result[work[0]] = data
         except:

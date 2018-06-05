@@ -25,7 +25,6 @@ stn_df = load_data('Station_Inventory_EN.csv', DATA_DIR)
 
 
 def make_dataframe(df, filename):
-
     return df.to_csv(filename)
 
 
