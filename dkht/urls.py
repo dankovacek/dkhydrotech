@@ -36,6 +36,7 @@ urlpatterns = [
     path('tools/climate_data_finder/output/<station_ID>/<start_year>/<end_year>/',
          ClimateScrapeExport, name="climate-scrape-export"),
     path('donation-checkout/', DonateCheckout, name="donate-checkout"),
-    path('payment-success/<pk>/', PaymentSuccess.as_view(), name="payment-success")
+    path('payment-success/<pk>/', PaymentSuccess.as_view(), name="payment-success"),
+    path('dataviz/<viz_url>/', DataVizDetail.as_view(), name="dataviz-test")
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
