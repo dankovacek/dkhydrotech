@@ -14,7 +14,8 @@ from django.forms.models import inlineformset_factory
 
 from io import StringIO
 
-from bokeh.embed import server_document
+from bokeh.embed import server_session
+from bokeh.util import session_id
 
 from climatescrape import station_search
 
@@ -230,10 +231,15 @@ class DataVizDetail(TemplateView):
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(**kwargs)
         data_viz_id = context['viz_url']
-        dataviz_url = settings.BOKEH_BASE_URL + context['viz_url']
+
+        dataviz_url = request.build_absolute_uri(
+            location='/') + context['viz_url']
+        print('')
         print('dataviz url = ', dataviz_url)
+        print('')
         try:
-            bk_script = server_document(dataviz_url, resources=None)
+            bk_script = server_session(
+                None, session_id=session_id.generate_session_id(), url=datataviz_url)
             context['bk_script'] = bk_script
         except Exception as e:
             msg = "Uh oh.  Richard, whatja do??: {}".format(e)
