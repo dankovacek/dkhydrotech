@@ -1,21 +1,13 @@
 {% extends 'dkht/base.html' %}
 {% load static %}
+{% load bokeh %}
 
 {% load embed_video_tags %}
 
-<link
-    href="https://cdn.pydata.org/bokeh/release/bokeh-0.12.16.min.css"
-    rel="stylesheet" type="text/css">
-<link
-    href="https://cdn.pydata.org/bokeh/release/bokeh-widgets-0.12.16.min.css"
-    rel="stylesheet" type="text/css">
-<link
-    href="https://cdn.pydata.org/bokeh/release/bokeh-tables-0.12.16.min.css"
-    rel="stylesheet" type="text/css">
-
-<script src="https://cdn.pydata.org/bokeh/release/bokeh-0.12.16.min.js"></script>
-<script src="https://cdn.pydata.org/bokeh/release/bokeh-widgets-0.12.16.min.js"></script>
-<script src="https://cdn.pydata.org/bokeh/release/bokeh-tables-0.12.16.min.js"></script>
+{% block head %}
+    {{ block.super }}
+    {% bokeh_css %}
+{% endblock head %}
 
 {% block content %}
     {{ block.super }}
@@ -38,3 +30,8 @@
     </div>
 
 {% endblock content %}
+
+{% block javascripts %}
+    {{ block.super }}
+    {% bokeh_js %}
+{% endblock javascripts %}
