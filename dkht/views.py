@@ -231,7 +231,7 @@ class DataVizDetail(TemplateView):
         context = super().get_context_data(**kwargs)
         data_viz_id = context['viz_url']
         dataviz_url = settings.BOKEH_BASE_URL + context['viz_url']
-        # print('dataviz url = ', dataviz_url)
+        print('dataviz url = ', dataviz_url)
         try:
             bk_script = server_document(dataviz_url)
             context['bk_script'] = bk_script
