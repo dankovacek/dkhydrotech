@@ -233,7 +233,7 @@ class DataVizDetail(TemplateView):
         dataviz_url = settings.BOKEH_BASE_URL + context['viz_url']
         # print('dataviz url = ', dataviz_url)
         try:
-            bk_script = server_document(dataviz_url)
+            bk_script = server_document(dataviz_url, resources=None)
             context['bk_script'] = bk_script
         except Exception as e:
             msg = "Uh oh.  Richard, whatja do??: {}".format(e)
