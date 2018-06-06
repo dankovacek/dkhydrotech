@@ -225,7 +225,7 @@ def ClimateScrapeExport(request, station_ID, start_year, end_year):
 
 class DataVizDetail(TemplateView):
     model = Entry
-    template_name = "dkht/entry_detail.html"
+    template_name = "dkht/bokeh_post.html"
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(**kwargs)
