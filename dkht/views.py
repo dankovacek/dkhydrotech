@@ -232,14 +232,14 @@ class DataVizDetail(TemplateView):
         context = super().get_context_data(**kwargs)
         data_viz_id = context['viz_url']
 
-        dataviz_url = request.build_absolute_uri(
+        dataviz_url = self.request.build_absolute_uri(
             location='/') + context['viz_url']
         print('')
         print('dataviz url = ', dataviz_url)
         print('')
         try:
             bk_script = server_session(
-                None, session_id=session_id.generate_session_id(), url=datataviz_url)
+                None, session_id=session_id.generate_session_id(), url=dataviz_url)
             context['bk_script'] = bk_script
         except Exception as e:
             msg = "Uh oh.  Richard, whatja do??: {}".format(e)
