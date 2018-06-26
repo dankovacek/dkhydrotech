@@ -231,7 +231,6 @@ class DataVizDetail(TemplateView):
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(**kwargs)
         data_viz_id = context['viz_url']
-
         dataviz_url = self.request.build_absolute_uri(
             location='/') + context['viz_url']
         print('')
