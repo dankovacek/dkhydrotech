@@ -238,7 +238,7 @@ class DataVizDetail(TemplateView):
         print('')
         try:
             bk_script = server_session(
-                None, session_id=session_id.generate_session_id(), url=datataviz_url)
+                None, session_id=session_id.generate_session_id(), url=dataviz_url)
             context['bk_script'] = bk_script
         except Exception as e:
             msg = "Uh oh.  Richard, whatja do??: {}".format(e)

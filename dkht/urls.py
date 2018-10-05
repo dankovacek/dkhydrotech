@@ -39,4 +39,4 @@ urlpatterns = [
     path('payment-success/<pk>/', PaymentSuccess.as_view(), name="payment-success"),
     path('dataviz/<viz_url>/', DataVizDetail.as_view(), name="dataviz-test")
 
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+] #+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
