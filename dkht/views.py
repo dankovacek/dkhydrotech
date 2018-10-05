@@ -238,8 +238,7 @@ def ClimateScrapeAnnualMaxPrecip(request, station_ID, start_year, end_year):
         annual_max_precip_data = station_search.extract_annual_max_precip(data)
         buff = StringIO()
 
-        output = template.format(
-            annual_max_precip_data.to_csv(buff, index=None))
+        output = annual_max_precip_data.to_csv(buff, index=None)
 
         buff.seek(0)
 
