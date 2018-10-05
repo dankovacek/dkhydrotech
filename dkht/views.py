@@ -238,14 +238,6 @@ def ClimateScrapeAnnualMaxPrecip(request, station_ID, start_year, end_year):
         annual_max_precip_data = station_search.extract_annual_max_precip(data)
         buff = StringIO()
 
-        template = """
-        Station ID: {}
-        Period of Record: {} - {}
-        Notes: The values presented herein represent maximum daily values, not the maximum 24-hour period.
-        
-        {}
-        """
-
         output = template.format(
             annual_max_precip_data.to_csv(buff, index=None))
 
