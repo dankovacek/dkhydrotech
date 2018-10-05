@@ -205,6 +205,9 @@ def extract_annual_max_precip(df):
 
     max_annual_precip['Total Precip Flag'] = df.loc[df.index.intersection(
         max_dates.values)]['Total Precip Flag']
+    max_annual_precip['Data Quality'] = df['Data Quality'].loc[df.index.intersection(
+        max_dates.values)]
+
     max_annual_precip.reset_index(inplace=True)
     max_annual_precip.rename({'Date/Time': 'Year'}, axis=1, inplace=True)
 
