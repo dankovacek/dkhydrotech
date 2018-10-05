@@ -18,7 +18,8 @@
 <body>
 	{% block javascript %}
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
-	<script type="text/javascript" src="{% static 'js/dkht.js' %}"></script> {% endblock javascript %} {% block navcontent %}
+	<script type="text/javascript" src="{% static 'js/dkht.js' %}"></script> {% endblock javascript %} {% block navcontent
+	%}
 
 	<!-- Dropdown Structure -->
 
@@ -26,17 +27,13 @@
 		<li>
 			<a href="{% url 'dkht:climate-scrape' %}">Climate Data Wrangler</a>
 		</li>
-		<li>
-			<a href="https://130.211.36.215.xip.io/dashboard">WSC Data Explorer</a>
-		</li>
+
 	</ul>
 	<ul id="dropdown2" class="dropdown-content">
 		<li>
 			<a href="{% url 'dkht:climate-scrape' %}">Climate Data Wrangler</a>
 		</li>
-		<li>
-			<a href="https://130.211.36.215.xip.io/dashboard">WSC Data Explorer</a>
-		</li>
+
 	</ul>
 
 	<nav class="grey lighten-3">
@@ -45,8 +42,10 @@
 			<a href="{% url 'dkht:main-view' %}" class="brand-logo svg-logo-wrapper hide-on-med-and-down">
 				<img src="{% static 'images/dkhydrotech1.3.1.svg' %}" class="shadow ">
 			</a>
-			<a href="{% url 'dkht:main-view' %}" class="brand-logo hide-on-small-only grey-text text-darken-3 left" style="margin-left: 75px;">DK HYDROTECH</h4>
-				<a href="{% url 'dkht:main-view' %}" class="brand-logo hide-on-med-and-up grey-text text-darken-3 right">DK HYDROTECH</h4>
+			<a href="{% url 'dkht:main-view' %}" class="brand-logo hide-on-small-only grey-text text-darken-3 left" style="margin-left: 75px;">DK
+				HYDROTECH</h4>
+				<a href="{% url 'dkht:main-view' %}" class="brand-logo hide-on-med-and-up grey-text text-darken-3 right">DK
+					HYDROTECH</h4>
 
 
 					<ul class="right hide-on-med-and-down">
