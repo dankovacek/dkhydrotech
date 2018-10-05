@@ -224,6 +224,35 @@ def ClimateScrapeExport(request, station_ID, start_year, end_year):
     return response
 
 
+def ClimateScrapeAnnualMaxPrecip(request, station_ID, start_year, end_year):
+        # def get(self, request), station_ID, start_year, end_year):
+    # stn_id = request.GET.get('station_ID')
+    # start_year = request.GET.get('start_year')
+    # end_year = request.GET.get('end_year')
+    # Create the HttpResponse object with the appropriate CSV header.
+
+    data, filename = station_search.make_dataframe(
+        station_ID, start_year, end_year)
+
+    try:
+        annual_max_precip_data = station_search.extract_annual_max_precip(data)
+        buff = StringIO()
+
+        output = annual_max_precip_data.to_csv(buff, index=None)
+
+        buff.seek(0)
+
+        response = HttpResponse(buff, content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename={}'.format(
+            filename)
+
+        return response
+    except ValueError as error:
+        html = "<html><body>Error parsing MSC data. {}</body></html>".format(
+            error)
+        return HttpResponse(html)
+
+
 class DataVizDetail(TemplateView):
     model = Entry
     template_name = "dkht/bokeh_post.html"

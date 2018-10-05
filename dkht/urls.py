@@ -9,7 +9,7 @@ from django.conf.urls.static import static
 from .views import EntryList, EntryCreate, EntryDetail, EntryUpdate, EntryDelete
 from .views import TagList, Main, Contact
 from .views import DataVizDetail, PaymentSuccess
-from .views import ClimateScrapeCreate, ClimateScrapeResults, ClimateScrapeExport
+from .views import ClimateScrapeCreate, ClimateScrapeResults, ClimateScrapeExport, ClimateScrapeAnnualMaxPrecip
 from .stripe_payment import DonateCheckout
 
 from markdownx import urls as markdownx
@@ -35,8 +35,10 @@ urlpatterns = [
          ClimateScrapeResults.as_view(), name="climate-scrape-results"),
     path('tools/climate_data_finder/output/<station_ID>/<start_year>/<end_year>/',
          ClimateScrapeExport, name="climate-scrape-export"),
+    path('tools/climate_data_finder/output/max/<station_ID>/<start_year>/<end_year>/',
+         ClimateScrapeAnnualMaxPrecip, name="climate-scrape-annual-max-precip"),
     path('donation-checkout/', DonateCheckout, name="donate-checkout"),
     path('payment-success/<pk>/', PaymentSuccess.as_view(), name="payment-success"),
     path('dataviz/<viz_url>/', DataVizDetail.as_view(), name="dataviz-test")
 
-] #+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+]  # + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

@@ -28,8 +28,10 @@
 <body>
 	{% block javascript %}
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
-	<script type="text/javascript" src="{% static 'js/dkht.js' %}"></script> {% endblock javascript %} {% block navcontent
-	%}
+	<script type="text/javascript" src="{% static 'js/dkht.js' %}"></script>
+	{% endblock javascript %}
+
+	{% block navcontent %}
 
 	<!-- Dropdown Structure -->
 
@@ -109,7 +111,9 @@
 	</nav>
 
 
-	{% endblock navcontent %} {% block content %}{% endblock content %}
+	{% endblock navcontent %}
+
+	{% block content %}{% endblock content %}
 
 	<footer class="page-footer grey lighten-3">
 		<div class="container">
