@@ -14,8 +14,9 @@ from django.forms.models import inlineformset_factory
 
 from io import StringIO
 
-from bokeh.embed import server_session
+from bokeh.embed import server_session, server_document
 from bokeh.util import session_id
+from bokeh.client import pull_session
 
 from climatescrape import station_search
 
@@ -260,17 +261,23 @@ class DataVizDetail(TemplateView):
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(**kwargs)
         data_viz_id = context['viz_url']
-        dataviz_url = self.request.build_absolute_uri(
-            location='/') + context['viz_url']
+        dataviz_url = 'http://0.0.0.0:5006/' + data_viz_id
         print('')
         print('dataviz url = ', dataviz_url)
         print('')
-        try:
-            bk_script = server_session(
-                None, session_id=session_id.generate_session_id(), url=dataviz_url)
-            context['bk_script'] = bk_script
-        except Exception as e:
-            msg = "Uh oh.  Richard, whatja do??: {}".format(e)
-            logger.error(msg)
+        sec_key = settings.BOKEH_SECRET_KEY
+        sess_id = session_id.generate_session_id(sec_key)
+        test_url = "wss://127.0.0.1:5006/bokeh"
+        with pull_session(url=dataviz_url) as session:
+
+            try:
+                #bk_script = server_session(session_id=session.id, url=test_url)
+                bk_script = server_session(session_id=sess_id,  url=dataviz_url)
+                print(bk_script)
+                #bk_script = server_document(dataviz_url + data_viz_id)
+                context['bk_script'] = bk_script
+            except Exception as e:
+                msg = "Uh oh.  Richard, whatja do??: {}".format(e)
+                logger.error(msg)
 
         return context
