@@ -1,6 +1,8 @@
 from django.conf import settings
+from .models import Donation
 
 import stripe
+
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
 
