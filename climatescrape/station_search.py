@@ -1,5 +1,3 @@
-import os
-
 import numpy as np
 import pandas as pd
 import math
@@ -8,7 +6,7 @@ import sys
 import time
 import utm
 import time
-
+import logging
 from multiprocessing import Process, Queue, Pool
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -98,8 +96,6 @@ def make_dataframe(station_ID, start_year, end_year):
     url_list = get_urls_list(station_ID, start_year, end_year, 1, t_frame)
 
     # initialisation for query queuing
-    proc = []
-    frames = []
     # initialize the queue for storing threads
     p = Pool()
 
@@ -110,7 +106,7 @@ def make_dataframe(station_ID, start_year, end_year):
     p.join()
 
     request_time = time.time()
-    print('All requests completed in t={}s.'.format(request_time - start_time))
+    #print('All requests completed in t={}s.'.format(request_time - start_time))
 
     # initialize a results dataframe
     all_data = pd.DataFrame()

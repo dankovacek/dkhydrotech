@@ -20,7 +20,6 @@
 // Import, definitions and constant ------------------------------------------------------------------------------------
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-console.log('hhahaha')
 var utils_1 = require("./utils");
 var UPLOAD_URL_ATTRIBUTE = "data-markdownx-upload-urls-path", PROCESSING_URL_ATTRIBUTE = "data-markdownx-urls-path", RESIZABILITY_ATTRIBUTE = "data-markdownx-editor-resizable", LATENCY_ATTRIBUTE = "data-markdownx-latency", LATENCY_MINIMUM = 500, // microseconds.
 XHR_RESPONSE_ERROR = "Invalid response", UPLOAD_START_OPACITY = "0.3", NORMAL_OPACITY = "1";
@@ -364,6 +363,7 @@ var MarkdownX = function (parent, editor, preview) {
         // --------------------------------------------------------
         // Mounting the defined events.
         utils_1.mountEvents(editorListeners, documentListeners);
+        properties.editor.setAttribute('data-markdownx-init', '');
         // Set animation for image uploads lock down.
         properties.editor.style.transition = "opacity 1s ease";
         properties.editor.style.webkitTransition = "opacity 1s ease";
@@ -565,7 +565,12 @@ exports.MarkdownX = MarkdownX;
 })("docReady", window);
 docReady(function () {
     var ELEMENTS = document.getElementsByClassName('markdownx');
-    return Object.keys(ELEMENTS).map(function (key) { return new MarkdownX(ELEMENTS[key], ELEMENTS[key].querySelector('.markdownx-editor'), ELEMENTS[key].querySelector('.markdownx-preview')); });
+    return Object.keys(ELEMENTS).map(function (key) {
+        var element = ELEMENTS[key], editor = element.querySelector('.markdownx-editor'), preview = element.querySelector('.markdownx-preview');
+        // Only add the new MarkdownX instance to fields that have no MarkdownX instance yet.
+        if (!editor.hasAttribute('data-markdownx-init'))
+            return new MarkdownX(element, editor, preview);
+    });
 });
 
 },{"./utils":2}],2:[function(require,module,exports){
@@ -647,8 +652,12 @@ exports.mountEvents = mountEvents;
 function preparePostData(data, csrf) {
     if (csrf === void 0) { csrf = true; }
     var form = new FormData();
-    if (csrf)
-        form.append("csrfmiddlewaretoken", getCookie('csrftoken'));
+    if (csrf) {
+        var csrfToken = getCookie('csrftoken');
+        if (!csrfToken)
+            csrfToken = document.querySelector("input[name='csrfmiddlewaretoken']").value;
+        form.append("csrfmiddlewaretoken", csrfToken);
+    }
     Object.keys(data).map(function (key) { return form.append(key, data[key]); });
     return form;
 }

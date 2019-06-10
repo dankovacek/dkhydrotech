@@ -1,53 +1,82 @@
-{% extends "portfolio/base.html" %}
+{% extends "dkht/base.html" %}
+{% load static %}
 {% block content %}
 {{ block.super }}
+
 <div id="background-image">
-    <div class="row">
+  <div class="row">
+    <div class="col s12">
+      <h3>Canadian Climate Data Wrangler</h3>
+      <div class="row">
         <div class="col s12">
-        	  <h4>Search and Acquire Climate Data</h4>
-            <p class="subheader flow-text">In the process of developing this application, I realized I had to place a few restrictions on the search, so my little server doesn't get overrun.</p>
-            <p class="subheader flow-text">For this reason, the largest search radius is set to 40km.  If you'd like a custom query, either for a larger search area, for hourly climate data, or for any other large data manipulation tasks, feel free to contact me at dan[at]dkhydrotech[dot]com, or reach out to me through the LinkedIn, Github, or Google+ links in the footer.</p>
-            <h4>Results</h4>
-          {% if stations %}
-             <table class="highlight">
-               <thead>
-                 <tr>
-                   <th>Station Name</th>
-                   <th>Station ID</th>
-                   <th>Lat/Lon [dec. degrees]</th>
-                   <th>Distance to Target [km]</th>
-                   <th>Record Start Year</th>
-                   <th>Record End Year</th>
-                   <th>Download [daily]</th>
-                 </tr>
-               </thead>
-               <tbody>
-                 {% for station in stations %}
-                  <tr>
-                    <td>{{ station.station_name }}</td>
-                    <td>{{ station.station_ID }}</td>
-                    <td>{{ station.latlon }}</td>
-                    <td>{{ station.distance_to_target|floatformat:1 }}</td>
-                    <td>{{ station.start_year }}</td>
-                    <td>{{ station.end_year }}</td>
-                    <td><a href="{% url 'climate-scrape-export' station_ID=station.station_ID start_year=station.start_year end_year=station.end_year %}">
-                      <i class="material-icons">cloud_download</i>
-                    </a></td>
-                  </tr>
-                 {% endfor %}
-               </tbody>
-            </table>
-            {% else %}
-              <p class="subheader">No stations found.  Try a larger search radius or another location.</p>
-            {% endif %}
+
+          <blockquote>
+            <h5><strong>NEW!</strong> Download the annual maximum daily precipitation series for any MSC climate
+              station. Note that this is not the maximum 24-hour period, rather it is the 00:00 to 23:59 daily total.</h3>
+          </blockquote>
+
+          <p class="flow-text">
+            Download the entire historical record for the stations found within your search radius.
+          </p>
+
+          <p class="flow-text">
+            The largest search
+            radius is currently set to 50km, and the available frequency is limited to daily records.
+            If you'd like a custom query, either for a larger search area, for hourly climate data, or for any other
+            large
+            data manipulation tasks, feel free to <a href="{% url 'dkht:contact-view' %}">contact me</a>.
+            I can also be reached via the LinkedIn, Github, and Google+ links in the footer.</p>
         </div>
-    </div>
-    <div class="row">
-      <div class="col s12">
-        <p class="subheader">This tool retrieves and concatenates data collected, reviewed, and published by <a href="http://climate.weather.gc.ca/">Environment Canada</a>.  The author of this software does not guarantee the accuracy of any data, and this application is provided WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the <a href="http://www.gnu.org/licenses/">GNU General Public License</a> for more details.</p>
       </div>
+      <h4>Results</h4>
+      {% if stations %}
+      <table class="highlight">
+        <thead>
+          <tr>
+            <th>Station Name</th>
+            <th>Station ID</th>
+            <th>Lat/Lon [dec. degrees]</th>
+            <th>Distance to Target [km]</th>
+            <th>Record Start Year</th>
+            <th>Record End Year</th>
+            <th>Download [daily]</th>
+            <th>Download Annual Max. Precip.</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for station in stations %}
+          <tr>
+            <td>{{ station.station_name }}</td>
+            <td>{{ station.station_ID }}</td>
+            <td>{{ station.latlon }}</td>
+            <td>{{ station.distance_to_target|floatformat:1 }}</td>
+            <td>{{ station.start_year }}</td>
+            <td>{{ station.end_year }}</td>
+
+            <td>
+              <a href="{% url 'dkht:climate-scrape-export' station_ID=station.station_ID start_year=station.start_year end_year=station.end_year %}">
+                <i class="material-icons tooltipped" data-position="left" data-tooltip="Download climate data for the entire period of record.">cloud_download</i>
+              </a>
+            </td>
+            <td>
+              <a href="{% url 'dkht:climate-scrape-annual-max-precip' station_ID=station.station_ID start_year=station.start_year end_year=station.end_year %}">
+                <i class="material-icons tooltipped" data-position="left" data-tooltip="Download the annual maximum precipitation for the entire period of record.">play_for_work</i>
+              </a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <p class="subheader">No stations found. <a href="{% url 'dkht:climate-scrape' %}">Try a larger search radius or
+          another location.</a></p>
+      {% endif %}
     </div>
-</div>
-    <!--{# {% render_bundle 'vendors' %}#}
-    {# {% render_bundle 'App1' %}  #} -->
-{% endblock content %}
+  </div>
+
+  {% block payment %}
+  {% include 'dkht/donation-form.html' %}
+  {% endblock payment %}
+
+  <!-- Stripe Donation Link -->
+  {% endblock content %}

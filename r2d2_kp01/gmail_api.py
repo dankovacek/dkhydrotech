@@ -109,7 +109,9 @@ def create_message_and_send(service,
         service, "me", message_with_attachment, message_text_plain, attached_file)
 
 
-def create_message_without_attachment(sender, to, subject, message_text_html, message_text_plain):
+def create_message_without_attachment(sender, to, subject,
+                                      message_text_html,
+                                      message_text_plain):
     # Create message container
     # needed for both plain & HTML (the MIME type is multipart/alternative)
     message = MIMEMultipart('alternative')
@@ -165,12 +167,12 @@ def create_Message_with_attachment(sender, to, subject, message_text_plain, mess
     # # to attach a text file you containing "test" you would do:
     # # message.attach(MIMEText("test", 'plain'))
 
-    #-----About MimeTypes:
+    # -----About MimeTypes:
     # It tells gmail which application it should use to read the attachment (it acts like an extension for windows).
     # If you dont provide it, you just wont be able to read the attachment (eg. a text) within gmail.
     # You'll have to download it to read it (windows will know how to read it with it's extension).
 
-    #-----3.1 get MimeType of attachment
+    # -----3.1 get MimeType of attachment
     # option 1: if you want to attach the same file just specify it’s mime types
 
     # option 2: if you want to attach any file use mimetypes.guess_type(attached_file)

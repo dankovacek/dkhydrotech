@@ -1,89 +1,176 @@
 {% load static %}
 <!DOCTYPE html>
 <html>
+
 <head>
+	<!-- Global site tag (gtag.js) - Google Analytics -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=UA-122017653-1"></script>
+	<script>
+		window.dataLayer = window.dataLayer || [];
+		function gtag() { dataLayer.push(arguments); }
+		gtag('js', new Date());
+
+		gtag('config', 'UA-122017653-1');
+	</script>
+
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-  <link rel="stylesheet" href="{% static 'css/materialize.min.css' %}">
-  <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-  <link rel="shortcut icon" type="image/png" href="{% static 'icons/favicon.ico' %}">
-  <script type="text/javascript" src="{% static 'js/jquery-3.2.1.min.js' %}"></script>
-  <title>DK Hydro / tech - Multi-disciplinary Data Analysis and Hydrotechnical Engineering</title>
+	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
+	<link rel="stylesheet" href="{% static 'css/styles.css' %}">
+	<link rel="shortcut icon" href="{% static 'images/favicon.ico' %}">
+	<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+	 crossorigin="anonymous"></script>
+	<title>DK Hydro / tech - Multi-disciplinary Data Analysis and Hydrotechnical Engineering</title>
 </head>
+
 <body>
-    {% block javascripts %}
-        <script src="{% static 'js/materialize.min.js' %}"></script>
-        <script src="{% static 'js/masonry.min.js' %}"></script>
-        <script src="{% static 'js/dkht.js' %}"></script>
-    {% endblock javascripts %}
+	{% block javascript %}
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+	<script type="text/javascript" src="{% static 'js/dkht.js' %}"></script>
+	{% endblock javascript %}
 
-{% block navcontent %}
+	{% block navcontent %}
 
-<div class="navbar-fixed">
-    <nav class="grey darken-3">
-        <div class="nav-wrapper">
-            <a href="{% url 'entry-list' %}" class="brand-logo left">
-                <ul>
-                    <li class="white-text text-darken-2 logo-word">POST</li>
-                    <li class="white-text logo-word">NO</li>
-                    <li class="white-text text-lighten-2 logo-word">STILLS</li>
-                </ul>
-            </a>
-            <a href="#" data-activates="mobile-demo" class="button-collapse right">
-                <i class="material-icons white-text text-lighten-1">menu</i>
-            </a>
-            <ul id="nav-mobile" class="right hide-on-med-and-down">
-                <li><a class="white-text text-lighten-1" href="{% url 'blerg-list' %}">BLERG</a></li>
-            </ul>
-        </div>
-    </nav>
-</div>
+	<!-- Dropdown Structure -->
 
-<ul class="side-nav grey darken-3" id="mobile-demo">
-    <li><a class="grey darken-3 white-text text-lighten-1" href="{% url 'blerg-list' %}">BLERG</a></li>
-</ul>
+	<ul id="dropdown1" class="dropdown-content">
+		<li>
+			<a href="{% url 'dkht:climate-scrape' %}">Climate Data Wrangler</a>
+		</li>
 
-{% endblock navcontent %}
+	</ul>
+	<ul id="dropdown2" class="dropdown-content">
+		<li>
+			<a href="{% url 'dkht:climate-scrape' %}">Climate Data Wrangler</a>
+		</li>
 
-    <main>
-        {% block content %}{% endblock content %}
-    </main>
+	</ul>
 
-    <footer class="page-footer grey darken-3">
-        <div class="container">
-            <div class="row">
-                <div class="col 14 s6 m3 center">
-                    <span class="flow-text">
-                        <a href="https://github.com/dankovacek" class="white-text text-lighten-1 social">GITHUB</a>
-                    </span>
-                </div>
-                <div class="col 14 s6 m3 center">
-                    <span class="flow-text">
-                        <a href="https://www.linkedin.com/in/dankovacek/" class="white-text text-lighten-1 social">LINKEDIN</a>
-                    </span>
-                </div>
-                <div class="col 14 s6 m3 center">
-                    <span class="flow-text">
-                        <a href="https://google.com/+DanKovacek" class="white-text text-lighten-1 social">GOOGLE +</a>
-                    </span>
-                </div>
-            </div>
-        </div>
-        <div class="footer copyright">
-            <div class="container">
-                <div class="col 16 s12 center license">
-                    <span class="flow-text">
-                        <h6>
-                            <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"
-                            class="white-text text-lighten-1">Creative Commons 4.0 License</a>
-                        </h6>
-                    </span>
-                </div>
-            </div>
-        </div>
-    </footer>
+	<nav class="grey lighten-3">
+		<div class="nav-wrapper">
+
+			<a href="{% url 'dkht:main-view' %}" class="brand-logo svg-logo-wrapper hide-on-med-and-down">
+				<img src="{% static 'images/dkhydrotech1.3.1.svg' %}" class="shadow ">
+			</a>
+			<a href="{% url 'dkht:main-view' %}" class="brand-logo hide-on-small-only grey-text text-darken-3 left" style="margin-left: 75px;">DK
+				HYDROTECH</h4>
+				<a href="{% url 'dkht:main-view' %}" class="brand-logo hide-on-med-and-up grey-text text-darken-3 right">DK
+					HYDROTECH</h4>
+
+
+					<ul class="right hide-on-med-and-down">
+						{% if user.is_authenticated %}
+						<li>
+							<a href="{% url 'dkht:entry-create' %}">
+								<i class="material-icons left">add</i>CONTENT</a>
+						</li>
+						{% endif %}
+						<li>
+							<a class="dropdown-button" href="#!" data-activates="dropdown2">TOOLS
+								<i class="material-icons right">arrow_drop_down</i>
+							</a>
+						</li>
+						<li>
+							<a href="{% url 'dkht:entry-list' %}">PROJECTS</a>
+						</li>
+						<li>
+							<a href="{% url 'dkht:contact-view' %}">CONTACT</a>
+						</li>
+					</ul>
+
+					<ul class="side-nav" id="mobile-demo">
+						<li>
+							<a href="{% url 'dkht:main-view' %}">HOME</a>
+						</li>
+						<li>
+							<a class="dropdown-button" href="#!" data-activates="dropdown1">TOOLS
+								<i class="material-icons right">arrow_drop_down</i>
+							</a>
+						</li>
+						<li>
+							<a href="{% url 'dkht:entry-list' %}">PROJECTS</a>
+						</li>
+						<li>
+							<a href="{% url 'dkht:contact-view' %}">CONTACT</a>
+						</li>
+						{% if user.is_authenticated %}
+						<li>
+							<a href="{% url 'dkht:entry-create' %}" class="grey-text text-darken-2">
+								<i class="material-icons left">add</i>CONTENT</a>
+						</li>
+						{% endif %}
+					</ul>
+
+					<a href="#" data-activates="mobile-demo" class="button-collapse">
+						<i class="material-icons">menu</i>
+					</a>
+
+		</div>
+	</nav>
+
+
+	{% endblock navcontent %}
+
+	{% block content %}{% endblock content %}
+
+	<footer class="page-footer grey lighten-3">
+		<div class="container">
+			<div class="row">
+				<div class="col s12 m4 center">
+					<span class="flow-text">
+						<a href="https://github.com/dankovacek" class="social">GITHUB</a>
+					</span>
+				</div>
+				<div class="col s12 m4 center">
+					<span class="flow-text">
+						<a href="https://www.linkedin.com/in/dankovacek/" class="social">LINKEDIN</a>
+					</span>
+				</div>
+				<div class="col s12 m4 center">
+					<span class="flow-text">
+						<a href="https://google.com/+DanKovacek" class="social">GOOGLE +</a>
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="footer copyright">
+			<div class="container">
+				<div class="col 16 s12 center license">
+					<span class="flow-text">
+						<h6>
+							<a href="#">COPYRIGHT &#9400; 2017 DK Hydrotech. Vancouver, B.C. </a>
+						</h6>
+					</span>
+				</div>
+			</div>
+		</div>
+	</footer>
+
+	<div id="code">
+		[base64]
+	</div>
+
+	<script>
+		// Encode an SVG element as a base64 data uri.
+		function svgToBase64Image(svgElement) {
+			var div = document.createElement('div');
+			div.appendChild(svgElement.cloneNode(true));
+			var b64 = window.btoa(div.innerHTML);
+			return 'data:image/svg+xml;base64,' + b64;
+		}
+		var svgs = document.getElementsByTagName('svg');
+		var urls = [];
+		for (var i = 0; i < svgs.length; i++)
+			urls.push('url("' + svgToBase64Image(svgs[i]) + '")');
+		var url = urls.join(',');
+		var msg = 'Base64 CSS image (for cross-browser support):' +
+			'<br><br>background: ' + url + ';';
+		document.getElementById('code').innerHTML = msg;
+		document.body.style.background = url;
+	</script>
 
 </body>
+
 </html>
