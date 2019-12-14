@@ -261,7 +261,7 @@ class DataVizDetail(TemplateView):
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(**kwargs)
         data_viz_id = context['viz_url']
-        dataviz_url = 'http://0.0.0.0:5006/' + data_viz_id
+        dataviz_url = 'wss://dkhydrotech:5000/dataviz/' + data_viz_id
         print('')
         print('dataviz url = ', dataviz_url)
         print('')
