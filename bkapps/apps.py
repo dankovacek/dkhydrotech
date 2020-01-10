@@ -14,8 +14,11 @@ def bk_worker():
     server = Server({'/bk_sliders_app': bk_sliders.app},
                     io_loop=IOLoop(),
                     address=bk_config.server['address'],
+                    ssl_certfile='/home/private/certs/{}/cert.pem'.format(bk_config.server['address']),
+                    ssl_keyfile='/home/private/certs/{}/privkey.pem'.format(bk_config.server['address']),
                     port=bk_config.server['port'],
                     allow_websocket_origin=["dkhydrotech.com"],
+                    use_xheaders=True
                     )
     server.start()
     server.io_loop.start()
