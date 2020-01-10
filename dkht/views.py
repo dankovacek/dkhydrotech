@@ -263,7 +263,7 @@ class DataVizDetail(TemplateView):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(**kwargs)
-        dataviz_url = 'https://localhost:5006/' + context['viz_url']
+        dataviz_url = 'http://127.0.0.1:5006/' + context['viz_url']
         print(dataviz_url)
         sec_key = settings.BOKEH_SECRET_KEY
         sess_id = session_id.generate_session_id(sec_key)
