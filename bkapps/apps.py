@@ -1,7 +1,6 @@
 # based on: https://github.com/bokeh/bokeh/blob/0.12.16/examples/howto/server_embed/flask_embed.py
 
 from django.apps import AppConfig
-from django.conf import settings
 
 from bokeh.server.server import Server
 
