@@ -271,13 +271,18 @@ class DataVizDetail(TemplateView):
         print('')
         print('')
         sec_key = settings.BOKEH_SECRET_KEY
-        sess_id = session_id.generate_session_id(sec_key)
+        session_id = session_id.generate_session_id(sec_key)
 
         with pull_session(url=dataviz_url) as session:
             try:
+                print('')
+                print('made it into pull session!')
+
                 bk_script = server_session(
-                    session_id=sess_id,  url=dataviz_url)
-                # print(bk_script)
+                    session_id=session_id,  url=dataviz_url)
+                print(bk_script)
+                print('')
+                print('')
                 context['bk_script'] = bk_script
 
             except Exception as e:
