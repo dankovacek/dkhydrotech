@@ -8,6 +8,10 @@ from bokeh.util import session_id
 
 from . import bk_config
 
+import logging
+logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO)
+
 
 # Inspired by: https://panel.pyviz.org/user_guide/Django_Apps.html
 
