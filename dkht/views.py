@@ -265,7 +265,7 @@ class DataVizDetail(TemplateView):
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(**kwargs)
         # dataviz_url = 'https://www.dkhydrotech.com/' + context['viz_url']
-        dataviz_url = 'http://localhost:5006/' + context['viz_url']
+        dataviz_url = 'wss://dkhydrotech.com:5000/bokeh/' + context['viz_url']
         print('')
         print('grrr')
         print('dataviz_url in views.py:', dataviz_url)
