@@ -4,6 +4,7 @@ from django.conf import settings
 from django.views.generic import ListView, View, TemplateView
 
 from bokeh.embed import server_document
+from bokeh.util import session_id
 
 from . import bk_config
 
