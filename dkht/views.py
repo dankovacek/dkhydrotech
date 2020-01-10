@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 from django.shortcuts import render, get_object_or_404, get_list_or_404
 from django.views.generic.edit import FormView, UpdateView, CreateView, DeleteView
 from django.views.generic import ListView, View, TemplateView
@@ -237,6 +238,8 @@ def ClimateScrapeAnnualMaxPrecip(request, station_ID, start_year, end_year):
 
     try:
         annual_max_precip_data = station_search.extract_annual_max_precip(data)
+        print(annual_max_precip_data.head())
+
         buff = StringIO()
 
         output = annual_max_precip_data.to_csv(buff, index=None)
@@ -260,22 +263,18 @@ class DataVizDetail(TemplateView):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(**kwargs)
-        data_viz_id = context['viz_url']
-        dataviz_url = 'wss://dkhydrotech:5000/dataviz/' + data_viz_id
-        print('')
-        print('dataviz url = ', dataviz_url)
-        print('')
+        dataviz_url = 'https://localhost:5006/' + context['viz_url']
+        print(dataviz_url)
         sec_key = settings.BOKEH_SECRET_KEY
         sess_id = session_id.generate_session_id(sec_key)
-        test_url = "wss://127.0.0.1:5006/bokeh"
-        with pull_session(url=dataviz_url) as session:
 
+        with pull_session(url=dataviz_url) as session:
             try:
-                #bk_script = server_session(session_id=session.id, url=test_url)
-                bk_script = server_session(session_id=sess_id,  url=dataviz_url)
-                print(bk_script)
-                #bk_script = server_document(dataviz_url + data_viz_id)
+                bk_script = server_session(
+                    session_id=sess_id,  url=dataviz_url)
+                # print(bk_script)
                 context['bk_script'] = bk_script
+
             except Exception as e:
                 msg = "Uh oh.  Richard, whatja do??: {}".format(e)
                 logger.error(msg)

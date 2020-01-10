@@ -40,16 +40,12 @@ def load_data(filename, DATA_DIR):
 
 stn_df = load_data('Station_Inventory_EN.csv', DATA_DIR)
 
-# multithreading and queuing inspired from:
-# https://stackoverflow.com/questions/36460096/python-multiprocessing-queue-object-has-no-attribute-task-done-join
-# user: nneonneo
-
 
 def web_query(ec_url):
     print('querying url: {}'.format(ec_url))
     df = pd.DataFrame()
     try:
-        df = pd.read_csv(ec_url, header=22, parse_dates=['Date/Time'])
+        df = pd.read_csv(ec_url, parse_dates=['Date/Time'])
     except Exception:
         print('No result returned for requested timeframe.')
     return df
@@ -61,7 +57,7 @@ def get_urls_list(station_ID, start_year, end_year, month, t_frame):
     # if interval is daily (1), month is irrelevant
     urls = []
     years = [e for e in range(int(start_year), int(end_year) + 1)]
-    ec_base_url = "http://climate.weather.gc.ca/climate_data/bulk_data_e.html?"
+    ec_base_url = "https://climate.weather.gc.ca/climate_data/bulk_data_e.html?"
     for year in years:
         urls += [ec_base_url + 'format=csv&stationID={}&Year={}&Month={}&Day=14&timeframe={}&submit=Download+Data'.format(
             station_ID, year, 1, t_frame)]
@@ -95,7 +91,6 @@ def make_dataframe(station_ID, start_year, end_year):
     # create a list of urls to query
     url_list = get_urls_list(station_ID, start_year, end_year, 1, t_frame)
 
-    # initialisation for query queuing
     # initialize the queue for storing threads
     p = Pool()
 
@@ -106,15 +101,11 @@ def make_dataframe(station_ID, start_year, end_year):
     p.join()
 
     request_time = time.time()
-    #print('All requests completed in t={}s.'.format(request_time - start_time))
 
     # initialize a results dataframe
     all_data = pd.DataFrame()
     all_data = pd.concat(results)
 
-    name_col = [stn_name for e in range(len(all_data.index))]
-
-    all_data.insert(0, 'Station Name', np.array(name_col))
 
     # create unique filename for output file
     t = time.strftime("%d%b%Y_%H%M%S", time.gmtime())
