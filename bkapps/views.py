@@ -19,14 +19,14 @@ class DataVizDetail(TemplateView):
         context = super().get_context_data(**kwargs)
 
         sec_key = settings.BOKEH_SECRET_KEY
-        session_id = session_id.generate_session_id(sec_key)
+        s_id = bokeh.util.session_id.generate_session_id(sec_key)
         
         try:
             print('')
             print('made it into pull session!')
             bk_script = server_document(dataviz_url='https://{}:{}/bk_sliders_app'.format(bk_config.server['address'],
                                                                         bk_config.server['port']),
-                                                                        session_id=session_id)
+                                                                        session_id=s_id)
             # bk_script = server_session(url=dataviz_url, session_id=generate_session_id())
             print(bk_script)
             print('##')
