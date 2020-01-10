@@ -262,10 +262,6 @@ class DataVizDetail(TemplateView):
     model = Entry
     template_name = "dkht/bokeh_post.html"
 
-    server = Server({'/bk_test': bkapp}, io_loop=IOLoop(), allow_websocket_origin=["localhost:8000"])
-    server.start()
-    server.io_loop.start()
-
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(**kwargs)
         dataviz_url = 'http://127.0.0.1:5006/' + context['viz_url']
