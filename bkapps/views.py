@@ -21,16 +21,12 @@ class DataVizDetail(TemplateView):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(**kwargs)
-
-        sec_key = settings.BOKEH_SECRET_KEY
-        s_id = session_id.generate_session_id(sec_key)
         
         try:
             print('')
             print('made it into pull session!')
             bk_script = server_document(url='https://{}:{}/bk_sliders_app'.format(bk_config.server['address'],
-                                                                        bk_config.server['port']),
-                                                                        session_id=s_id)
+                                                                        bk_config.server['port']))
             # bk_script = server_session(url=dataviz_url, session_id=generate_session_id())
             print(bk_script)
             print('##')
