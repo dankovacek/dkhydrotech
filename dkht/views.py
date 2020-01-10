@@ -18,6 +18,7 @@ from io import StringIO
 from bokeh.embed import server_session, server_document
 from bokeh.util import session_id
 from bokeh.client import pull_session
+from bokeh.server.server import Server
 
 from climatescrape import station_search
 
@@ -261,10 +262,18 @@ class DataVizDetail(TemplateView):
     model = Entry
     template_name = "dkht/bokeh_post.html"
 
+    server = Server({'/bk_test': bkapp}, io_loop=IOLoop(), allow_websocket_origin=["localhost:8000"])
+    server.start()
+    server.io_loop.start()
+
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(**kwargs)
         dataviz_url = 'http://127.0.0.1:5006/' + context['viz_url']
-        print(dataviz_url)
+        print('')
+        print('')
+        print('dataviz_url in views.py:', dataviz_url)
+        print('')
+        print('')
         sec_key = settings.BOKEH_SECRET_KEY
         sess_id = session_id.generate_session_id(sec_key)
 
