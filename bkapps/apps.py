@@ -1,6 +1,7 @@
 # based on: https://github.com/bokeh/bokeh/blob/0.12.16/examples/howto/server_embed/flask_embed.py
 
 from django.apps import AppConfig
+from django.conf import settings
 
 from bokeh.server.server import Server
 
@@ -15,7 +16,8 @@ def bk_worker():
                     io_loop=IOLoop(),
                     address=bk_config.server['address'],
                     port=bk_config.server['port'],
-                    allow_websocket_origin=["127.0.0.1:8000"])
+                    allow_websocket_origin=["dkhydrotech.com"],
+                    )
     server.start()
     server.io_loop.start()
 
