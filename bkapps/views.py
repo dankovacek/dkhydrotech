@@ -23,11 +23,9 @@ class DataVizDetail(TemplateView):
         context = super().get_context_data(**kwargs)
         
         try:
-            print('')
-            print('made it into pull session!')
             bk_script = server_document(url='https://{}:{}/bk_sliders_app'.format(bk_config.server['address'],
                                                                         bk_config.server['port']))
-            # bk_script = server_session(url=dataviz_url, session_id=generate_session_id())
+
             print(bk_script)
             print('##')
             print('')

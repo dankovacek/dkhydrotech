@@ -20,6 +20,9 @@ def bk_worker():
                     allow_websocket_origin=["dkhydrotech.com"],
                     use_xheaders=True
                     )
+
+    print('started server.....')
+    print(server)
     server.start()
     server.io_loop.start()
 
