@@ -279,7 +279,7 @@ class DataVizDetail(TemplateView):
                 print('made it into pull session!')
 
                 bk_script = server_session(
-                    session_id=session_id,  url=dataviz_url)
+                    session_id=session_id,  url=dataviz_url, relative_urls=True)
                 print(bk_script)
                 print('')
                 print('')
