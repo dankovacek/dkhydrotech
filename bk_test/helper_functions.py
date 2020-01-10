@@ -21,9 +21,6 @@ import math
 import time
 import itertools
 
-import scipy.stats as sci_stats
-import scipy.optimize as sci_optim
-
 # Define data folders
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(BASE_DIR, 'data')
