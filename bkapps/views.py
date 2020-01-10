@@ -19,7 +19,7 @@ class DataVizDetail(TemplateView):
         context = super().get_context_data(**kwargs)
 
         sec_key = settings.BOKEH_SECRET_KEY
-        s_id = bokeh.util.session_id.generate_session_id(sec_key)
+        s_id = session_id.generate_session_id(sec_key)
         
         try:
             print('')
