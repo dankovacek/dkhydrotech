@@ -8,7 +8,7 @@ from django.conf.urls.static import static
 
 from .views import EntryList, EntryCreate, EntryDetail, EntryUpdate, EntryDelete
 from .views import TagList, Main, Contact
-from .views import DataVizDetail, PaymentSuccess
+from .views import PaymentSuccess
 from .views import ClimateScrapeCreate, ClimateScrapeResults, ClimateScrapeExport, ClimateScrapeAnnualMaxPrecip
 from .stripe_payment import DonateCheckout
 
@@ -39,6 +39,7 @@ urlpatterns = [
          ClimateScrapeAnnualMaxPrecip, name="climate-scrape-annual-max-precip"),
     path('donation-checkout/', DonateCheckout, name="donate-checkout"),
     path('payment-success/<pk>/', PaymentSuccess.as_view(), name="payment-success"),
-    path('dataviz/<viz_url>/', DataVizDetail.as_view(), name="dataviz-test")
+#     path('dataviz/<viz_url>/', DataVizDetail.as_view(), name="dataviz-test"),
+    path('sliders/', include('bkapps.urls')),
 
 ] # + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

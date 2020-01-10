@@ -21,4 +21,5 @@ urlpatterns = [
     path('accounts/', include('allauth.urls')),
     # url(r'^accounts/', include('mainsite_admin.urls')),
     path('', include('dkht.urls')),  # , namespace='dkht')),
+    path('dataviz/', include('bkapps.urls')),  # , namespace='dkht')),
 ]  
