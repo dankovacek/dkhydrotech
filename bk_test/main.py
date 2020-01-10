@@ -15,16 +15,14 @@ except ImportError:
             return _
         return dec
 
-import bokeh
-import numpy as np
-import pandas as pd
-import scipy.stats as sci_stats
-import statsmodels.api as sm
-from statsmodels.sandbox.regression.predstd import wls_prediction_std
 import math
 import os
 import sys
 import time
+
+import bokeh
+import numpy as np
+import pandas as pd
 
 from bokeh.io import curdoc
 from bokeh.layouts import row, column, widgetbox
@@ -36,10 +34,6 @@ from bokeh.plotting import figure
 from bokeh.palettes import Spectral11, Viridis11
 
 from helper_functions import load_data
-from helper_functions import linearRegCostFunction, getTestAndTrainingSets
-from helper_functions import gradientDescent, featureNormalize, targetNormalize
-from helper_functions import learningCurve, polyFeatures, estimateGaussian
-from helper_functions import map_theta_to_features, multivariateGaussian
 from helper_functions import apply_poly, getRandomChronSets
 from helper_functions import SITES, Site
 
@@ -241,7 +235,7 @@ hydrograph.yaxis.axis_label_text_font_size = '10pt'
 hydrograph.xaxis.major_label_text_font_size = '10pt'
 hydrograph.yaxis.major_label_text_font_size = '10pt'
 
-foo_df = pd.DataFrame()
+results_df = pd.DataFrame()
 
 
 def update_poly_order():
@@ -320,20 +314,21 @@ def update_poly_order():
 
         bf_range = [apply_poly(model_fit, e) for e in bf_domain]
 
-        slope, intercept, r_value, p_value, std_err = sci_stats.linregress(
-            a1, a2)
+        rmse = np.sqrt(np.mean((predictions-targets)**2))
 
-        foo_df['bf_domain'] = bf_domain
-        foo_df['bf_range'] = bf_range
+        results_df['bf_domain'] = bf_domain
+        results_df['bf_range'] = bf_range
 
         output_regression_source.data = output_regression_source.from_df(
-            foo_df)
+            results_df)
         model_performance_source.data = model_performance_source.from_df(
             test_data)
 
         # add polynomial curves for plotting on ur_ratio figure
-        current_fit = np.polyfit(
-            train_data['day_of_year'], train_data['ur_ratio'], p)[::-1]
+        current_fit, residuals = np.polyfit(
+            train_data['day_of_year'], train_data['ur_ratio'], p, full=True)[::-1]
+
+        r_value = 1 - residuals**2 / len(train_data)
 
         # plot the polynomial curve over the ur_ratio vs. normalized day scatter plot
         poly_curves_df['y_poly_date'] = [apply_poly(
