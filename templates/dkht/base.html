@@ -16,14 +16,16 @@
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
-	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">	
         <!-- <link rel="stylesheet" href="https://cdn.pydata.org/bokeh/release/bokeh-1.0.4.min.css">
         <link rel="stylesheet" href="https://cdn.pydata.org/bokeh/release/bokeh-widgets-1.0.4.min.css"> -->
 	<link rel="stylesheet" href="{% static 'css/styles.css' %}">
 	<link rel="shortcut icon" href="{% static 'images/favicon.ico' %}">
 	<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
 	 crossorigin="anonymous"></script>
+	 {% include 'material/includes/material_css.html' %}
+	 {% include 'material/includes/material_js.html' %}
+	 {% load material_form %}
 	<title>DK Hydro / tech - Multi-disciplinary Data Analysis and Hydrotechnical Engineering</title>
 </head>
 
