@@ -24,7 +24,7 @@
       <div class="row">
         <div class="col s12">
           <h5 class="flow-text">Search Parameters</h5>
-          <form action="{{ action }}" method="POST" class="post-form" enctype="multipart/form-data">{% csrf_token %}
+          <form method="POST" class="post-form" enctype="multipart/form-data">{% csrf_token %}
             {{ form.as_p }}
             <button type="submit" class="btn green darken-2 waves-effect waves-light" onclick="Materialize.toast('Search Submitted!', 4000)">Submit</button>
           </form>
