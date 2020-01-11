@@ -39,7 +39,11 @@ urlpatterns = [
          ClimateScrapeAnnualMaxPrecip, name="climate-scrape-annual-max-precip"),
     path('donation-checkout/', DonateCheckout, name="donate-checkout"),
     path('payment-success/<pk>/', PaymentSuccess.as_view(), name="payment-success"),
-#     path('dataviz/<viz_url>/', DataVizDetail.as_view(), name="dataviz-test"),
+    # path('dataviz/<viz_url>/', DataVizDetail.as_view(), name="dataviz-test"),
     path('sliders/', include('bkapps.urls')),
+] 
 
-] #+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL,
+                          document_root=settings.MEDIA_ROOT) + \
+        static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
