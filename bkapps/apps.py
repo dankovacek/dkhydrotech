@@ -11,18 +11,19 @@ from . import bk_config
 
 def bk_worker():
     # Note: num_procs must be 1; see e.g. flask_gunicorn_embed.py for num_procs>1
-    server = Server({'/bk_sliders_app': bk_sliders.app},
-                    io_loop=IOLoop(),
-                    address=bk_config.server['address'],
-                    port=bk_config.server['port'],
-                    allow_websocket_origin=["dkhydrotech.com"],
-                    use_xheaders=True
-                    )
+    # server = Server({'/bk_sliders_app': bk_sliders.app},
+    #                 io_loop=IOLoop(),
+    #                 address=bk_config.server['address'],
+    #                 port=bk_config.server['port'],
+    #                 allow_websocket_origin=["dkhydrotech.com"],
+    #                 use_xheaders=True
+    #                 )
 
-    print('started server.....')
-    print(server)
-    server.start()
-    server.io_loop.start()
+    # print('started server.....')
+    # print(server)
+    # server.start()
+    # server.io_loop.start()
+    pass
 
 class Sliders(AppConfig):
     name = 'bkapps'
@@ -34,5 +35,6 @@ class Sliders(AppConfig):
         # use). Alternatively, using "python manage.py runserver
         # --noreload" avoids the problem. Otherwise, could add some
         # kind of lock...
-        from threading import Thread
-        Thread(target=bk_worker).start()
+        # from threading import Thread
+        # Thread(target=bk_worker).start()
+        pass
