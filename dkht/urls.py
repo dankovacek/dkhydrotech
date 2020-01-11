@@ -42,4 +42,4 @@ urlpatterns = [
 #     path('dataviz/<viz_url>/', DataVizDetail.as_view(), name="dataviz-test"),
     path('sliders/', include('bkapps.urls')),
 
-] # + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+] #+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
