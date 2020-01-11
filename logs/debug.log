@@ -1,0 +1,59 @@
+Exception while resolving variable 'action' in template 'dkht/climatescrape_form.html'.
+Traceback (most recent call last):
+  File "/home/danbot/dkhydrotech/env/lib/python3.6/site-packages/django/template/base.py", line 828, in _resolve_lookup
+    current = current[bit]
+  File "/home/danbot/dkhydrotech/env/lib/python3.6/site-packages/django/template/context.py", line 83, in __getitem__
+    raise KeyError(key)
+KeyError: 'action'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/danbot/dkhydrotech/env/lib/python3.6/site-packages/django/template/base.py", line 834, in _resolve_lookup
+    if isinstance(current, BaseContext) and getattr(type(current), bit):
+AttributeError: type object 'RequestContext' has no attribute 'action'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/danbot/dkhydrotech/env/lib/python3.6/site-packages/django/template/base.py", line 842, in _resolve_lookup
+    current = current[int(bit)]
+ValueError: invalid literal for int() with base 10: 'action'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/danbot/dkhydrotech/env/lib/python3.6/site-packages/django/template/base.py", line 849, in _resolve_lookup
+    (bit, current))  # missing attribute
+django.template.base.VariableDoesNotExist: Failed lookup for key [action] in [{'True': True, 'False': False, 'None': None}, {'csrf_token': <SimpleLazyObject: <function csrf.<locals>._get_val at 0x7fc639b4ad90>>, 'request': <WSGIRequest: GET '/tools/climate_data_finder/'>, 'MEDIA_URL': '/media/', 'user': <SimpleLazyObject: <django.contrib.auth.models.AnonymousUser object at 0x7fc639a5d7b8>>, 'perms': <django.contrib.auth.context_processors.PermWrapper object at 0x7fc639a40710>, 'messages': <django.contrib.messages.storage.fallback.FallbackStorage object at 0x7fc639ff0828>, 'DEFAULT_MESSAGE_LEVELS': {'DEBUG': 10, 'INFO': 20, 'SUCCESS': 25, 'WARNING': 30, 'ERROR': 40}}, {}, {'form': <StationSearchTargetForm bound=False, valid=Unknown, fields=(lat;lon;search_radius)>, 'view': <dkht.views.ClimateScrapeCreate object at 0x7fc63a002cc0>, 'stripe_key': 'pk_test_AZ4cFfoxI6SIbn9dAqUqZN2y'}, {'block': <Block Node: content. Contents: [<TextNode: '\n'>, <Variable Node: block.super>, <TextNode: '\n\n<div id="background-ima'>, <Variable Node: action>, <TextNode: '" method="POST" class="po'>, <django.template.defaulttags.CsrfTokenNode object at 0x7fc639a37e10>, <TextNode: '\n            '>, <Variable Node: form.as_p>, <TextNode: '\n            <button type'>, <django.template.defaulttags.URLNode object at 0x7fc639a40080>, <TextNode: '">contact me</a>.\n       '>, <Block Node: payment. Contents: [<TextNode: '\n  '>, <django.template.loader_tags.IncludeNode object at 0x7fc639a40240>, <TextNode: '\n  '>]>, <TextNode: '\n\n</div>\n\n'>]>}]
+(0.004) INSERT INTO "dkht_stationsearchtarget" ("lat", "lon", "search_radius") VALUES ('49.2500', '-123.1200', '5.0'); args=['49.2500', '-123.1200', '5.0']
+(0.002) SELECT "dkht_stationsearchtarget"."id", "dkht_stationsearchtarget"."lat", "dkht_stationsearchtarget"."lon", "dkht_stationsearchtarget"."search_radius" FROM "dkht_stationsearchtarget" WHERE "dkht_stationsearchtarget"."id" = 75 LIMIT 21; args=(75,)
+(0.000) SELECT "dkht_stationsearchtarget"."id", "dkht_stationsearchtarget"."lat", "dkht_stationsearchtarget"."lon", "dkht_stationsearchtarget"."search_radius" FROM "dkht_stationsearchtarget" WHERE "dkht_stationsearchtarget"."id" = 75 LIMIT 21; args=(75,)
+Internal Server Error: /tools/climate_data_finder/results/75/
+Traceback (most recent call last):
+  File "/home/danbot/dkhydrotech/env/lib/python3.6/site-packages/django/core/handlers/exception.py", line 34, in inner
+    response = get_response(request)
+  File "/home/danbot/dkhydrotech/env/lib/python3.6/site-packages/django/core/handlers/base.py", line 115, in _get_response
+    response = self.process_exception_by_middleware(e, request)
+  File "/home/danbot/dkhydrotech/env/lib/python3.6/site-packages/django/core/handlers/base.py", line 113, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/home/danbot/dkhydrotech/env/lib/python3.6/site-packages/django/views/generic/base.py", line 71, in view
+    return self.dispatch(request, *args, **kwargs)
+  File "/home/danbot/dkhydrotech/env/lib/python3.6/site-packages/django/views/generic/base.py", line 97, in dispatch
+    return handler(request, *args, **kwargs)
+  File "/home/danbot/dkhydrotech/env/lib/python3.6/site-packages/django/views/generic/detail.py", line 107, in get
+    context = self.get_context_data(object=self.object)
+  File "/home/danbot/dkhydrotech/dkhydrotech/dkht/views.py", line 181, in get_context_data
+    target.lat, target.lon, target.search_radius)
+  File "/home/danbot/dkhydrotech/dkhydrotech/climatescrape/station_search.py", line 121, in get_stations
+    target_loc = utm.from_latlon(lat, lon)
+  File "/home/danbot/dkhydrotech/env/lib/python3.6/site-packages/utm/conversion.py", line 189, in from_latlon
+    if not in_bounds(latitude, -80.0, 84.0):
+  File "/home/danbot/dkhydrotech/env/lib/python3.6/site-packages/utm/conversion.py", line 49, in in_bounds
+    return lower <= mathlib.min(x) and mathlib.max(x) <= upper
+  File "<__array_function__ internals>", line 6, in amin
+  File "/home/danbot/dkhydrotech/env/lib/python3.6/site-packages/numpy/core/fromnumeric.py", line 2793, in amin
+    keepdims=keepdims, initial=initial, where=where)
+  File "/home/danbot/dkhydrotech/env/lib/python3.6/site-packages/numpy/core/fromnumeric.py", line 88, in _wrapreduction
+    return reduction(axis=axis, out=out, **passkwargs)
+TypeError: Required argument 'other' (pos 1) not found
