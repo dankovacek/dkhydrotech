@@ -1,8 +1,0 @@
-User-agent: * 
-Disallow: /r2d2_kp01/
-Disallow: /.git/
-Disallow: /tmp/
-Disallow: /migrations/
-Disallow: /db/
-Disallow: /bk_test/
-Disallow: /env/
