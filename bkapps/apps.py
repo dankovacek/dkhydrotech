@@ -29,7 +29,7 @@ def bk_worker():
                     address=bk_config.server['address'],
                     port=bk_config.server['port'],
                     allow_websocket_origin=["localhost:8000"],
-                    # use_xheaders=x_headers
+                    use_xheaders=x_headers
                     )
 
     logging.error('starting server ...')
