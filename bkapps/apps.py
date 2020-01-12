@@ -26,7 +26,7 @@ def bk_worker():
     else:
         bk_address = bk_config.server['address']
         bk_port = bk_config.server['port']
-        ws_origin = 'dkhydrotech.com'
+        ws_origin = '127.0.0.1'
         x_headers = True
 
     server = Server({'/bk_sliders_app': bk_sliders.app},
