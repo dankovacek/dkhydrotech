@@ -8,13 +8,4 @@ $( document ).ready(function() {
     $(".button-collapse").sideNav();
     $('select').material_select();
 
-    console.log("Markdownx ready");
-
-    // $('.markdownx').on('markdownx.init', function() {
-	  //    console.log("INIT");
-    // });
-    // $('.markdownx').on('markdownx.update', function(e, response) {
-	  //    console.log("UPDATE" + response);
-    // });
-
 });
