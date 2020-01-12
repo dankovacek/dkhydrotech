@@ -31,8 +31,8 @@ def bk_worker():
 
     server = Server({'/bk_sliders_app': bk_sliders.app},
                     io_loop=IOLoop(),
-                    # address=bk_address,
-                    # port=bk_port,
+                    address='localhost',
+                    port=5007,
                     allow_websocket_origin=[ws_origin],
                     use_xheaders=x_headers
                     )
