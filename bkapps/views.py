@@ -28,13 +28,12 @@ class DataVizDetail(TemplateView):
                 bk_url = 'http://127.0.0.1:5007/bk_sliders_app'
             else:
                 bk_url = 'http://{}:{}/bk_sliders_app'.format(bk_config.server['address'],
-                                                                        bk_config.server['port'])
+                                                              bk_config.server['port'])
 
             bk_script = server_document(url=bk_url)
 
-            print(bk_script)
-            print('##')
-            print('')
+            logging.error('views url = {}'.format(bk_url))
+            
             context['bk_script'] = bk_script
 
         except Exception as e:
