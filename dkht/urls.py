@@ -10,6 +10,7 @@ from .views import EntryList, EntryCreate, EntryDetail, EntryUpdate, EntryDelete
 from .views import TagList, Main, Contact
 from .views import PaymentSuccess
 from .views import ClimateScrapeCreate, ClimateScrapeResults, ClimateScrapeExport, ClimateScrapeAnnualMaxPrecip
+
 from .stripe_payment import DonateCheckout
 
 from markdownx import urls as markdownx
@@ -39,8 +40,6 @@ urlpatterns = [
          ClimateScrapeAnnualMaxPrecip, name="climate-scrape-annual-max-precip"),
     path('donation-checkout/', DonateCheckout, name="donate-checkout"),
     path('payment-success/<pk>/', PaymentSuccess.as_view(), name="payment-success"),
-    # path('dataviz/<viz_url>/', DataVizDetail.as_view(), name="dataviz-test"),
-    path('sliders/', include('bkapps.urls')),
 ] 
 
 if settings.DEBUG:
