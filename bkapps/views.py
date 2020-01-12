@@ -21,10 +21,16 @@ class DataVizDetail(TemplateView):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(**kwargs)
-        
+
         try:
-            bk_script = server_document(url='http://{}:{}/bk_sliders_app'.format(bk_config.server['address'],
-                                                                        bk_config.server['port']))
+
+            if settings.DEBUG:
+                bk_url = 'http://127.0.0.1:5007/bk_sliders_app'
+            else:
+                bk_url = 'http://{}:{}/bk_sliders_app'.format(bk_config.server['address'],
+                                                                        bk_config.server['port'])
+
+            bk_script = server_document(url=bk_url)
 
             print(bk_script)
             print('##')

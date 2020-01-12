@@ -19,7 +19,6 @@ from django.urls import include, path
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('allauth.urls')),
-    # url(r'^accounts/', include('mainsite_admin.urls')),
-    path('', include('dkht.urls')),  # , namespace='dkht')),
-    path('dataviz/', include('bkapps.urls')),  # , namespace='dkht')),
+    path('', include('dkht.urls')),  
+    path('dataviz/', include('bkapps.urls')),
 ]  
