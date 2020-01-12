@@ -25,7 +25,7 @@ class DataVizDetail(TemplateView):
         try:
             bk_url = '/bk_sliders_app'
 
-            bk_script = server_document(url=bk_url, relative_urls=True, resources='cdn')
+            bk_script = server_document(url=bk_url, relative_urls=True)
 
             logging.info('views url = {}'.format(bk_url))
 
