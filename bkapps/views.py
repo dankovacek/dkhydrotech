@@ -28,7 +28,7 @@ class DataVizDetail(TemplateView):
 
             bk_script = server_document(url=bk_url, relative_urls=True)
 
-            logging.error('views url = {}'.format(bk_url))
+            logging.info('views url = {}'.format(bk_url))
 
             context['bk_script'] = bk_script
 
