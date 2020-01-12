@@ -31,9 +31,8 @@ def bk_worker():
 
     server = Server({'/bk_sliders_app': bk_sliders.app},
                     io_loop=IOLoop(),
-                    address='localhost',
+                    address='http://www.dkhydrotech.com',
                     port=5007,
-                    prefix='/bk_sliders_app',
                     allow_websocket_origin=[ws_origin],
                     use_xheaders=x_headers
                     )
