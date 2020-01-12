@@ -14,7 +14,6 @@ ENTRY_CHOICES = (
     ('project', 'PROJECT'),
 )
 
-
 class Entry(models.Model):
     """
     A generic Entry, covers all four categories: photo, video, illustration, blurb (writing).
@@ -29,7 +28,8 @@ class Entry(models.Model):
     content = MDTextField()
     image = models.ImageField(blank=True, null=True, verbose_name="Main Image")
     img_thumb = models.ImageField(
-        blank=True, null=True, upload_to="thumbs", editable=False, verbose_name="Image Thumbnail")
+        blank=True, null=True, upload_to=settings.MEDIA_URL, 
+        editable=False, verbose_name="Image Thumbnail")
     video = EmbedVideoField(
         verbose_name="Video Link (optional)", blank=True, null=True)
     tags = models.CharField(max_length=500, blank=True,
@@ -42,12 +42,8 @@ class Entry(models.Model):
             if not self.make_thumbnail():
                 raise Exception(
                     'Could not create thumbnail. .jpg, .jpeg, .gif, and .png are recognized types.')
-
         super(Entry, self).save(*args, **kwargs)
 
-    # @property
-    # def formatted_markdown(self):
-    #     return markdownify(self.text_body)
 
     def make_thumbnail(self):
         img = Image.open(self.image)
