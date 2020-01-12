@@ -24,15 +24,15 @@ def bk_worker():
         ws_origin = '127.0.0.1:8000'
         x_headers = False
     else:
-        bk_address = bk_config.server['address']
+        # bk_address = bk_config.server['address']
         bk_port = bk_config.server['port']
         ws_origin = '127.0.0.1:8000'
         x_headers = True
 
     server = Server({'/bk_sliders_app': bk_sliders.app},
                     io_loop=IOLoop(),
-                    address=bk_address,
-                    port=bk_port,
+                    # address=bk_address,
+                    # port=bk_port,
                     allow_websocket_origin=[ws_origin],
                     use_xheaders=x_headers
                     )
