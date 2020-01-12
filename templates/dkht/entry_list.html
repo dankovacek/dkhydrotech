@@ -1,5 +1,6 @@
 {% extends 'dkht/base.html' %}
 {% load static %}
+
 {% block content %}
 
 {{ block.super }}
@@ -21,7 +22,11 @@
                   <div class="card hoverable">
                     <div class="row valign-wrapper">
                       <div class="col s12 m3 l2">
-                        <img src="{{ entry.img_thumb.url }}">
+                        {% if entry_img_thumb.url %}
+                          <img src="{{ entry.img_thumb.url }}">
+                        {% else %}
+                          <p>no img</p>
+                        {% endif %}
                       </div>
                       <div class="col s12 m9 l10">
                         <div class="card-content black-text">
