@@ -79,7 +79,7 @@ class EntryCreate(LoginRequiredMixin, CreateView):
     """
     model = Entry
     fields = ['post_type', 'title', 'byline',
-              'text_body', 'image', 'tags', 'video']
+              'content', 'image', 'tags', 'video']
 
     def get_context_data(self, *args, **kwargs):
         context = super(EntryCreate, self).get_context_data(**kwargs)
@@ -109,7 +109,7 @@ class EntryUpdate(LoginRequiredMixin, UpdateView):
     """
     model = Entry
     fields = ['post_type', 'title', 'byline',
-              'text_body', 'image', 'tags', 'video']
+              'content', 'image', 'tags', 'video']
 
     def get_context_data(self, *args, **kwargs):
         context = super(EntryUpdate, self).get_context_data(**kwargs)

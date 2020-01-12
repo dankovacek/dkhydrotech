@@ -4,14 +4,14 @@ WSGI config for mainsite project.
 It exposes the WSGI callable as a module-level variable named ``application``.
 
 For more information on this file, see
-https://docs.djangoproject.com/en/2.0/howto/deployment/wsgi/
+https://docs.djangoproject.com/en/3.0/howto/deployment/wsgi/
 """
 
 import os
 import sys
 
 
-path = os.path.expanduser('/home/protected/django/')
+path = os.path.expanduser('/home/dkhydrotech/env/lib/python3.6/site-packages/django/')
 
 if path not in sys.path:
     sys.path.append(path)
