@@ -28,7 +28,7 @@ def bk_worker():
                     io_loop=IOLoop(),
                     address=bk_config.server['address'],
                     port=bk_config.server['port'],
-                    allow_websocket_origin=["dkhydrotech.com:80"],
+                    allow_websocket_origin=["dkhydrotech.com"],
                     use_xheaders=x_headers
                     )
 
