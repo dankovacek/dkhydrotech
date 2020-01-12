@@ -1,4 +1,4 @@
 server = dict(
     address="127.0.0.1",
-    port=5007
+    port=5006
 )

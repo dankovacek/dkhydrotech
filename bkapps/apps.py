@@ -21,7 +21,7 @@ def bk_worker():
     if settings.DEBUG:
         bk_port = 5007
         bk_address = '127.0.0.1'
-        ws_origin = '127.0.0.1:8000'
+        ws_origin = '127.0.0.1:80'
         x_headers = False
     else:
         bk_address = bk_config.server['address']
@@ -31,8 +31,8 @@ def bk_worker():
 
     server = Server({'/bk_sliders_app': bk_sliders.app},
                     io_loop=IOLoop(),
-                    address='http://www.dkhydrotech.com',
-                    port=5007,
+                    address='localhost',
+                    port=5006,
                     allow_websocket_origin=[ws_origin],
                     use_xheaders=x_headers
                     )
