@@ -8,8 +8,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from PIL import Image
 from io import BytesIO
 import os.path
-from markdownx.models import MarkdownxField
-from markdownx.utils import markdownify
+from mdeditor.fields import MDTextField
 
 ENTRY_CHOICES = (
     ('project', 'PROJECT'),
@@ -27,7 +26,7 @@ class Entry(models.Model):
         max_length=30, verbose_name="Title", blank=True, null=True)
     byline = models.CharField(
         max_length=100, blank=True, null=True, verbose_name="Title Byline")
-    text_body = MarkdownxField(blank=True, null=True, verbose_name="Body Text")
+    content = MDTextField()
     image = models.ImageField(blank=True, null=True, verbose_name="Main Image")
     img_thumb = models.ImageField(
         blank=True, null=True, upload_to="thumbs", editable=False, verbose_name="Image Thumbnail")
@@ -46,9 +45,9 @@ class Entry(models.Model):
 
         super(Entry, self).save(*args, **kwargs)
 
-    @property
-    def formatted_markdown(self):
-        return markdownify(self.text_body)
+    # @property
+    # def formatted_markdown(self):
+    #     return markdownify(self.text_body)
 
     def make_thumbnail(self):
         img = Image.open(self.image)
@@ -152,7 +151,7 @@ class Donation(models.Model):
     A model instance to manage donations for tools used.
     """
     id_prefix = 'DON-'
-    #email = EmaiField(max_length=50, null=True, blank=True)
+    #email = EmailField(max_length=50, null=True, blank=True)
     created = models.DateTimeField(default=timezone.now)
     amount = models.DecimalField(
         max_digits=9, decimal_places=2, null=False, blank=False,

@@ -13,14 +13,11 @@ from .views import ClimateScrapeCreate, ClimateScrapeResults, ClimateScrapeExpor
 
 from .stripe_payment import DonateCheckout
 
-from markdownx import urls as markdownx
-
 app_name = 'dkht'
 
 urlpatterns = [
     path('', Main.as_view(), name="main-view"),
     path('contact/', Contact.as_view(), name="contact-view"),
-    path('markdownx/', include(markdownx)),
     path('projects/', EntryList.as_view(), name="entry-list"),
     path('create_entry/', EntryCreate.as_view(), name="entry-create"),
     path('entry/<int:pk>/', EntryDetail.as_view(), name="entry-detail"),
@@ -40,9 +37,4 @@ urlpatterns = [
          ClimateScrapeAnnualMaxPrecip, name="climate-scrape-annual-max-precip"),
     path('donation-checkout/', DonateCheckout, name="donate-checkout"),
     path('payment-success/<pk>/', PaymentSuccess.as_view(), name="payment-success"),
-] 
-
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL,
-                          document_root=settings.MEDIA_ROOT) + \
-        static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+]

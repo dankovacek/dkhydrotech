@@ -1,8 +1,6 @@
 from django import forms
 from django.utils import timezone
-from .models import Entry, StationSearchTarget, Donation  # , EntryImage
-
-#from markdownx.fields import MarkdownxWidget
+from .models import Entry, StationSearchTarget, Donation 
 
 
 class EntryForm(forms.ModelForm):
@@ -15,12 +13,7 @@ class EntryForm(forms.ModelForm):
     class Meta:
         model = Entry
         fields = ('post_type', 'title', 'byline',
-                  'text_body', 'image', 'tags', 'video')
-
-    def __init__(self, *args, **kwargs):
-        # Call to ModelForm constructor
-        super(EntryForm, self).__init__(*args, **kwargs)
-        self.fields['text_body'].widget.attrs['height'] = '50vh'
+                  'content', 'image', 'tags', 'video')
 
 
 class ClimateScrapeForm(forms.ModelForm):
@@ -36,20 +29,3 @@ class ClimateScrapeForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         # Call to ModelForm constructor
         super(ClimateScrapeForm, self).__init__(*args, **kwargs)
-
-    # def __init__(self, *args, **kwargs):
-    #     # Call to ModelForm constructor
-    #     super(ClimateScrapeForm, self).__init__(*args, **kwargs)
-    #
-
-#
-# class EntryImageForm(forms.ModelForm):
-#
-#     def save(self, commit=True):
-#         self.instance.entryimage = self.entry
-#         return super().save(commit)
-#
-#
-#     class Meta:
-#         model = EntryImage
-#         fields = ('image',)
