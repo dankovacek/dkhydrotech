@@ -10,6 +10,12 @@ from tornado.ioloop import IOLoop
 from . import bk_sliders
 from . import bk_config
 
+# import the logging library
+import logging
+
+# Get an instance of a logger
+logger = logging.getLogger(__name__)
+
 def bk_worker():
     # Note: num_procs must be 1; see e.g. flask_gunicorn_embed.py for num_procs>1
     if settings.DEBUG:
@@ -31,8 +37,10 @@ def bk_worker():
                     use_xheaders=x_headers
                     )
 
-    print('started server.....')
-
+    logging.error('started server ...')
+    logging.error(server)
+    logging.error('')
+    
     try:
         server.start()
         server.io_loop.start()
