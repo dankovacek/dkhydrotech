@@ -26,7 +26,7 @@ class DataVizDetail(TemplateView):
             bk_url = 'http://{}:{}/bk_sliders_app'.format(bk_config.server['address'],
                                                             bk_config.server['port'])
 
-            bk_script = server_document(url=bk_url)
+            bk_script = server_document(url=bk_url, relative_urls=True)
 
             logging.error('views url = {}'.format(bk_url))
 
