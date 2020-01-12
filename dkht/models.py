@@ -28,7 +28,7 @@ class Entry(models.Model):
     content = MDTextField()
     image = models.ImageField(blank=True, null=True, verbose_name="Main Image")
     img_thumb = models.ImageField(
-        blank=True, null=True, upload_to=settings.MEDIA_URL, 
+        blank=True, null=True, upload_to="thumbs", 
         editable=False, verbose_name="Image Thumbnail")
     video = EmbedVideoField(
         verbose_name="Video Link (optional)", blank=True, null=True)
