@@ -18,22 +18,17 @@ logger = logging.getLogger(__name__)
 
 def bk_worker():
     # Note: num_procs must be 1; see e.g. flask_gunicorn_embed.py for num_procs>1
-    if settings.DEBUG:
-        bk_port = 5007
-        bk_address = '127.0.0.1'
-        ws_origin = '127.0.0.1:8000'
-        x_headers = False
-    else:
-        bk_address = bk_config.server['address']
-        bk_port = bk_config.server['port']
-        ws_origin = 'dkhydrotech.com'
-        x_headers = True
+
+    bk_address = bk_config.server['address']
+    bk_port = bk_config.server['port']
+    ws_origin = 'dkhydrotech.com'
+    x_headers = True
 
     server = Server({'/bk_sliders_app': bk_sliders.app},
                     io_loop=IOLoop(),
-                    address='http://www.dkhydrotech.com',
-                    port=5007,
-                    allow_websocket_origin=[ws_origin],
+                    address=bk_config.server['address'],
+                    port=bk_config.server['port'],
+                    allow_websocket_origin=["localhost:8000"],
                     use_xheaders=x_headers
                     )
 
