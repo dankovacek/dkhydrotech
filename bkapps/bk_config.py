@@ -1,4 +1,4 @@
 server = dict(
-    address = "dkhydrotech.com",
-    port = 5007
+    address="127.0.0.1",
+    port=5007
 )

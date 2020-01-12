@@ -40,7 +40,7 @@ def bk_worker():
     logging.error('started server ...')
     logging.error(server)
     logging.error('')
-    
+
     try:
         server.start()
         server.io_loop.start()
