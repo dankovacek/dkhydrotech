@@ -24,9 +24,9 @@ def bk_worker():
         ws_origin = '127.0.0.1:8000'
         x_headers = False
     else:
-        # bk_address = bk_config.server['address']
+        bk_address = bk_config.server['address']
         bk_port = bk_config.server['port']
-        ws_origin = '127.0.0.1:8000'
+        ws_origin = 'dkhydrotech.com'
         x_headers = True
 
     server = Server({'/bk_sliders_app': bk_sliders.app},
@@ -37,17 +37,14 @@ def bk_worker():
                     use_xheaders=x_headers
                     )
 
-    logging.error('started server ...')
-    logging.error(server)
-    logging.error('')
+    logging.error('starting server ...')
 
     try:
         server.start()
         server.io_loop.start()
     except Exception as e:
-        print('')
-        print(e)
-        print('')
+        logging.error('Bokeh Server Exception:')
+        logging.error(e)
 
 class Sliders(AppConfig):
     name = 'bkapps'
