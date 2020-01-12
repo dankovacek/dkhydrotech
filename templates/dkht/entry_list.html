@@ -22,10 +22,10 @@
                   <div class="card hoverable">
                     <div class="row valign-wrapper">
                       <div class="col s12 m3 l2">
-                        {% if entry_img_thumb.url %}
-                          <img src="{{ entry.img_thumb.url }}">
+                        {% if entry.img_thumb %}
+                          <img src="{{ entry.img_thumb.url }}" style='width: 100%;'>
                         {% else %}
-                          <p>no img</p>
+                          <p></p>
                         {% endif %}
                       </div>
                       <div class="col s12 m9 l10">
