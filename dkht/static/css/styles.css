@@ -31,27 +31,6 @@ nav a:visited, nav a:link, footer a:visited, footer a:link, p.flow-text a {
 	color: rgba(60,60,60,0.8);
 }
 
-/*a {
-	/*color: rgba(0,0,0,0.9);*/
-	/*text-decoration: none;
-}*/
-
-/*a:link {
-	color: rgb(104, 162, 106);
-	text-decoration: none;
-}
-
-a:visited {
-	color: rgb(104, 162, 106);
-	text-decoration: none;
-}
-
-a:hover {
-	color: rgb(129, 199, 132);
-	background-color: rgba(0,0,0,0);
-	text-decoration: none;
-}*/
-
 button:hover {
 	color: rgba(60,60,60,0.8);
 	background-color: rgba(0,0,0,0);
@@ -97,10 +76,6 @@ blockquote {
 	width: 40px;
 	margin: 5px 5px 10px 10px;
 	/*padding: 0.25em 0 0.25em 1em;*/
-}
-
-img:not(.png) {
-  width: 75%;
 }
 
 .contact-list {
