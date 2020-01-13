@@ -24,13 +24,20 @@ def bk_worker():
     ws_origin = 'dkhydrotech.com'
     x_headers = True
 
-    server = Server({'/bk_sliders_app': bk_sliders.app},
-                    io_loop=IOLoop(),
-                    address=bk_config.server['address'],
-                    port=bk_config.server['port'],
-                    allow_websocket_origin=["dkhydrotech.com"],
-                    use_xheaders=x_headers
-                    )
+
+    if settings.DEBUG:
+        server = Server({'/bk_sliders_app': bk_sliders.app},
+                        io_loop=IOLoop(),
+                        allow_websocket_origin=['127.0.0.1:8000']
+        )
+    else:    
+        server = Server({'/bk_sliders_app': bk_sliders.app},
+                        io_loop=IOLoop(),
+                        address=bk_config.server['address'],
+                        port=bk_config.server['port'],
+                        allow_websocket_origin=["dkhydrotech.com"],
+                        use_xheaders=x_headers
+                        )
 
     logging.info('starting server ...')
 
