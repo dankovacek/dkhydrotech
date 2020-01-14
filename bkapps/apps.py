@@ -21,10 +21,10 @@ def bk_worker():
 
     bk_address = bk_config.server['address']
     bk_port = bk_config.server['port']
-    ws_origin = 'dkhydrotech.com'
+    ws_origin = 'dkhydrotech.com:8000'
     x_headers = True
 
-
+    logging.error('starting Bokeh server...')
     if settings.DEBUG:
         server = Server({'/bk_sliders_app': bk_sliders.app},
                         io_loop=IOLoop(),
@@ -35,7 +35,7 @@ def bk_worker():
                         io_loop=IOLoop(),
                         address=bk_config.server['address'],
                         port=bk_config.server['port'],
-                        allow_websocket_origin=["dkhydrotech.com"],
+                        allow_websocket_origin=["www.dkhydrotech.com"],
                         use_xheaders=x_headers
                         )
 
@@ -44,6 +44,7 @@ def bk_worker():
     try:
         server.start()
         server.io_loop.start()
+        logging.error('Bokeh server started')
     except Exception as e:
         logging.error('Bokeh Server Exception:')
         logging.error(e)

@@ -32,6 +32,7 @@ class DataVizDetail(TemplateView):
                                             resources=None)
 
             logging.info('views url = {}'.format(bk_url))
+            logging.error('Server document generated...')
 
             context['bk_script'] = bk_script
 
