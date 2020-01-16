@@ -22,11 +22,10 @@ class FloodMsmtErrorSimulator(TemplateView):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['base_uri'] = self.request.build_absolute_uri("/").rstrip("/")
+    
         app_ID = '/flood_msmt'
 
         try:
-            # bk_url = '/bk_sliders_app'
 
             if settings.DEBUG:
                 bk_url = 'http://127.0.0.1:5006' + app_ID
@@ -40,14 +39,11 @@ class FloodMsmtErrorSimulator(TemplateView):
                 # bk_url = app_ID
                 # bk_script = server_document(url=bk_url, relative_urls=True, 
                 #                             resources=None)
-                bk_script = server_session(url='http://127.0.0.1:5000/flood_msmt',
-                                        #    relative_urls=True,
+                bk_script = server_session(url='http://127.0.0.1:5006flood_msmt',
+                                           relative_urls=False,
                                            resources=None,
                                            session_id=session_id.generate_session_id(),
                                            )
-
-            logging.info('bokeh_script = {}'.format(bk_script))
-            logging.error('Server document generated...')
 
             context['bk_script'] = bk_script
 
