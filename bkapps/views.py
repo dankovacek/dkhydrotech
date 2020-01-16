@@ -77,7 +77,7 @@ def sliders_view(request):
     server_script = server_session(session_id=session_id.generate_session_id(),
                                    relative_urls=True,
                                    resources=None,
-                                   url='/sliders')
+                                   url='bokehproxy/sliders')
                                 #    url=bokeh_server_url)
 
     # Tip: More elaborate permission checks can be made using Django's user system, to generate (or not) bokeh session accesss tokens:
