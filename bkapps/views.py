@@ -22,24 +22,25 @@ class FloodMsmtErrorSimulator(TemplateView):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(**kwargs)
-
+        context['base_uri'] = self.request.build_absolute_uri("/").rstrip("/")
+        logging.info('$$$$$$$ base uri = {}'.format(context['base_uri']))
         app_ID = '/flood_msmt'
 
         try:
             # bk_url = '/bk_sliders_app'
 
             if settings.DEBUG:
-                bk_url = 'http://127.0.0.1:5006' + app_ID
+                bk_url = 'http://127.0.0.1' + app_ID
                 bk_script = server_session(url=bk_url,
                                             session_id=session_id.generate_session_id(),
                                             )
             else:
                 # bk_url = 'http://127.0.0.1:5006
-                bk_url = '/flood_msmt'
+                bk_url = context['base_uri'] + '/bokehproxy' + app_ID
                 # bk_script = server_document(url=bk_url, relative_urls=True, 
                 #                             resources=None)
                 bk_script = server_session(url=bk_url,
-                                           relative_urls=True,
+                                        #    relative_urls=True,
                                            resources=None,
                                            session_id=session_id.generate_session_id(),
                                            )
