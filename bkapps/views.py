@@ -57,3 +57,40 @@ class FloodMsmtErrorSimulator(TemplateView):
             logger.error(msg)
 
         return context
+
+
+def sliders_view(request):
+    # Define bokeh endpoint url
+    # bokeh_server_url = "%sbokehproxy/sliders" % (request.build_absolute_uri(location='/'))
+    bokeh_server_url = 'http://127.0.0.1:5006/sliders'
+    print('')
+    print('')
+    print('')
+    print(request.build_absolute_uri(location='/'))
+    print('')
+    print('##############')
+    print('')
+    # Generate bokeh session token so user can access plot, this is done for all logged in users per the @login_required decorator
+    # ensuring only logged in users can view plots
+
+    # Using newer bokeh server_session method vs.  deprecated bokeh.embed.autoload_server
+    # Note: session_id.generate_session_id() relies on the presence of BOKEH_SECRET_KEY defined in settings.py via an OS variable
+    server_script = server_session(None,
+                                   session_id=session_id.generate_session_id(),
+                                   url=bokeh_server_url)
+
+    # Tip: More elaborate permission checks can be made using Django's user system, to generate (or not) bokeh session accesss tokens:
+    # if user.is_authenticated() and user.has_perm("bokehdash.change_plot"):
+    #     server_session(None, session_id=....)
+    # else:
+    #     HttpResponseRedirect("You can't see this plot")
+    # Tip2: More elaborate permissions checks can also be made with other method decorators @user_passes_test, @permission_required
+    # (besides @login_reqired)
+
+    # Proceed with context and response
+    context = {
+               "graphname":"Sliders",
+               "bk_script": server_script,
+               }
+    # return render(request, 'bokehdash/bokeh_server.html', context)
+    return render(request, 'dkht/bokeh_post.html', context)
