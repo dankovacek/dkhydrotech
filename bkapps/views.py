@@ -74,7 +74,7 @@ def sliders_view(request):
 
     # Using newer bokeh server_session method vs.  deprecated bokeh.embed.autoload_server
     # Note: session_id.generate_session_id() relies on the presence of BOKEH_SECRET_KEY defined in settings.py via an OS variable
-    server_script = server_session(#session_id=session_id.generate_session_id(),
+    server_script = server_session(session_id=session_id.generate_session_id(),
                                    relative_urls=True,
                                    resources=None,
                                    url='/bokehproxy/sliders')
