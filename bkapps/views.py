@@ -23,7 +23,7 @@ class FloodMsmtErrorSimulator(TemplateView):
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        app_ID = '/flood_msmt_error_simulator'
+        app_ID = '/flood_msmt'
 
         try:
             # bk_url = '/bk_sliders_app'
