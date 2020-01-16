@@ -81,4 +81,8 @@ blockquote {
 .contact-list {
 	margin: 0 auto 0 auto;
 }
-
+/*
+.shadow {
+    -webkit-filter: drop-shadow( 3px 3px 3px rgba(0,0,0,0.6) );
+    filter: drop-shadow( 3px 3px 3px rgba(0,0,0,0.6) ); /* Same syntax as box-shadow */
+} */
