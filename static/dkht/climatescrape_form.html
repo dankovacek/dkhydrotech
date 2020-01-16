@@ -1,0 +1,53 @@
+{% extends "dkht/base.html" %}
+{% load static %}
+{% block content %}
+{{ block.super }}
+
+<div id="background-image">
+  <div class="row">
+    <div class="col s12">
+      <h3>Canadian Climate Data Wrangler</h3>
+      <h4>Search and Acquire Formatted Historical Climate Data</h4>
+      <blockquote class="subheader flow-text"><em>2018-10-04 Added Feature: </em> Download the annual maximum
+        daily precipitation series!</blockquote>
+      <p class="subheader flow-text">Enter the lat/lon (in decimal degrees),
+        choose a search radius, and submit. Note that your <em>longitude should be negative</em>.
+        E.g. Vancouver, BC is located at 49.25, -123.12.
+        The code will return all stations within
+        the specified search radius from the target location. Results of the search
+        are summarized in the subsequent view where you can download the resultant
+        measured records in their entirety.</p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col s12 m8 push-m2 l6 push-l3 green lighten-4">
+      <div class="row">
+        <div class="col s12">
+          <h5 class="flow-text">Search Parameters</h5>
+          <form method="POST" class="post-form" enctype="multipart/form-data">{% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn green darken-2 waves-effect waves-light" onclick="Materialize.toast('Search Submitted!', 4000)">Submit</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col s12">
+      <p class="flow-text">The largest search
+        radius is currently set to 50km, and the available frequency is limited to daily records.
+        If you'd like a custom query, either for a larger search area, for hourly climate data, or for any other
+        large
+        data manipulation tasks, feel free to <a href="{% url 'dkht:contact-view' %}">contact me</a>.
+        I can also be reached via the LinkedIn, Github, and Google+ links in the footer.</p>
+    </div>
+  </div>
+
+  {% block payment %}
+  {% include 'dkht/donation-form.html' %}
+  {% endblock payment %}
+
+</div>
+
+{% endblock content %}
