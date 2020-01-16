@@ -61,7 +61,7 @@ class FloodMsmtErrorSimulator(TemplateView):
 def sliders_view(request):
     # Define bokeh endpoint url
     # bokeh_server_url = "%sbokehproxy/sliders" % (request.build_absolute_uri(location='/'))
-    bokeh_server_url = 'http://127.0.0.1:5006/bokehproxy/sliders'
+    bokeh_server_url = request.build_absolute_uri(location='/') + '/bokehproxy/sliders'
     print('')
     print('')
     print('')
