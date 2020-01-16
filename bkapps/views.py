@@ -22,13 +22,16 @@ class DataVizDetail(TemplateView):
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(**kwargs)
 
+        app_ID = '/' + self.kwargs['app_ID']
+
         try:
-            bk_url = '/bk_sliders_app'
+            # bk_url = '/bk_sliders_app'
 
             if settings.DEBUG:
-                bk_script = server_document(url='http://127.0.0.1:5006' + bk_url)
+                bk_url = 'http://127.0.0.1:5006' + app_ID
+                bk_script = server_document(url=bk_url)
             else:
-                bk_script = server_document(url=bk_url, relative_urls=True, 
+                bk_script = server_document(url=app_ID, relative_urls=True, 
                                             resources=None)
 
             logging.info('views url = {}'.format(bk_url))
