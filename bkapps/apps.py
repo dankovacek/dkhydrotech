@@ -72,11 +72,13 @@ def bk_worker():
         #                 allow_websocket_origin=["www.dkhydrotech.com"],
         #                 use_xheaders=x_headers
         #                 )
-
+        ws_origins = ['www.dkhydrotech.com', 'dkhydrotech.com']
+        # patterns = []
         bokeh_tornado = BokehTornado({'/bk_sliders_app': bk_sliders.app,
                                       '/msmt_error_simulation': msmt_sim_app.app},
                                       prefix='http://127.0.0.1:5006',
-                                      extra_websocket_origins=['www.dkhydrotech.com'],
+                                      extra_patterns='http://127.0.0.1:5006'
+                                      extra_websocket_origins=ws_origins,
                                       )
 
         bokeh_http = HTTPServer(bokeh_tornado)
