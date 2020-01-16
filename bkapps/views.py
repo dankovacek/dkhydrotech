@@ -7,7 +7,7 @@ from bokeh.embed import server_document
 from bokeh.util import session_id
 from bokeh.embed import server_session
 
-# from . import bk_config
+from . import bk_config
 
 import logging
 logger = logging.getLogger(__name__)
@@ -34,7 +34,7 @@ class FloodMsmtErrorSimulator(TemplateView):
                                             session_id=session_id.generate_session_id(),
                                             )
             else:
-                bk_url = app_ID
+                bk_url = 'bokehproxy' + app_ID
                 # bk_script = server_document(url=bk_url, relative_urls=True, 
                 #                             resources=None)
                 bk_script = server_session(url=bk_url,
