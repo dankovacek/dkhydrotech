@@ -2,7 +2,7 @@ from django.urls import path
 
 from . import views
 
-app_name='bokeh_apps'
+app_name = 'bokeh_apps'
 
 urlpatterns = [
     path('sliders', views.sliders_view, name='sliders'),
