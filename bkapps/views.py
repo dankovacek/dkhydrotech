@@ -39,8 +39,8 @@ class FloodMsmtErrorSimulator(TemplateView):
                 bk_url = context['base_uri'] + '/bokehproxy' + app_ID
                 # bk_script = server_document(url=bk_url, relative_urls=True, 
                 #                             resources=None)
-                bk_script = server_session(url=bk_url,
-                                        #    relative_urls=True,
+                bk_script = server_session(url='/bokehproxy/flood_msmt',#bk_url,
+                                           relative_urls=True,
                                            resources=None,
                                            session_id=session_id.generate_session_id(),
                                            )
