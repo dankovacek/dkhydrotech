@@ -23,7 +23,6 @@ class FloodMsmtErrorSimulator(TemplateView):
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(**kwargs)
         context['base_uri'] = self.request.build_absolute_uri("/").rstrip("/")
-        logging.info('$$$$$$$ base uri = {}'.format(context['base_uri']))
         app_ID = '/flood_msmt'
 
         try:
@@ -47,7 +46,7 @@ class FloodMsmtErrorSimulator(TemplateView):
                                            session_id=session_id.generate_session_id(),
                                            )
 
-            logging.info('views url = {}'.format(bk_url))
+            logging.info('bokeh_script = {}'.format(bk_script))
             logging.error('Server document generated...')
 
             context['bk_script'] = bk_script
