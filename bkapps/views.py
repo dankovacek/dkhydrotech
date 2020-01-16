@@ -83,7 +83,7 @@ def sliders_view(request):
         server_script = server_session(session_id=session_id.generate_session_id(),
                                     resources=None,
                                     relative_urls=False,
-                                    url='http://www.dkhydrotech.com:5006/bokehproxy/sliders')
+                                    url='http://www.dkhydrotech.com:8000/bokehproxy/sliders')
         
     # Tip: More elaborate permission checks can be made using Django's user system, to generate (or not) bokeh session accesss tokens:
     # if user.is_authenticated() and user.has_perm("bokehdash.change_plot"):
