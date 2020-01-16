@@ -30,7 +30,7 @@ class FloodMsmtErrorSimulator(TemplateView):
             # bk_url = '/bk_sliders_app'
 
             if settings.DEBUG:
-                bk_url = 'http://127.0.0.1' + app_ID
+                bk_url = 'http://127.0.0.1:5006' + app_ID
                 bk_script = server_session(url=bk_url,
                                             session_id=session_id.generate_session_id(),
                                             )

@@ -11,6 +11,8 @@ import logging
 
 from django.conf import settings
 
+# settings.configure()
+
 import sqlite3
 import scipy.spatial
 
@@ -19,11 +21,15 @@ from stations import IDS_AND_DAS, STATIONS_DF
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 # This BASE_DIR is for my personal system, where the DB
 # is saved two levels up in the file directory
-if settings.DEBUG:
-    DB_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(BASE_DIR)))), 'hydat_db/')
-else:
-    DB_DIR = os.path.join(os.path.dirname(BASE_DIR), 'hydat_db/')
-    
+# if settings.DEBUG:
+#     DB_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(BASE_DIR)))), 'hydat_db/')
+# else:
+#     DB_DIR = os.path.join(os.path.dirname(BASE_DIR), 'hydat_db/')
+
+DB_DIR = os.path.join(os.path.dirname(BASE_DIR), 'hydat_db/')
+logging.error('######## DB_DIR = ', DB_DIR)
+
+# DB_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(BASE_DIR)))), 'hydat_db/')
 # If you used the Download.py function to obtain the Hydat database file and docs,
 # the line below should be used to define the DB directory instead of the one above
 # DB_DIR = os.path.join(BASE_DIR, 'hydat_db/')
