@@ -74,12 +74,17 @@ def sliders_view(request):
 
     # Using newer bokeh server_session method vs.  deprecated bokeh.embed.autoload_server
     # Note: session_id.generate_session_id() relies on the presence of BOKEH_SECRET_KEY defined in settings.py via an OS variable
-    server_script = server_session(session_id=session_id.generate_session_id(),
-                                   relative_urls=True,
-                                   resources=None,
-                                   url='/bokehproxy/sliders')
-                                #    url=bokeh_server_url)
-
+    if settings.DEBUG:
+        server_script = server_session(session_id=session_id.generate_session_id(),
+                                    resources=None,
+                                    url='http://127.0.0.1:5006/sliders')
+                                    #    url=bokeh_server_url)
+    else:
+        server_script = server_session(session_id=session_id.generate_session_id(),
+                                    resources=None,
+                                    relative_urls=False,
+                                    url='http://127.0.0.1:5006/sliders')
+        
     # Tip: More elaborate permission checks can be made using Django's user system, to generate (or not) bokeh session accesss tokens:
     # if user.is_authenticated() and user.has_perm("bokehdash.change_plot"):
     #     server_session(None, session_id=....)
