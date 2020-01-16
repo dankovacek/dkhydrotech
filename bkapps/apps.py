@@ -77,7 +77,7 @@ def bk_worker():
         bokeh_tornado = BokehTornado({'/bk_sliders_app': bk_sliders.app,
                                       '/msmt_error_simulation': msmt_sim_app.app},
                                       prefix='http://127.0.0.1:5006',
-                                      extra_patterns='http://127.0.0.1:5006'
+                                      extra_patterns='http://127.0.0.1:5006',
                                       extra_websocket_origins=ws_origins,
                                       )
 
