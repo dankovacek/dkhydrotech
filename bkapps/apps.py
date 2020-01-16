@@ -46,6 +46,7 @@ def bk_worker():
     x_headers = True
 
     logging.error('starting Bokeh server...')
+    asyncio.set_event_loop(asyncio.new_event_loop())
     if settings.DEBUG:
         # server = Server({'/bk_sliders_app': bk_sliders.app,
         #                 '/msmt_error_simulation': msmt_sim_app.app},
@@ -53,7 +54,6 @@ def bk_worker():
         #                 allow_websocket_origin=['127.0.0.1:8000'],
         #                 num_procs=3
         # )
-        asyncio.set_event_loop(asyncio.new_event_loop())
 
         bokeh_tornado = BokehTornado({'/bk_sliders_app': bk_sliders.app,
                                       '/msmt_error_simulation': msmt_sim_app.app},
@@ -65,13 +65,25 @@ def bk_worker():
         server.start()
         server.io_loop.start()
     else:    
-        server = Server({'/bk_sliders_app': bk_sliders.app},
-                        io_loop=IOLoop(),
-                        address=bk_config.server['address'],
-                        port=bk_config.server['port'],
-                        allow_websocket_origin=["www.dkhydrotech.com"],
-                        use_xheaders=x_headers
-                        )
+        # server = Server({'/bk_sliders_app': bk_sliders.app},
+        #                 io_loop=IOLoop(),
+        #                 address=bk_config.server['address'],
+        #                 port=bk_config.server['port'],
+        #                 allow_websocket_origin=["www.dkhydrotech.com"],
+        #                 use_xheaders=x_headers
+        #                 )
+
+        bokeh_tornado = BokehTornado({'/bk_sliders_app': bk_sliders.app,
+                                      '/msmt_error_simulation': msmt_sim_app.app},
+                                      extra_websocket_origins=['www.dkhydrotech.com'],
+                                      use_xheaders=x_headers)
+                                      
+        bokeh_http = HTTPServer(bokeh_tornado)
+        bokeh_http.add_sockets(sockets)
+
+        server = BaseServer(IOLoop.current(), bokeh_tornado, bokeh_http)
+        server.start()
+        server.io_loop.start()
 
     logging.info('starting server ...')
 
