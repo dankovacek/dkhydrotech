@@ -75,20 +75,22 @@ def bk_worker():
 
         bokeh_tornado = BokehTornado({'/bk_sliders_app': bk_sliders.app,
                                       '/msmt_error_simulation': msmt_sim_app.app},
-                                    #   extra_websocket_origins=['www.dkhydrotech.com'],
-                                      allow_websocket_origins=['www.dkhydrotech.com'],
-                                      address=bk_config.server['address'],
-                                      port=bk_config.server['port'],
-                                      use_xheaders=x_headers)
+                                      extra_websocket_origins=['www.dkhydrotech.com'],
+                                      )
 
         bokeh_http = HTTPServer(bokeh_tornado)
         bokeh_http.add_sockets(sockets)
 
-        server = BaseServer(IOLoop.current(), bokeh_tornado, bokeh_http)
+        server = BaseServer(IOLoop.current(), 
+                            bokeh_tornado, 
+                            bokeh_http,
+                            address=bk_config.server['address'],
+                            port=bk_config.server['port'],
+                            use_xheaders=x_headers)
         server.start()
         server.io_loop.start()
 
-    logging.info('starting server ...')
+        logging.info('######## Server started...            +++++++++++')
 
     try:
         server.start()
