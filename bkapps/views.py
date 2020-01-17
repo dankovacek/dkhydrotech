@@ -25,10 +25,6 @@ class BokehView(TemplateView):
     
         app_ID = self.kwargs['app_ID']
 
-        print(app_ID)
-        print(app_ID)
-        print(app_ID)
-        print(app_ID)
         logging.error('@@@@@@@@@@@ pp id = {}'.format(app_ID))
         
         try:
@@ -40,11 +36,6 @@ class BokehView(TemplateView):
                                             session_id=session_id.generate_session_id(),
                                             )
             else:
-                # bk_url = 'http://127.0.0.1:5006/bokehproxy' + app_ID
-                # bk_url = context['base_uri'] + '/bokehproxy' + app_ID
-                # bk_url = app_ID
-                # bk_script = server_document(url=bk_url, relative_urls=True, 
-                #                             resources=None)
                 bk_script = server_session(url='/bokeh/' + app_ID,
                                            relative_urls=True,
                                            resources=None,
