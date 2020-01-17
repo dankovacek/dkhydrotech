@@ -46,17 +46,12 @@ class BokehView(TemplateView):
                 # bk_script = server_document(url=bk_url, relative_urls=True, 
                 #                             resources=None)
                 bk_script = server_session(url='/bokehproxy/' + app_ID,
-                                           relative_urls=True,
+                                           relative_urls=False,
                                            resources=None,
                                            session_id=session_id.generate_session_id(),
                                            )
 
             context['bk_script'] = bk_script
-            logging.info(bk_script)
-            logging.info(bk_script)
-            logging.info(bk_script)
-            logging.info(bk_script)
-            logging.info(bk_script)
 
         except Exception as e:
             msg = "Uh oh.  Richard, whatja do??: {}".format(e)
