@@ -21,9 +21,15 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 # is saved two levels up in the file directory\
 try:
     DB_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(BASE_DIR)))), 'hydat_db/')
-except ImportError:
-    print('Debug=False in settings.')
+except FileNotFoundError as e:
+    logging.error('Debug=False in settings.')
+    print(e)
+
+try:
     DB_DIR = os.path.join(os.path.dirname(BASE_DIR), 'hydat_db/')
+except FileNotFoundError as e:
+    logging.error('Debug=False in settings.')
+    print(e)
 
 # DB_DIR = os.path.join(os.path.dirname(BASE_DIR), 'hydat_db/')
 # DB_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(BASE_DIR)))), 'hydat_db/')
