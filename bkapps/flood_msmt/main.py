@@ -296,7 +296,7 @@ station_name_input = AutocompleteInput(
     value=IDS_TO_NAMES['08MH016'], min_characters=3)
 
 simulation_number_input = Spinner(
-    high=1000, low=1, step=1, value=50, title="Number of Simulations",
+    high=150, low=10, step=1, value=30, title="Number of Simulations",
 )
 
 sample_size_input = Spinner(
