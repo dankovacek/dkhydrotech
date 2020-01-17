@@ -20,11 +20,11 @@ class BokehView(TemplateView):
     # model = Entry
     template_name = "dkht/bokeh_post.html"
 
-    apps_dict = {'flood_msmt_error_simulaton': 'flood_msmt',
-                'sliders': 'sliders'}
-
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(**kwargs)
+
+        apps_dict = {'flood_msmt_error_simulaton': 'flood_msmt',
+                'sliders': 'sliders'}
     
         app_ID = apps_dict[self.kwargs['app_ID']]
 
