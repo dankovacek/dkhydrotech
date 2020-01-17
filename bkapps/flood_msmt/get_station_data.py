@@ -19,24 +19,9 @@ from stations import IDS_AND_DAS, STATIONS_DF
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 # This BASE_DIR is for my personal system, where the DB
 # is saved two levels up in the file directory\
-try:
-    DB_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(BASE_DIR)))), 'hydat_db/')
-except FileNotFoundError as e:
-    logging.error('Debug=False in settings.')
-    print(e)
 
-try:
-    DB_DIR = os.path.join(os.path.dirname(os.path.dirname(BASE_DIR)), 'db/hydat_db/')
-except FileNotFoundError as e:
-    logging.error('Debug=False in settings.')
-    print(e)
-
-# DB_DIR = os.path.join(os.path.dirname(BASE_DIR), 'hydat_db/')
-# DB_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(BASE_DIR)))), 'hydat_db/')
-
-# If you used the Download.py function to obtain the Hydat database file and docs,
-# the line below should be used to define the DB directory instead of the one above
-# DB_DIR = os.path.join(BASE_DIR, 'hydat_db/')
+DB_PRODUCTION_DIR = os.path.join(os.path.dirname(os.path.dirname(BASE_DIR)), 'db/hydat_db/')
+DB_DEV_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(BASE_DIR)))), 'hydat_db/')
 
 day_labels = {}
 flag_labels = {}
@@ -63,10 +48,17 @@ def create_connection():
     :param db_file: database file
     :return: Connection object or None
     """
-    db_filename = get_newest_db_file([f for f in os.listdir(DB_DIR) if '.sqlite3' in f])
-    
     try:
-        conn = sqlite3.connect(db_filename)
+        files_list = os.listdir(DB_PRODUCTION_DIR)
+        DB_DIR = DB_PRODUCTION_DIR
+    except FileNotFoundError as e:
+        print("###############")
+        print("Running in Development")
+        files_list = os.listdir(DB_DEV_DIR)
+        DB_DIR = DB_DEV_DIR    
+    try:
+        db_file_path = DB_DIR + get_newest_db_file([f for f in files_list if '.sqlite3' in f])
+        conn = sqlite3.connect(db_file_path)
         return conn
     except sqlite3.Error as e:
         logging.warn('Sqlite3 connection Error: {}'.format(e))
@@ -84,7 +76,7 @@ def get_newest_db_file(files):
         # sort the list in ascending order and return
         # the last entry (latest date)
         newest_file = sorted(files)[-1]
-    return DB_DIR + newest_file
+    return newest_file
 
 
 def get_daily_UR(station):
