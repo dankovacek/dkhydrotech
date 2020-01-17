@@ -5,6 +5,5 @@ from . import views
 app_name = 'bokeh_apps'
 
 urlpatterns = [
-    path('sliders', views.sliders_view.as_view(), name='sliders'),
-    path('flood_msmt_error_simulaton', views.FloodMsmtErrorSimulator.as_view(), name="flood_msmt_err_sim"),
+    path('<app_ID>', views.SlidersView.as_view(), name='bokeh_views'),
 ]
