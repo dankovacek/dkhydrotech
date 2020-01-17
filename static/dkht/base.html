@@ -43,16 +43,28 @@
 		<li>
 			<a href="{% url 'dkht:climate-scrape' %}">Climate Data Wrangler</a>
 		</li>
+		<li>
+			<a href="{% url 'bkapps:bokeh-flood-msmt' %}">Flood Msmt. Explorer</a>
+		</li>
+		<li>
+			<a href="{% url 'bkapps:bokeh-sliders' %}">Bokeh Demo App</a>
+		</li>
 
 	</ul>
 	<ul id="dropdown2" class="dropdown-content">
 		<li>
 			<a href="{% url 'dkht:climate-scrape' %}">Climate Data Wrangler</a>
 		</li>
+		<li>
+			<a href="{% url 'bkapps:bokeh-flood-msmt' %}">Flood Measurement Explorer</a>
+		</li>
+		<li>
+			<a href="{% url 'bkapps:bokeh-sliders' %}">Bokeh Demo App</a>
+		</li>
 
 	</ul>
 
-	<nav class="grey lighten-3">
+	<nav class="grey lighten-2">
 		<div class="nav-wrapper">
 
 			<a href="{% url 'dkht:main-view' %}" class="brand-logo svg-logo-wrapper hide-on-med-and-down">
@@ -119,7 +131,7 @@
 
 	{% block content %}{% endblock content %}
 
-	<footer class="page-footer grey lighten-3">
+	<footer class="page-footer grey lighten-2">
 		<div class="container">
 			<div class="row">
 				<div class="col s12 m4 center">
@@ -134,7 +146,8 @@
 				</div>
 				<div class="col s12 m4 center">
 					<span class="flow-text">
-						<a href="https://google.com/+DanKovacek" class="social">GOOGLE +</a>
+						<!-- <a href="https://google.com/+DanKovacek" class="social">GOOGLE +</a> -->
+						<a href="{% url 'dkht:contact-view' %}" class="social">CONTACT</a>
 					</span>
 				</div>
 			</div>
@@ -144,7 +157,7 @@
 				<div class="col 16 s12 center license">
 					<span class="flow-text">
 						<h6>
-							<a href="#">COPYRIGHT &#9400; 2017 DK Hydrotech. Vancouver, B.C. </a>
+							<a href="#">COPYRIGHT &#9400; 2020 DK Hydrotech. Vancouver, B.C. </a>
 						</h6>
 					</span>
 				</div>
