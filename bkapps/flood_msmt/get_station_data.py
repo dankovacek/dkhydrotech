@@ -26,7 +26,7 @@ except FileNotFoundError as e:
     print(e)
 
 try:
-    DB_DIR = os.path.join(os.path.dirname(os.path.dirname(BASE_DIR)), 'db/')
+    DB_DIR = os.path.join(os.path.dirname(os.path.dirname(BASE_DIR)), 'db/hydat_db/')
 except FileNotFoundError as e:
     logging.error('Debug=False in settings.')
     print(e)
