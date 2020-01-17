@@ -11,8 +11,6 @@ import logging
 
 from django.conf import settings
 
-# settings.configure()
-
 import sqlite3
 import scipy.spatial
 
@@ -20,14 +18,15 @@ from stations import IDS_AND_DAS, STATIONS_DF
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 # This BASE_DIR is for my personal system, where the DB
-# is saved two levels up in the file directory
-# if settings.DEBUG:
-#     DB_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(BASE_DIR)))), 'hydat_db/')
-# else:
-#     DB_DIR = os.path.join(os.path.dirname(BASE_DIR), 'hydat_db/')
+# is saved two levels up in the file directory\
+try:
+    DB_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(BASE_DIR)))), 'hydat_db/')
+except ImportError:
+    print('Debug=False in settings.')
+    DB_DIR = os.path.join(os.path.dirname(BASE_DIR), 'hydat_db/')
 
 # DB_DIR = os.path.join(os.path.dirname(BASE_DIR), 'hydat_db/')
-DB_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(BASE_DIR)))), 'hydat_db/')
+# DB_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(BASE_DIR)))), 'hydat_db/')
 logging.error('######## DB_DIR = ', DB_DIR)
 
 # If you used the Download.py function to obtain the Hydat database file and docs,
@@ -61,7 +60,6 @@ def create_connection():
     """
     db_filename = get_newest_db_file([f for f in os.listdir(DB_DIR) if '.sqlite3' in f])
     
-    print(db_filename)
     try:
         conn = sqlite3.connect(db_filename)
         return conn
@@ -81,7 +79,7 @@ def get_newest_db_file(files):
         # sort the list in ascending order and return
         # the last entry (latest date)
         newest_file = sorted(files)[-1]
-    return DB_DIR + '/' + newest_file
+    return DB_DIR + newest_file
 
 
 def get_daily_UR(station):

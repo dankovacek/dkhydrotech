@@ -1,4 +1,10 @@
 
+from django.apps import AppConfig
+
+
+class BokehApps(AppConfig):
+    name = 'bkapps'
+    verbose_name = "Bokeh Apps"
 
 
 
