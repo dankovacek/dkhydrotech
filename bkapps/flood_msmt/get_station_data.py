@@ -33,7 +33,6 @@ except FileNotFoundError as e:
 
 # DB_DIR = os.path.join(os.path.dirname(BASE_DIR), 'hydat_db/')
 # DB_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(BASE_DIR)))), 'hydat_db/')
-logging.error('######## DB_DIR = ', DB_DIR)
 
 # If you used the Download.py function to obtain the Hydat database file and docs,
 # the line below should be used to define the DB directory instead of the one above

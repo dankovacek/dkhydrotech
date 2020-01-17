@@ -24,11 +24,8 @@ class BokehView(TemplateView):
         context = super().get_context_data(**kwargs)
     
         app_ID = self.kwargs['app_ID']
-
-        logging.error('@@@@@@@@@@@ pp id = {}'.format(app_ID))
         
         try:
-
             if settings.DEBUG:
                 bk_url = 'http://127.0.0.1:5006/' + app_ID
                 bk_script = server_session(url=bk_url,
