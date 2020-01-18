@@ -192,7 +192,6 @@ def run_ffa_simulation(data, n_simulations):
     return model
 
 
-@lru_cache()
 def get_data_and_initialize_dataframe():
     station_name = station_name_input.value.split(':')[-1].strip()
 
@@ -212,7 +211,6 @@ def get_data_and_initialize_dataframe():
     df = fit_LP3(df)
     
     return df
-
 
 def update():
     
@@ -419,8 +417,8 @@ qq_plot = figure(title="Q-Q Plot",
                 height=300,
                 output_backend="webgl")
 
-qq_plot.xaxis.axis_label = "Empirical"
-qq_plot.yaxis.axis_label = "Theoretical"
+qq_plot.xaxis.axis_label = "Empirical Flow [m³/s]"
+qq_plot.yaxis.axis_label = "Theoretical Flow [m³/s]"
 
 qq_plot.circle('PEAK', 'lp3_quantiles_theoretical', source=peak_source)
 qq_plot.line('PEAK', 'PEAK', source=peak_source, legend_label='1:1',
@@ -434,8 +432,8 @@ pp_plot = figure(title="P-P Plot",
                 height=300,
                 output_backend="webgl")
 
-pp_plot.xaxis.axis_label = "Empirical"
-pp_plot.yaxis.axis_label = "Theoretical"
+pp_plot.xaxis.axis_label = "Empirical P(x)"
+pp_plot.yaxis.axis_label = "Theoretical P(x)"
 
 pp_plot.circle('empirical_cdf', 'theoretical_cdf', source=peak_source)
 pp_plot.line('empirical_cdf', 'empirical_cdf', source=peak_source, legend_label='1:1',
@@ -447,9 +445,9 @@ pp_plot.legend.location = 'top_left'
 layout = column(station_name_input,
                 # sample_size_input,
                 row(simulation_number_input, msmt_error_input, toggle_button),
-                ffa_info,
                 error_info,
                 ts_plot,
+                ffa_info,
                 ffa_plot,
                 # row(qq_plot, pp_plot)
                 )
