@@ -246,6 +246,7 @@ def update():
 
     # update the peak flow data source
     # peak_data_reorg
+    
     peak_source.data = peak_source.from_df(data)
     peak_sim_source.data = peak_sim_source.from_df(data)
     data_flag_filter = data[~data['SYMBOL'].isin([None, ' '])]
@@ -288,9 +289,7 @@ def update_sim(foo):
     data = calculate_Tr(peak_sim,
                         data['YEAR'].values.flatten(),
                         data['SYMBOL'].values.flatten())
-
-    data = data.sort_values('Tr')
-    
+   
     peak_sim_source.data = data
 
 # configure Bokeh Inputs, data sources, and plots
@@ -452,7 +451,7 @@ layout = column(station_name_input,
                 error_info,
                 ts_plot,
                 ffa_plot,
-                row(qq_plot, pp_plot)
+                # row(qq_plot, pp_plot)
                 )
 
 curdoc().add_root(layout)
