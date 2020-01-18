@@ -70,7 +70,6 @@ def get_newest_db_file(files):
         print('No database file found.  Check the database path.')
         newest_file = None
     elif len(files) == 1:
-        print('1 file found')
         newest_file = files[0]
     else:
         # sort the list in ascending order and return

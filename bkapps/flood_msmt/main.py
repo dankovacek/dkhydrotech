@@ -39,8 +39,8 @@ def get_stats(data, param):
 def norm_ppf(x):
     if x == 1.0:
         x += 0.001
-    if x < 0.0001:
-        x == 0.001
+    if x < 0.001:
+        x = 0.001
     return st.norm.ppf(1-(1/x))
 
 def update_UI_text_output(n_years):
@@ -48,7 +48,6 @@ def update_UI_text_output(n_years):
     out of a total {} years of record.  \n
     Coloured bands represent the 67 and 95 per cent confidence intervals, respectively.""".format(
         simulation_number_input.value, n_years, n_years)
-
     error_info.text = ""
 
 
@@ -59,14 +58,13 @@ def set_up_model(df):
     model.set_index('Tr', inplace=True)
     model['z'] = list(map(norm_ppf, model.index.values))
 
-    # # z_model = np.array(list(map(norm_ppf, df.index.values)))
-    # z_empirical = np.array(list(map(norm_ppf, model.index)))
-
-    lp3_model = 2 / log_skew * \
+    lp3_calc = 2 / log_skew * \
         (np.power((model['z'] - log_skew / 6) * log_skew / 6 + 1, 3) - 1)
 
     model['lp3_quantiles_model'] = np.power(10, np.mean(
-        np.log10(df['PEAK'])) + lp3_model*np.std(np.log10(df['PEAK'])))
+        np.log10(df['PEAK'])) + lp3_calc*np.std(np.log10(df['PEAK'])))
+
+    print(model.head())
 
     return model
 
@@ -75,41 +73,6 @@ def randomize_msmt_err(val):
     msmt_error = msmt_error_input.value / 100.
     return val * np.random.uniform(low=1. - msmt_error, 
                              high=1. + msmt_error)
-
-
-def fit_LP3(df):
-    ### 
-    # First, fit an LP3 to the raw measured data.
-    # This will be our basis of comparison
-    # plot the log-pearson fit to the entire dataset
-    log_skew = st.skew(np.log10(df['PEAK']))
-    z_model = np.array(list(map(norm_ppf, df.index.values)))
-    z_empirical = np.array(list(map(norm_ppf, df['Tr'])))
-
-    lp3_model = 2 / log_skew * \
-        (np.power((z_model - log_skew / 6) * log_skew / 6 + 1, 3) - 1)
-
-    lp3_empirical = 2 / log_skew * \
-        (np.power((z_empirical - log_skew/6)*log_skew/6 + 1, 3) - 1)
-
-    df['lp3_quantiles_model'] = np.power(10, np.mean(
-        np.log10(df['PEAK'])) + lp3_model*np.std(np.log10(df['PEAK'])))
-
-    df['lp3_quantiles_theoretical'] = np.power(10, np.mean(
-        np.log10(df['PEAK'])) + lp3_empirical*np.std(np.log10(df['PEAK'])))
-
-    # pearson_fit_params = st.pearson3.fit(np.log(data['PEAK']))
-
-    # reverse the order for proper plotting on P-P plot
-    df['theoretical_cdf'] = st.pearson3.cdf(z_empirical, skew=log_skew)[::-1]
-
-    # need to remember why I've added 1 to the denominator
-    # has to do with sample vs. population?
-    df['empirical_cdf'] = df['rank'] / (len(df) + 1)
-
-    df['Mean'] = np.mean(df['PEAK'])
-
-    return df
 
 
 def log_mapper(val):
@@ -123,6 +86,36 @@ def LP3_calc(row, z):
     lp3_model = np.power(10, np.mean(
         np.log10(row)) + lp3 * np.std(np.log10(row)))
     return lp3_model
+
+def fit_LP3(df):
+    ### 
+    # First, fit an LP3 to the raw measured data.
+    # This will be our basis of comparison
+    # plot the log-pearson fit to the entire dataset
+
+    z_model = np.array(list(map(norm_ppf, (len(df) + 1) / df['rank'])))
+    z_empirical = np.array(list(map(norm_ppf, df['Tr'])))
+
+    lp3_model = LP3_calc(df['PEAK'], z_model)
+    lp3_empirical = LP3_calc(df['PEAK'], z_empirical)
+
+    df['lp3_quantiles_model'] = np.power(10, np.mean(
+        np.log10(df['PEAK'])) + lp3_model*np.std(np.log10(df['PEAK'])))
+
+    df['lp3_quantiles_empirical'] = np.power(10, np.mean(
+        np.log10(df['PEAK'])) + lp3_empirical*np.std(np.log10(df['PEAK'])))
+
+    # reverse the order for proper plotting on P-P plot
+    df['theoretical_cdf'] = st.pearson3.cdf(z_empirical, skew=st.skew(np.log10(df['PEAK'])))[::-1]
+
+    # need to remember why I've added 1 to the denominator
+    # has to do with sample vs. population (degrees of freedom)?
+    df['empirical_cdf'] = df['rank'] / (len(df) + 1)
+
+    df['Mean'] = np.mean(df['PEAK'])
+
+    return df
+
 
 def calculate_Tr(peak_values, years, flags, correction_factor=None):
    
@@ -145,6 +138,7 @@ def calculate_Tr(peak_values, years, flags, correction_factor=None):
     n_sample = len(peak_values)
 
     data['Tr'] = (n_sample + 1) / data['rank'].values.flatten()
+    data['z'] = np.array(list(map(norm_ppf, data['Tr'])))
 
     return data
 
@@ -168,7 +162,7 @@ def run_ffa_simulation(data, n_simulations):
     # For the measurement uncertainty simulation, use all points
     # instead of sampling from sample subset
 
-    selection = calculate_Tr(peak_values, years, flags)
+    data = calculate_Tr(peak_values, years, flags)
 
     model = set_up_model(data)
 
@@ -187,7 +181,7 @@ def run_ffa_simulation(data, n_simulations):
     model['lower_2s_bound'] = np.apply_along_axis(calculate_percentile, 0, lp3_model, p=95.)
     model['upper_2s_bound'] = np.apply_along_axis(calculate_percentile, 0, lp3_model, p=5.)
     model['expected_value'] = np.apply_along_axis(calculate_percentile, 0, lp3_model, p=50.)
-    model['mean_value'] = np.apply_along_axis(calculate_mean, 0, lp3_model)
+    model['mean'] = np.apply_along_axis(calculate_mean, 0, lp3_model)
 
     return model
 
@@ -242,9 +236,7 @@ def update():
     print("Time for {:.0f} simulations = {:0.2f} s".format(
         n_simulations, time_end - time0))
 
-    # update the peak flow data source
-    # peak_data_reorg
-    
+    # update the peak flow data source   
     peak_source.data = peak_source.from_df(data)
     peak_sim_source.data = peak_sim_source.from_df(data)
     data_flag_filter = data[~data['SYMBOL'].isin([None, ' '])]
@@ -386,7 +378,7 @@ ffa_plot.line('Tr', 'lp3_quantiles_model', color='red',
             source=distribution_source,
             legend_label='Log-Pearson3 (Measured Data)')
 
-ffa_plot.line('Tr', 'mean_value', color='navy',
+ffa_plot.line('Tr', 'mean', color='navy',
             line_dash='dotted',
             source=distribution_source,
             legend_label='Mean Simulation')
