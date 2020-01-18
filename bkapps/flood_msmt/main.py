@@ -7,10 +7,12 @@ import pandas as pd
 import time
 import param
 
+from functools import lru_cache
+
 import scipy.special
 import scipy.stats as st
 
-from multiprocessing import Pool
+from numba import jit
 
 from bokeh.layouts import row, column
 from bokeh.models import CustomJS, Slider, Band, Spinner
@@ -26,7 +28,6 @@ from get_station_data import get_daily_UR, get_annual_inst_peaks
 from stations import IDS_AND_DAS, STATIONS_DF, IDS_TO_NAMES, NAMES_TO_IDS
 
 
-
 def get_stats(data, param):
     mean = data[param].mean()
     var = np.var(data[param])
@@ -34,23 +35,12 @@ def get_stats(data, param):
     skew = st.skew(data[param])
     return mean, var, stdev, skew
 
-def calculate_Tr(data, param, correction_factor=None):
-    if correction_factor is None:
-        correction_factor = 1
-
-    data.loc[:, 'rank'] = data[param].rank(ascending=False, method='first')
-    data.loc[:, 'logQ'] = list(map(math.log, data[param]))
-
-    data.loc[:, 'Tr'] = (len(data) + 1) / \
-        data['rank'].astype(int).round(1).copy()
-
-    data = data.sort_values(by='rank', ascending=False)
-
-    return data 
 
 def norm_ppf(x):
     if x == 1.0:
         x += 0.001
+    if x < 0.0001:
+        x == 0.001
     return st.norm.ppf(1-(1/x))
 
 def update_UI_text_output(n_years):
@@ -60,26 +50,6 @@ def update_UI_text_output(n_years):
         simulation_number_input.value, n_years, n_years)
 
     error_info.text = ""
-
-def randomize_measurement_error(data):
-    """
-    Using the reported measured values as base points,
-    and using the specified measurement error,
-    generate a randomized resampling of the data 
-    points accounting for the level of measurement
-    error. 
-    Note that the error is assumed constant across
-    all data points.
-    """
-    msmt_error = msmt_error_input.value / 100.
-
-    multipliers = np.random.uniform(low=1. - msmt_error, 
-                                            high=1. + msmt_error, 
-                                            size=len(data))
-
-    data['peak_sim'] = np.multiply(data['PEAK'], multipliers)
-
-    return data[['peak_sim']]
 
 
 def set_up_model(df):
@@ -101,32 +71,10 @@ def set_up_model(df):
     return model
 
 
-def run_ffa_simulation(model, data, target_param, n_simulations):
-    # reference:
-    # https://nbviewer.jupyter.org/github/demotu/BMC/blob/master/notebooks/CurveFitting.ipynb
-
-    for i in range(n_simulations):
-
-        # sample_set = data.sample(
-        #     sample_size_input.value, replace=False)
-
-        # For the measurement uncertainty simulation, use all points
-        # instead of sampling from sample subset
-        sample_set = randomize_measurement_error(data)
-
-        selection = calculate_Tr(sample_set, target_param)
-
-        # log-pearson distribution
-        log_skew = st.skew(np.log10(selection[target_param]))
-
-        lp3 = 2 / log_skew * \
-            (np.power((model['z'] - log_skew / 6) * log_skew / 6 + 1, 3) - 1)
-
-        lp3_model = np.power(10, np.mean(
-            np.log10(selection[target_param])) + lp3 * np.std(np.log10(selection[target_param])))
-
-        model[i] = lp3_model
-    return model
+def randomize_msmt_err(val):
+    msmt_error = msmt_error_input.value / 100.
+    return val * np.random.uniform(low=1. - msmt_error, 
+                             high=1. + msmt_error)
 
 
 def fit_LP3(df):
@@ -164,6 +112,87 @@ def fit_LP3(df):
     return df
 
 
+def log_mapper(val):
+    return math.log(val)
+
+def LP3_calc(row, z):
+    # calculate the log-pearson III distribution
+    log_skew = st.skew(np.log10(row))
+    lp3 = 2 / log_skew * \
+        (np.power((z - log_skew / 6) * log_skew / 6 + 1, 3) - 1)
+    lp3_model = np.power(10, np.mean(
+        np.log10(row)) + lp3 * np.std(np.log10(row)))
+    return lp3_model
+
+def calculate_Tr(peak_values, years, flags, correction_factor=None):
+   
+    data = pd.DataFrame()
+    data['PEAK'] = peak_values
+
+    msmt_error = msmt_error_input.value / 100.
+    data['YEAR'] = years
+    data['SYMBOL'] = flags
+
+    if correction_factor is None:
+        correction_factor = 1
+
+    data['rank'] = data['PEAK'].rank(ascending=False, method='first')
+
+    log_func_mapper = np.vectorize(log_mapper)
+
+    data['log_Q'] = log_func_mapper(peak_values)
+
+    n_sample = len(peak_values)
+
+    data['Tr'] = (n_sample + 1) / data['rank'].values.flatten()
+
+    return data
+
+def run_ffa_simulation(data, n_simulations):
+    # reference:
+    # https://nbviewer.jupyter.org/github/demotu/BMC/blob/master/notebooks/CurveFitting.ipynb
+
+    peak_values = data[['PEAK']].to_numpy().flatten()
+    years = data[['YEAR']].to_numpy().flatten
+    flags = data[['SYMBOL']].to_numpy().flatten
+
+    simulation_matrix = np.tile(peak_values, (n_simulations, 1))
+
+    v_func = np.vectorize(randomize_msmt_err)
+
+    vectorized_random_value_matrix = v_func(simulation_matrix)
+
+    # sample_set = data.sample(
+    #     sample_size_input.value, replace=False)
+
+    # For the measurement uncertainty simulation, use all points
+    # instead of sampling from sample subset
+
+    selection = calculate_Tr(peak_values, years, flags)
+
+    model = set_up_model(data)
+
+    def calculate_percentile(row, p):
+        return np.percentile(row, p)
+    
+    def calculate_mean(row):
+        return np.mean(row)
+
+    lp3_model = np.apply_along_axis(LP3_calc, 1,
+                                    vectorized_random_value_matrix,
+                                    z=model['z'].values.flatten())
+
+    model['lower_1s_bound'] = np.apply_along_axis(calculate_percentile, 0, lp3_model, p=33.333)
+    model['upper_1s_bound'] = np.apply_along_axis(calculate_percentile, 0, lp3_model, p=66.667)
+    model['lower_2s_bound'] = np.apply_along_axis(calculate_percentile, 0, lp3_model, p=95.)
+    model['upper_2s_bound'] = np.apply_along_axis(calculate_percentile, 0, lp3_model, p=5.)
+    model['expected_value'] = np.apply_along_axis(calculate_percentile, 0, lp3_model, p=50.)
+    model['mean_value'] = np.apply_along_axis(calculate_mean, 0, lp3_model)
+
+    return model
+
+
+@lru_cache()
 def get_data_and_initialize_dataframe():
     station_name = station_name_input.value.split(':')[-1].strip()
 
@@ -176,7 +205,9 @@ def get_data_and_initialize_dataframe():
         station_name_input.value = IDS_TO_NAMES['08MH016']
         update()
 
-    df = calculate_Tr(df, 'PEAK')
+    df = calculate_Tr(df['PEAK'].values.flatten(),
+                      df['YEAR'].values.flatten(),
+                      df['SYMBOL'].values.flatten())
 
     df = fit_LP3(df)
     
@@ -192,8 +223,6 @@ def update():
     # set the target param to PEAK to extract peak annual values 
     # target_param = 'PEAK'
 
-    model = set_up_model(df)
-
     n_years = len(df)
     print('number of years of data = {}'.format(n_years))
     print("")
@@ -208,11 +237,10 @@ def update():
     n_simulations = simulation_number_input.value
 
     data = df.copy()
-    target_param = 'peak_sim'
-    time0 = time.time()
-    model = run_ffa_simulation(model, data, target_param, n_simulations)
-    time_end = time.time()
 
+    time0 = time.time()
+    model = run_ffa_simulation(data, n_simulations)
+    time_end = time.time()
     print("Time for {:.0f} simulations = {:0.2f} s".format(
         n_simulations, time_end - time0))
 
@@ -223,25 +251,7 @@ def update():
     data_flag_filter = data[~data['SYMBOL'].isin([None, ' '])]
     peak_flagged_source.data = peak_flagged_source.from_df(data_flag_filter)
 
-    # plot the simulation error bounds
-    model['lower_1s_bound'] = model.apply(lambda row: np.percentile(row, 33), axis=1)
-    model['upper_1s_bound'] = model.apply(lambda row: np.percentile(row, 67), axis=1)
-    model['lower_2s_bound'] = model.apply(lambda row: np.percentile(row, 5), axis=1)
-    model['upper_2s_bound'] = model.apply(lambda row: np.percentile(row, 95), axis=1)
-    model['expected_value'] = model.apply(lambda row: np.percentile(row, 50), axis=1)
-    model['mean_value'] = model.apply(lambda row: row.mean(), axis=1)
-
-    simulation = {'Tr': model.index,
-                'lower_1_sigma': model['lower_1s_bound'],
-                'upper_1_sigma': model['upper_1s_bound'],
-                'lower_2_sigma': model['lower_2s_bound'],
-                'upper_2_sigma': model['upper_2s_bound'],
-                'mean': model['mean_value'],
-                'EV': model['expected_value'],
-                'lp3_model': model['lp3_quantiles_model']
-                }    
-
-    distribution_source.data = simulation
+    distribution_source.data = model
     
     update_UI_text_output(n_years)
 
@@ -251,7 +261,7 @@ def update_station(attr, old, new):
 
 
 def update_n_simulations(attr, old, new):
-    if new > 1000:
+    if new > simulation_number_input.high:
         simulation_number_input.value = 500
         error_info.text = "Max simulation size is 500"
     update()
@@ -273,12 +283,13 @@ def update_simulation_sample_size(attr, old, new):
 def update_sim(foo):
     data = get_data_and_initialize_dataframe()
 
-    data['peak_sim'] = randomize_measurement_error(data)
+    peak_sim = [randomize_msmt_err(v) for v in data['PEAK']]
 
-    data = calculate_Tr(data, 'peak_sim')
+    data = calculate_Tr(peak_sim,
+                        data['YEAR'].values.flatten(),
+                        data['SYMBOL'].values.flatten())
 
-    data.sort_values('Tr', inplace=True)
-    # print(data[['Tr', 'peak_sim']])
+    data = data.sort_values('Tr')
     
     peak_sim_source.data = data
 
@@ -296,7 +307,7 @@ station_name_input = AutocompleteInput(
     value=IDS_TO_NAMES['08MH016'], min_characters=3)
 
 simulation_number_input = Spinner(
-    high=150, low=10, step=1, value=30, title="Number of Simulations",
+    high=5000, low=100, step=1, value=500, title="Number of Simulations",
 )
 
 sample_size_input = Spinner(
@@ -326,6 +337,7 @@ toggle_button.on_click(update_sim)
 # https://docs.bokeh.org/en/latest/docs/user_guide/server.html
 
 update()
+update_sim(1)
 
 # widgets
 ts_plot = figure(title="Annual Maximum Flood",
@@ -338,7 +350,7 @@ ts_plot.yaxis.axis_label = "Flow [m³/s]"
 
 
 # add the simulated measurement error points
-ts_plot.triangle('YEAR', 'peak_sim', source=peak_sim_source, 
+ts_plot.triangle('YEAR', 'PEAK', source=peak_sim_source, 
                 legend_label='Sim. Msmt. Error', size=3, 
                 color='red', alpha=0.5)
 
@@ -366,33 +378,33 @@ ffa_plot.xaxis.axis_label = "Return Period (Years)"
 ffa_plot.yaxis.axis_label = "Flow (m³/s)"
 
 # add the simulated measurement error points
-ffa_plot.triangle('Tr', 'peak_sim', source=peak_sim_source, 
+ffa_plot.triangle('Tr', 'PEAK', source=peak_sim_source, 
                 legend_label='Sim. Msmt. Error', size=3, 
                 color='red', alpha=0.5)
 
 ffa_plot.circle('Tr', 'PEAK', source=peak_source, legend_label="Measured Data")
 ffa_plot.circle('Tr', 'PEAK', source=peak_flagged_source, color="orange",
                 legend_label="Measured Data (QA/QC Flag)")
-ffa_plot.line('Tr', 'lp3_model', color='red',
+ffa_plot.line('Tr', 'lp3_quantiles_model', color='red',
             source=distribution_source,
             legend_label='Log-Pearson3 (Measured Data)')
 
-ffa_plot.line('Tr', 'mean', color='navy',
+ffa_plot.line('Tr', 'mean_value', color='navy',
             line_dash='dotted',
             source=distribution_source,
             legend_label='Mean Simulation')
 
-ffa_plot.line('Tr', 'EV', color='orange',
+ffa_plot.line('Tr', 'expected_value', color='orange',
             line_dash='dashed',
             source=distribution_source,
             legend_label='Expected Value')
 
 
 # plot the error bands as shaded areas
-ffa_2_sigma_band = Band(base='Tr', lower='lower_2_sigma', upper='upper_2_sigma', level='underlay',
+ffa_2_sigma_band = Band(base='Tr', lower='lower_2s_bound', upper='upper_2s_bound', level='underlay',
                         fill_alpha=0.25, fill_color='#1c9099',
                         source=distribution_source)
-ffa_1_sigma_band = Band(base='Tr', lower='lower_1_sigma', upper='upper_1_sigma', level='underlay',
+ffa_1_sigma_band = Band(base='Tr', lower='lower_1s_bound', upper='upper_1s_bound', level='underlay',
                         fill_alpha=0.65, fill_color='#a6bddb', 
                         source=distribution_source)
 
