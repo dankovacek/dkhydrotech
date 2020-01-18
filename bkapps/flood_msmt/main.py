@@ -64,8 +64,6 @@ def set_up_model(df):
     model['lp3_quantiles_model'] = np.power(10, np.mean(
         np.log10(df['PEAK'])) + lp3_calc*np.std(np.log10(df['PEAK'])))
 
-    print(model.head())
-
     return model
 
 
@@ -228,18 +226,16 @@ def update():
     ## number of times to run the simulation
     n_simulations = simulation_number_input.value
 
-    data = df.copy()
-
     time0 = time.time()
-    model = run_ffa_simulation(data, n_simulations)
+    model = run_ffa_simulation(df, n_simulations)
     time_end = time.time()
     print("Time for {:.0f} simulations = {:0.2f} s".format(
         n_simulations, time_end - time0))
 
     # update the peak flow data source   
-    peak_source.data = peak_source.from_df(data)
-    peak_sim_source.data = peak_sim_source.from_df(data)
-    data_flag_filter = data[~data['SYMBOL'].isin([None, ' '])]
+    peak_source.data = peak_source.from_df(df)
+    peak_sim_source.data = peak_sim_source.from_df(df)
+    data_flag_filter = df[~df['SYMBOL'].isin([None, ' '])]
     peak_flagged_source.data = peak_flagged_source.from_df(data_flag_filter)
 
     distribution_source.data = model
@@ -249,6 +245,7 @@ def update():
 
 def update_station(attr, old, new):
     update()
+    update_sim(1)
 
 
 def update_n_simulations(attr, old, new):
@@ -279,8 +276,12 @@ def update_sim(foo):
     data = calculate_Tr(peak_sim,
                         data['YEAR'].values.flatten(),
                         data['SYMBOL'].values.flatten())
+
+    # Fit LP3 to simulated data
+    model = set_up_model(data)
    
     peak_sim_source.data = data
+    sim_distribution_source.data = model
 
 # configure Bokeh Inputs, data sources, and plots
 autocomplete_station_names = list(STATIONS_DF['Station Name'])
@@ -288,6 +289,7 @@ peak_source = ColumnDataSource(data=dict())
 peak_flagged_source = ColumnDataSource(data=dict())
 peak_sim_source = ColumnDataSource(data=dict())
 distribution_source = ColumnDataSource(data=dict())
+sim_distribution_source = ColumnDataSource(data=dict())
 qq_source = ColumnDataSource(data=dict())
 
 
@@ -349,8 +351,8 @@ ts_plot.circle('YEAR', 'PEAK', source=peak_flagged_source, color="orange",
             legend_label="(QA/QC Flag)", size=4)
 
 
-ts_plot.line('YEAR', 'Mean', source=peak_source, color='red',
-            legend_label='Mean Annual Max', line_dash='dashed')
+# ts_plot.line('YEAR', 'Mean', source=peak_source, color='red',
+#             legend_label='Mean Annual Max', line_dash='dashed')
 
 ts_plot.legend.location = "top_left"
 ts_plot.legend.click_policy = 'hide'
@@ -374,7 +376,7 @@ ffa_plot.triangle('Tr', 'PEAK', source=peak_sim_source,
 ffa_plot.circle('Tr', 'PEAK', source=peak_source, legend_label="Measured Data")
 ffa_plot.circle('Tr', 'PEAK', source=peak_flagged_source, color="orange",
                 legend_label="Measured Data (QA/QC Flag)")
-ffa_plot.line('Tr', 'lp3_quantiles_model', color='red',
+ffa_plot.line('Tr', 'lp3_quantiles_model', color='blue',
             source=distribution_source,
             legend_label='Log-Pearson3 (Measured Data)')
 
@@ -383,11 +385,14 @@ ffa_plot.line('Tr', 'mean', color='navy',
             source=distribution_source,
             legend_label='Mean Simulation')
 
-ffa_plot.line('Tr', 'expected_value', color='orange',
-            line_dash='dashed',
+ffa_plot.line('Tr', 'expected_value', color='green',
             source=distribution_source,
             legend_label='Expected Value')
 
+ffa_plot.line('Tr', 'lp3_quantiles_model', color='red',
+            line_dash='dotted',
+            source=sim_distribution_source,
+            legend_label='Simulated Error Fit')
 
 # plot the error bands as shaded areas
 ffa_2_sigma_band = Band(base='Tr', lower='lower_2s_bound', upper='upper_2s_bound', level='underlay',
