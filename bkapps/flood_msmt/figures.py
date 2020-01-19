@@ -84,7 +84,7 @@ def create_ffa_plot(peak_source, peak_sim_source, peak_flagged_source,
     ffa_plot.circle('Tr', 'PEAK', source=peak_source, legend_label="Measured Data")
     ffa_plot.circle('Tr', 'PEAK', source=peak_flagged_source, color="orange",
                     legend_label="Measured Data (QA/QC Flag)")
-    ffa_plot.line('Tr', 'lp3_quantiles_theoretical', color='blue',
+    ffa_plot.line('Tr', 'theoretical_quantiles', color='blue',
                   source=distribution_source,
                   legend_label='Log-Pearson3 (Measured Data)')
 
@@ -97,7 +97,7 @@ def create_ffa_plot(peak_source, peak_sim_source, peak_flagged_source,
                   source=distribution_source,
                   legend_label='Expected Value')
 
-    ffa_plot.line('Tr', 'lp3_quantiles_theoretical', color='red',
+    ffa_plot.line('Tr', 'theoretical_quantiles', color='red',
                   line_dash='dotted',
                   source=sim_distribution_source,
                   legend_label='Simulated Error Fit')
@@ -134,7 +134,7 @@ def create_qq_plot(peak_source):
     qq_plot.xaxis.axis_label = "Empirical Flow [m³/s]"
     qq_plot.yaxis.axis_label = "Theoretical Flow [m³/s]"
 
-    qq_plot.circle('PEAK', 'lp3_quantiles_theoretical', source=peak_source)
+    qq_plot.circle('PEAK', 'theoretical_quantiles', source=peak_source)
     qq_plot.line('PEAK', 'PEAK', legend_label='1:1', source=peak_source,
                  line_dash='dashed', color='green')
 

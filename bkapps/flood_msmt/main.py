@@ -28,6 +28,8 @@ if not path in sys.path:
 
 from get_station_data import get_daily_UR, get_annual_inst_peaks
 
+from skew_calc import calculate_skew
+
 from stations import IDS_AND_DAS, STATIONS_DF, IDS_TO_NAMES, NAMES_TO_IDS
 
 
@@ -43,21 +45,24 @@ def norm_ppf(x):
     return st.norm.ppf(1-(1/x))
 
 
+norm_ppf_vector_func = np.vectorize(norm_ppf)
+
+
 def update_UI_text_output(n_years):
-    ffa_info.text = """{} simulations of a sample size {} \n
-    out of a total {} years of record.  <br>
-    Coloured bands represent the 67 and 95 per cent confidence intervals, respectively.""".format(
-        simulation_number_input.value, n_years, n_years)
+    ffa_info.text = """
+    Coloured bands represent the 67 and 95 per cent confidence intervals, respectively.
+    """.format()
     error_info.text = ""
 
 
 def set_up_model(df):
-    log_skew = st.skew(np.log10(df['PEAK']))
+    mean, variance, stdev, skew = calculate_sample_statistics(np.log10(df['PEAK']))
     model = pd.DataFrame()
     model['Tr'] = np.linspace(1.01, 200, 500)
-    model['z'] = list(map(norm_ppf, model['Tr']))
-    model.set_index('Tr', inplace=True)    
-    model['lp3_quantiles_theoretical'] = LP3_calc(df['PEAK'], model['z'])
+    model['theoretical_cdf'] = 1 / model['Tr']
+    log_q = st.pearson3.ppf(1 - model['theoretical_cdf'], skew,
+                            loc=mean, scale=stdev)
+    model['theoretical_quantiles'] = np.power(10, log_q)
     return model
 
 
@@ -67,40 +72,11 @@ def randomize_msmt_err(val):
                              high=1. + msmt_error)
 
 
-def LP3_calc(data, z_array):
+def LP3_calc(data, exceedance):
     # calculate the log-pearson III distribution
-    log_skew = st.skew(np.log10(data))
-    lp3 = 2 / log_skew * \
-        (np.power((z_array - log_skew / 6) * log_skew / 6 + 1, 3) - 1)
-    lp3_model = np.power(10, np.mean(
-        np.log10(data)) + lp3 * np.std(np.log10(data)))
-    return lp3_model
-
-
-def fit_LP3(df):
-    ### 
-    # First, fit an LP3 to the raw measured data.
-    # This will be our basis of comparison
-    # plot the log-pearson fit to the entire dataset
-    norm_ppf_func = np.vectorize(norm_ppf)
-    z_theoretical = norm_ppf_func((len(df) + 1) / df['rank'])
-    z_empirical = np.array(list(map(norm_ppf, df['Tr'])))
-
-    df['lp3_quantiles_theoretical'] = LP3_calc(df['PEAK'], z_theoretical)
-    df['lp3_quantiles_empirical'] = LP3_calc(df['PEAK'], z_empirical)
-
-    # reverse the order for proper plotting on P-P plot
-    log_skew = st.skew(np.log10(df['PEAK'].values.flatten()))
-
-    df['theoretical_cdf'] = 1 - st.pearson3.cdf(z_empirical, skew=log_skew)
-
-    # need to remember why I've added 1 to the denominator
-    # has to do with sample vs. population (degrees of freedom)?
-    df['empirical_cdf'] = df['rank'] / (len(df) + 1)
-
-    df['Mean'] = np.mean(df['PEAK'])
-
-    return df
+    mean, variance, stdev, skew = calculate_sample_statistics(np.log10(data))
+    lp3_model = st.pearson3.ppf(exceedance, abs(skew), loc=mean, scale=stdev)
+    return np.power(10, lp3_model)
 
 
 def run_ffa_simulation(data, n_simulations):
@@ -111,56 +87,55 @@ def run_ffa_simulation(data, n_simulations):
     years = data[['YEAR']].to_numpy().flatten
     flags = data[['SYMBOL']].to_numpy().flatten
 
+    data = calculate_distributions(peak_values, years, flags)
+    model = set_up_model(data)
+
     simulation_matrix = np.tile(peak_values, (n_simulations, 1))
 
     v_func = np.vectorize(randomize_msmt_err)
 
     vectorized_random_value_matrix = v_func(simulation_matrix)
 
-    data = calculate_Tr(peak_values, years, flags)
+    exceedance = 1 - model['theoretical_cdf'].values.flatten()
 
-    model = set_up_model(data)
+    simulation = np.apply_along_axis(LP3_calc, 1,
+                                     vectorized_random_value_matrix,
+                                     exceedance=exceedance)
 
-    def calculate_percentile(row, p):
-        return np.percentile(row, p)
+    # print(simulation)
+    # print(simulation.shape)
+    # print('')
     
-    def calculate_mean(row):
-        return np.mean(row)
-
-    lp3_model = np.apply_along_axis(LP3_calc, 1,
-                                    vectorized_random_value_matrix,
-                                    z_array=model['z'].values.flatten())
-
-    model['lower_1s_bound'] = np.apply_along_axis(calculate_percentile, 0, lp3_model, p=33.333)
-    model['upper_1s_bound'] = np.apply_along_axis(calculate_percentile, 0, lp3_model, p=66.667)
-    model['lower_2s_bound'] = np.apply_along_axis(calculate_percentile, 0, lp3_model, p=95.)
-    model['upper_2s_bound'] = np.apply_along_axis(calculate_percentile, 0, lp3_model, p=5.)
-    model['expected_value'] = np.apply_along_axis(calculate_percentile, 0, lp3_model, p=50.)
-    model['mean'] = np.apply_along_axis(calculate_mean, 0, lp3_model)
+    model['lower_1s_bound'] = np.apply_along_axis(np.percentile, 0, simulation, q=33)
+    model['upper_1s_bound'] = np.apply_along_axis(np.percentile, 0, simulation, q=67)
+    model['lower_2s_bound'] = np.apply_along_axis(np.percentile, 0, simulation, q=5)
+    model['upper_2s_bound'] = np.apply_along_axis(np.percentile, 0, simulation, q=95)
+    model['expected_value'] = np.apply_along_axis(np.percentile, 0, simulation, q=50.)
+    model['mean'] = np.apply_along_axis(np.mean, 0, simulation)
+    print(model[['lower_2s_bound', 'upper_2s_bound', 'lower_1s_bound', 'upper_1s_bound']])
 
     return model
 
 
-def calculate_Tr(peak_values, years, flags, correction_factor=None):
+def calculate_distributions(peak_values, years, flags, correction_factor=None):
    
+    n_sample = len(peak_values)
     data = pd.DataFrame()
     data['PEAK'] = peak_values
-
-    data['log_Q'] = np.log(peak_values)
-
-    msmt_error = msmt_error_input.value / 100.
+    data['log_Q'] = np.log10(peak_values)
     data['YEAR'] = years
     data['SYMBOL'] = flags
+    mean, variance, stdev, skew = calculate_sample_statistics(np.log10(peak_values))
+    print('skew = {:.2f}'.format(skew))
 
-    if correction_factor is None:
-        correction_factor = 1
+    data['Tr'] = (n_sample + 1) / data['PEAK'].rank(ascending=False)
 
-    data['rank'] = data['PEAK'].rank(ascending=False, method='first')
-
-    n_sample = len(peak_values)
-
-    data['Tr'] = (n_sample + 1) / data['rank'].values.flatten()
-    data['z'] = np.array(list(map(norm_ppf, data['Tr'])))
+    data['empirical_pdf'] = st.pearson3.pdf(np.log10(peak_values), skew, loc=mean, scale=stdev)
+    data['empirical_cdf'] = st.pearson3.cdf(np.log10(peak_values), skew, loc=mean, scale=stdev)
+    data['theoretical_cdf'] = (1 + n_sample) / data['PEAK'].rank(ascending=False, method='first')
+    data['theoretical_quantiles'] = st.pearson3.ppf(data['empirical_pdf'], 
+                                                    skew, loc=mean, scale=stdev)
+    data['mean'] = np.mean(peak_values)
 
     return data
 
@@ -180,13 +155,10 @@ def get_data_and_initialize_dataframe():
         update_sim(1)
         return update()
 
-
-    df = calculate_Tr(df['PEAK'].values.flatten(),
+    df = calculate_distributions(df['PEAK'].values.flatten(),
                       df['YEAR'].values.flatten(),
                       df['SYMBOL'].values.flatten())
 
-    df = fit_LP3(df)
-    
     return df
 
 def update():
@@ -207,6 +179,9 @@ def update():
     time0 = time.time()
     model = run_ffa_simulation(df, n_simulations)
     time_end = time.time()
+
+    # print(model[['Tr', 'theoretical_quantiles', 'theoretical_cdf']].head())
+    # print(model.columns)
 
     print("Time for {:.0f} simulations = {:0.2f} s".format(
         n_simulations, time_end - time0))
@@ -257,7 +232,7 @@ def update_sim(foo):
 
     peak_sim = [randomize_msmt_err(v) for v in data['PEAK']]
 
-    data = calculate_Tr(peak_sim,
+    data = calculate_distributions(peak_sim,
                         data['YEAR'].values.flatten(),
                         data['SYMBOL'].values.flatten())
 
@@ -295,7 +270,7 @@ def update_figs(attr, old, new):
         update_pv_plot(data, inds)
         update_ffa_plot(data, inds)
         stats = [round(e, 2) for e in calculate_sample_statistics(data[inds])]
-        datatable_source.data['value_selection'] = [stats[0], stats[2], stats[3]]
+        datatable_source.data['value_selection'] = [stats[0], stats[2], stats[3], len(data[inds])]
 
 
 def update_data_table(data):
@@ -304,9 +279,9 @@ def update_data_table(data):
     """
     df = pd.DataFrame()
     stats = calculate_sample_statistics(data)
-    df['parameter'] = ['Mean', 'Standard Deviation', 'Skewness']
-    df['value_all'] = np.round([stats[0], stats[2], stats[3]], 2)
-    df['value_selection'] = np.round([stats[0], stats[2], stats[3]], 2)
+    df['parameter'] = ['Mean', 'Standard Deviation', 'Skewness', 'Sample Size']
+    df['value_all'] = np.round([stats[0], stats[2], stats[3], len(data)], 2)
+    df['value_selection'] = np.round([stats[0], stats[2], stats[3], len(data)], 2)
     datatable_source.data = dict(df)
 
 
@@ -348,12 +323,12 @@ error_info = Div(text="", style={'color': 'red'})
 # Set up data table for summary statistics
 datatable_columns = [
     TableColumn(field="parameter", title="Parameter"),
-    TableColumn(field="value_all", title="Value (All Data)"),
-    TableColumn(field="value_selection", title="Value (Selection)"),
+    TableColumn(field="value_all", title="All Data"),
+    TableColumn(field="value_selection", title="Selected Data"),
 ]
 
 data_table = DataTable(source=datatable_source, columns=datatable_columns,
-                       width=400, height=100, index_position=None)
+                       width=400, height=125, index_position=None)
 
 # callback for updating the plot based on a changes to inputs
 station_name_input.on_change('value', update_station)
@@ -388,13 +363,13 @@ input_layout = row(column(simulation_number_input,
                           toggle_button),
                    column(station_name_input,
                           ffa_info, data_table),
-                   )
+                   sizing_mode='scale_both')
 
 # create a page layout
 layout = column(input_layout,
                 error_info,
                 row(ts_plot, pv),
-                row(ffa_plot, column(qq_plot, pp_plot))
+                row(ffa_plot),#, column(qq_plot, pp_plot))
                 )
 
 curdoc().add_root(layout)
