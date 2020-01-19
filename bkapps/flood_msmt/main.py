@@ -52,7 +52,7 @@ def update_UI_text_output(n_years):
     ffa_info.text = """
     Simulated measurement error is assumed to be a linear function of flow. 
     Coloured bands represent the 67 and 95 % confidence intervals of the 
-    curve fit MCMC simulation, respectively.
+    curve fit MCMC simulation.  The LP3 shape parameter is the generalized skew.
     """.format()
     error_info.text = ""
 
