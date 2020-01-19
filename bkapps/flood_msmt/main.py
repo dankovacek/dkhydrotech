@@ -94,8 +94,6 @@ def fit_LP3(df):
     df['lp3_quantiles_theoretical'] = LP3_calc(df['PEAK'], z_theoretical)
     df['lp3_quantiles_empirical'] = LP3_calc(df['PEAK'], z_empirical)
 
-    print(df[['lp3_quantiles_empirical', 'lp3_quantiles_theoretical']])
-
     # reverse the order for proper plotting on P-P plot
     log_skew = st.skew(np.log10(df['PEAK'].values.flatten()))
     df['theoretical_cdf'] = st.pearson3.cdf(z_empirical, skew=log_skew)
@@ -293,7 +291,6 @@ def update_pv(attr, old, new):
     vh1.data_source.data["right"] = vhist1
     vh2.data_source.data["right"] = -vhist2
 
-<<<<<<< HEAD
     if len(inds) > 2:
         stats = [round(e, 2) for e in calculate_sample_statistics(data[inds])]
 
@@ -311,8 +308,6 @@ def update_data_table(stats):
     datatable_source.data = dict(df)
 
 
-=======
->>>>>>> parent of ec7f935... fix pp plot and selection updating data table
 # configure Bokeh Inputs, data sources, and plots
 autocomplete_station_names = list(STATIONS_DF['Station Name'])
 peak_source = ColumnDataSource(data=dict())
