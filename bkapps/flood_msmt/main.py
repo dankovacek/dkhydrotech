@@ -42,6 +42,7 @@ def norm_ppf(x):
         x = 0.001
     return st.norm.ppf(1-(1/x))
 
+
 def update_UI_text_output(n_years):
     ffa_info.text = """Mean of {} simulations of a sample size {} \n
     out of a total {} years of record.  \n
@@ -65,8 +66,6 @@ def randomize_msmt_err(val):
     return val * np.random.uniform(low=1. - msmt_error, 
                              high=1. + msmt_error)
 
-def log_mapper(val):
-    return math.log(val)
 
 def LP3_calc(data, z_array):
     # calculate the log-pearson III distribution
@@ -83,7 +82,10 @@ def fit_LP3(df):
     # This will be our basis of comparison
     # plot the log-pearson fit to the entire dataset
 
-    z_theoretical = np.array(list(map(norm_ppf, (len(df) + 1) / df['rank'])))
+    df.sort_values('Tr', inplace=True)
+
+    norm_ppf_func = np.vectorize(norm_ppf)
+    z_theoretical = norm_ppf_func((len(df) + 1) / df['rank'])
     z_empirical = np.array(list(map(norm_ppf, df['Tr'])))
 
     df['lp3_quantiles_theoretical'] = LP3_calc(df['PEAK'], z_theoretical)
@@ -91,7 +93,7 @@ def fit_LP3(df):
 
     # reverse the order for proper plotting on P-P plot
     log_skew = st.skew(np.log10(df['PEAK'].values.flatten()))
-    df['theoretical_cdf'] = st.pearson3.cdf(z_empirical, skew=log_skew)
+    df['theoretical_cdf'] = st.pearson3.cdf(z_empirical, skew=log_skew)[::-1]
 
     # need to remember why I've added 1 to the denominator
     # has to do with sample vs. population (degrees of freedom)?
@@ -101,31 +103,6 @@ def fit_LP3(df):
 
     return df
 
-
-def calculate_Tr(peak_values, years, flags, correction_factor=None):
-   
-    data = pd.DataFrame()
-    data['PEAK'] = peak_values
-
-    msmt_error = msmt_error_input.value / 100.
-    data['YEAR'] = years
-    data['SYMBOL'] = flags
-
-    if correction_factor is None:
-        correction_factor = 1
-
-    data['rank'] = data['PEAK'].rank(ascending=False, method='first')
-
-    log_func_mapper = np.vectorize(log_mapper)
-
-    data['log_Q'] = log_func_mapper(peak_values)
-
-    n_sample = len(peak_values)
-
-    data['Tr'] = (n_sample + 1) / data['rank'].values.flatten()
-    data['z'] = np.array(list(map(norm_ppf, data['Tr'])))
-
-    return data
 
 def run_ffa_simulation(data, n_simulations):
     # reference:
@@ -165,6 +142,30 @@ def run_ffa_simulation(data, n_simulations):
     return model
 
 
+def calculate_Tr(peak_values, years, flags, correction_factor=None):
+   
+    data = pd.DataFrame()
+    data['PEAK'] = peak_values
+
+    data['log_Q'] = np.log(peak_values)
+
+    msmt_error = msmt_error_input.value / 100.
+    data['YEAR'] = years
+    data['SYMBOL'] = flags
+
+    if correction_factor is None:
+        correction_factor = 1
+
+    data['rank'] = data['PEAK'].rank(ascending=False, method='first')
+
+    n_sample = len(peak_values)
+
+    data['Tr'] = (n_sample + 1) / data['rank'].values.flatten()
+    data['z'] = np.array(list(map(norm_ppf, data['Tr'])))
+
+    return data
+
+
 def get_data_and_initialize_dataframe():
     station_name = station_name_input.value.split(':')[-1].strip()
 
@@ -191,20 +192,13 @@ def update():
 
     update_data_table(df['PEAK'].values.flatten())
 
-    ###
-    # Now simulate error on the measured data
-    # set the target param to PEAK to extract peak annual values 
-    # target_param = 'PEAK'
-
+    # prevent the sample size from exceeding the length of record
     n_years = len(df)
-
-    # prevent the sample size from exceeding the
-    # length of record
     if n_years < sample_size_input.value:
         sample_size_input.value = n_years - 1
 
     # Run the FFA fit simulation on a sample of specified size
-    ## number of times to run the simulation
+    # number of times to run the simulation
     n_simulations = simulation_number_input.value
 
     time0 = time.time()
