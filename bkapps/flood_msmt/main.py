@@ -31,20 +31,15 @@ from get_station_data import get_daily_UR, get_annual_inst_peaks
 from stations import IDS_AND_DAS, STATIONS_DF, IDS_TO_NAMES, NAMES_TO_IDS
 
 
-def get_stats(data, param):
-    mean = data[param].mean()
-    var = np.var(data[param])
-    stdev = data[param].std()
-    skew = st.skew(data[param])
-    return mean, var, stdev, skew
-
-
 def norm_ppf(x):
     if x == 1.0:
         x += 0.001
     if x < 0.001:
         x = 0.001
     return st.norm.ppf(1-(1/x))
+
+def calculate_sample_statistics(x):
+    return (np.mean(x), np.var(x), np.std(x), st.skew(x))
 
 def update_UI_text_output(n_years):
     ffa_info.text = """Mean of {} simulations of a sample size {} \n
@@ -73,6 +68,7 @@ def randomize_msmt_err(val):
 def log_mapper(val):
     return math.log(val)
 
+
 def LP3_calc(data, z_array):
     # calculate the log-pearson III distribution
     log_skew = st.skew(np.log10(data))
@@ -94,11 +90,11 @@ def fit_LP3(df):
     df['lp3_quantiles_theoretical'] = LP3_calc(df['PEAK'], z_theoretical)
     df['lp3_quantiles_empirical'] = LP3_calc(df['PEAK'], z_empirical)
 
-    print(df[['lp3_quantiles_empirical', 'lp3_quantiles_theoretical']])
+    # print(df[['lp3_quantiles_empirical', 'lp3_quantiles_theoretical']])
 
     # reverse the order for proper plotting on P-P plot
     log_skew = st.skew(np.log10(df['PEAK'].values.flatten()))
-    df['theoretical_cdf'] = st.pearson3.cdf(z_empirical, skew=log_skew)
+    df['theoretical_cdf'] = st.pearson3.cdf(z_theoretical, skew=log_skew)
 
     # need to remember why I've added 1 to the denominator
     # has to do with sample vs. population (degrees of freedom)?
@@ -171,9 +167,6 @@ def run_ffa_simulation(data, n_simulations):
 
     return model
 
-def calculate_sample_statistics(x):
-    pass
-    
 
 def get_data_and_initialize_dataframe():
     station_name = station_name_input.value.split(':')[-1].strip()
@@ -182,6 +175,7 @@ def get_data_and_initialize_dataframe():
         NAMES_TO_IDS[station_name])
 
     stats = calculate_sample_statistics(df['PEAK'].values.flatten())
+    update_data_table(stats)
 
     if len(df) < 2:
         error_info.text = "Error, insufficient data in record (n = {}).  Resetting to default.".format(
@@ -226,12 +220,19 @@ def update():
     print("Time for {:.0f} simulations = {:0.2f} s".format(
         n_simulations, time_end - time0))
 
-    df = df.sort_values('PEAK')
+    # df = df.sort_values('PEAK')
     # update the data sources  
     peak_source.data = peak_source.from_df(df)
     peak_sim_source.data = peak_sim_source.from_df(df)
     data_flag_filter = df[~df['SYMBOL'].isin([None, ' '])]
     peak_flagged_source.data = peak_flagged_source.from_df(data_flag_filter)
+
+
+    df = df.sort_values('lp3_quantiles_empirical')
+    
+    df['empirical_cdf'] = df['empirical_cdf'].values.flatten()[::-1]
+    pp_source.data = pp_source.from_df(df)
+    qq_source.data = qq_source.from_df(df)
 
     distribution_source.data = model
     
@@ -293,6 +294,24 @@ def update_pv(attr, old, new):
     vh1.data_source.data["right"] =  vhist1
     vh2.data_source.data["right"] = -vhist2
 
+    if len(inds) > 2:
+
+        stats = [round(e, 2) for e in calculate_sample_statistics(data[inds])]
+
+        datatable_source.data['value_selection'] = [stats[0], stats[2], stats[3]]
+
+
+def update_data_table(stats):
+    """
+    order of stats is mean, var, stdev, skew
+    """
+    df = pd.DataFrame()
+    df['parameter'] = ['Mean', 'Standard Deviation', 'Skewness']
+    df['value_all_data'] = np.round([stats[0], stats[2], stats[3]], 2)
+    df['value_selection'] = np.round([stats[0], stats[2], stats[3]], 2)
+    datatable_source.data = dict(df)
+
+
 # configure Bokeh Inputs, data sources, and plots
 autocomplete_station_names = list(STATIONS_DF['Station Name'])
 peak_source = ColumnDataSource(data=dict())
@@ -300,6 +319,7 @@ peak_flagged_source = ColumnDataSource(data=dict())
 peak_sim_source = ColumnDataSource(data=dict())
 distribution_source = ColumnDataSource(data=dict())
 sim_distribution_source = ColumnDataSource(data=dict())
+pp_source = ColumnDataSource(data=dict())
 qq_source = ColumnDataSource(data=dict())
 datatable_source = ColumnDataSource(data=dict())
 
@@ -322,19 +342,20 @@ msmt_error_input = Spinner(
 
 toggle_button = Toggle(label="Simulate Measurement Error", button_type="success")
 
-ffa_info = Div(
+ffa_info = Div(width=400,
     text="Mean of {} simulations for a sample size of {}.".format('x', 'y'))
 
 error_info = Div(text="", style={'color': 'red'})
 
-
 # Set up data table for summary statistics
 columns = [
     TableColumn(field="parameter", title="Parameter"),
-    TableColumn(field="value", title="Value"),
-    TableColumn(field="units", title="Units"),
+    TableColumn(field="value_all_data", title="Value (All Data)"),
+    TableColumn(field="value_selection", title="Value (Selection)"),
 ]
-data_table = DataTable(source=datatable_source, columns=columns, width=400, height=280, index_position=None)
+
+data_table = DataTable(source=datatable_source, columns=columns, 
+                       width=400, height=100, index_position=None)
 
 # callback for updating the plot based on a changes to inputs
 station_name_input.on_change('value', update_station)
@@ -360,19 +381,18 @@ peak_source.selected.on_change('indices', update_pv)
 ffa_plot = create_ffa_plot(peak_source, peak_sim_source, peak_flagged_source,
                             distribution_source, sim_distribution_source)
 
-qq_plot = create_qq_plot(peak_source)
+qq_plot = create_qq_plot(qq_source)
 
-pp_plot = create_pp_plot(peak_source)
+pp_plot = create_pp_plot(pp_source)
+
+inputs_row = column(station_name_input, row(simulation_number_input, msmt_error_input, toggle_button))
 
 # create a page layout
-layout = column(station_name_input,
-                # sample_size_input,
-                row(simulation_number_input, msmt_error_input, toggle_button),
+layout = column(inputs_row,
+                row(data_table, ffa_info),
                 error_info,
                 row(ts_plot, pv),
-                ffa_info,
-                ffa_plot,
-                row(qq_plot, pp_plot)
+                row(ffa_plot, column(qq_plot, pp_plot))
                 )
 
 curdoc().add_root(layout)
