@@ -44,8 +44,8 @@ def norm_ppf(x):
 
 
 def update_UI_text_output(n_years):
-    ffa_info.text = """Mean of {} simulations of a sample size {} \n
-    out of a total {} years of record.  \n
+    ffa_info.text = """{} simulations of a sample size {} \n
+    out of a total {} years of record.  <br>
     Coloured bands represent the 67 and 95 per cent confidence intervals, respectively.""".format(
         simulation_number_input.value, n_years, n_years)
     error_info.text = ""
@@ -76,14 +76,12 @@ def LP3_calc(data, z_array):
         np.log10(data)) + lp3 * np.std(np.log10(data)))
     return lp3_model
 
+
 def fit_LP3(df):
     ### 
     # First, fit an LP3 to the raw measured data.
     # This will be our basis of comparison
     # plot the log-pearson fit to the entire dataset
-
-    df.sort_values('Tr', inplace=True)
-
     norm_ppf_func = np.vectorize(norm_ppf)
     z_theoretical = norm_ppf_func((len(df) + 1) / df['rank'])
     z_empirical = np.array(list(map(norm_ppf, df['Tr'])))
@@ -93,7 +91,8 @@ def fit_LP3(df):
 
     # reverse the order for proper plotting on P-P plot
     log_skew = st.skew(np.log10(df['PEAK'].values.flatten()))
-    df['theoretical_cdf'] = st.pearson3.cdf(z_empirical, skew=log_skew)[::-1]
+
+    df['theoretical_cdf'] = 1 - st.pearson3.cdf(z_empirical, skew=log_skew)
 
     # need to remember why I've added 1 to the denominator
     # has to do with sample vs. population (degrees of freedom)?
@@ -169,6 +168,8 @@ def calculate_Tr(peak_values, years, flags, correction_factor=None):
 def get_data_and_initialize_dataframe():
     station_name = station_name_input.value.split(':')[-1].strip()
 
+    peak_source.selected.indices = []
+    
     df = get_annual_inst_peaks(
         NAMES_TO_IDS[station_name])
 
@@ -176,7 +177,9 @@ def get_data_and_initialize_dataframe():
         error_info.text = "Error, insufficient data in record (n = {}).  Resetting to default.".format(
             len(df))
         station_name_input.value = IDS_TO_NAMES['08MH016']
-        update()
+        update_sim(1)
+        return update()
+
 
     df = calculate_Tr(df['PEAK'].values.flatten(),
                       df['YEAR'].values.flatten(),
@@ -210,6 +213,7 @@ def update():
 
     # update the data sources  
     peak_source.data = peak_source.from_df(df)
+    peak_source.selected
     peak_sim_source.data = peak_sim_source.from_df(df)
     data_flag_filter = df[~df['SYMBOL'].isin([None, ' '])]
     peak_flagged_source.data = peak_flagged_source.from_df(data_flag_filter)
@@ -228,7 +232,10 @@ def update_n_simulations(attr, old, new):
     if new > simulation_number_input.high:
         simulation_number_input.value = 500
         error_info.text = "Max simulation size is 500"
+    
     update()
+    update_sim(1)
+
 
 def update_msmt_error(attr, old, new):
     if new > 100:
@@ -238,7 +245,7 @@ def update_msmt_error(attr, old, new):
         msmt_error_input.value = 1
         error_info.text = "Minimum measurement error is 0."
     update()
-    update_sim()
+    update_sim(1)
 
 
 def update_simulation_sample_size(attr, old, new):
@@ -260,9 +267,8 @@ def update_sim(foo):
     peak_sim_source.data = data
     sim_distribution_source.data = model
 
-def update_pv(attr, old, new):
-    data = peak_source.data['PEAK']
-    inds = new
+
+def update_pv_plot(data, inds):
     if len(inds) == 0 or len(inds) == len(data):
         vhist1, vhist2 = vzeros, vzeros
     else:
@@ -274,9 +280,21 @@ def update_pv(attr, old, new):
     vh1.data_source.data["right"] = vhist1
     vh2.data_source.data["right"] = -vhist2
 
-    if len(inds) > 2:
-        stats = [round(e, 2) for e in calculate_sample_statistics(data[inds])]
 
+def update_ffa_plot(data, inds):
+    if len(inds) > 2:
+        pass
+
+
+def update_figs(attr, old, new):
+    inds = new
+
+    # update the datatable only if at least three points are selected
+    if len(inds) > 2:
+        data = peak_source.data['PEAK']
+        update_pv_plot(data, inds)
+        update_ffa_plot(data, inds)
+        stats = [round(e, 2) for e in calculate_sample_statistics(data[inds])]
         datatable_source.data['value_selection'] = [stats[0], stats[2], stats[3]]
 
 
@@ -321,7 +339,7 @@ msmt_error_input = Spinner(
 
 toggle_button = Toggle(label="Simulate Measurement Error", button_type="success")
 
-ffa_info = Div(
+ffa_info = Div(width=550,
     text="Mean of {} simulations for a sample size of {}.".format('x', 'y'))
 
 error_info = Div(text="", style={'color': 'red'})
@@ -333,8 +351,9 @@ datatable_columns = [
     TableColumn(field="value_all", title="Value (All Data)"),
     TableColumn(field="value_selection", title="Value (Selection)"),
 ]
-data_table = DataTable(source=datatable_source, columns=datatable_columns, 
-                        width=400, height=100, index_position=None)
+
+data_table = DataTable(source=datatable_source, columns=datatable_columns,
+                       width=400, height=100, index_position=None)
 
 # callback for updating the plot based on a changes to inputs
 station_name_input.on_change('value', update_station)
@@ -353,29 +372,29 @@ update_sim(1)
 # widgets
 ts_plot = create_ts_plot(peak_source, peak_sim_source, peak_flagged_source)
 
-peak_source.selected.on_change('indices', update_pv)
+peak_source.selected.on_change('indices', update_figs)
 
 vedges, vzeros, vh1, vh2, pv = create_vhist(peak_source, ts_plot)
 
 ffa_plot = create_ffa_plot(peak_source, peak_sim_source, peak_flagged_source,
-                            distribution_source, sim_distribution_source)
+                           distribution_source, sim_distribution_source)
 
 qq_plot = create_qq_plot(peak_source)
 
 pp_plot = create_pp_plot(peak_source)
 
-input_layout = column(station_name_input, 
-                      row(simulation_number_input, 
-                          msmt_error_input, 
+input_layout = row(column(simulation_number_input,
+                          msmt_error_input,
                           toggle_button),
-                    )
+                   column(station_name_input,
+                          ffa_info, data_table),
+                   )
 
 # create a page layout
 layout = column(input_layout,
-                row(data_table, ffa_info),
                 error_info,
                 row(ts_plot, pv),
-                row(ffa_plot, column(qq_plot, pp_plot)),                
+                row(ffa_plot, column(qq_plot, pp_plot))
                 )
 
 curdoc().add_root(layout)

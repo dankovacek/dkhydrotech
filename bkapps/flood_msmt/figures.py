@@ -57,6 +57,8 @@ def create_ts_plot(peak_source, peak_sim_source, peak_flagged_source):
     ts_plot.legend.location = "top_left"
     ts_plot.legend.click_policy = 'hide'
     ts_plot.toolbar_location = 'above'
+    ts_plot.select(BoxSelectTool).select_every_mousemove = False
+    ts_plot.select(LassoSelectTool).select_every_mousemove = False
     return ts_plot
 
 
@@ -68,7 +70,8 @@ def create_ffa_plot(peak_source, peak_sim_source, peak_flagged_source,
                       x_axis_type='log',
                       width=700,
                       height=550,
-                      output_backend="webgl")
+                      output_backend="webgl",
+                      tools="pan,box_zoom,wheel_zoom,reset,lasso_select")
 
     ffa_plot.xaxis.axis_label = "Return Period (Years)"
     ffa_plot.yaxis.axis_label = "Flow (m³/s)"
@@ -118,8 +121,9 @@ def create_ffa_plot(peak_source, peak_sim_source, peak_flagged_source,
 
 
 def create_qq_plot(peak_source):
-    min_emp, max_emp = min(peak_source.data['PEAK']), max(peak_source.data['PEAK'])
+    # min_emp, max_emp = min(peak_source.data['PEAK']), max(peak_source.data['PEAK'])
     # prepare a Q-Q plot
+    
     qq_plot = figure(title="Q-Q Plot",
                      width=275,
                      height=275,
@@ -131,8 +135,8 @@ def create_qq_plot(peak_source):
     qq_plot.yaxis.axis_label = "Theoretical Flow [m³/s]"
 
     qq_plot.circle('PEAK', 'lp3_quantiles_theoretical', source=peak_source)
-    qq_plot.line((min_emp, max_emp), (min_emp, max_emp), 
-                 legend_label='1:1', line_dash='dashed', color='green')
+    qq_plot.line('PEAK', 'PEAK', legend_label='1:1', source=peak_source,
+                 line_dash='dashed', color='green')
 
     qq_plot.legend.location = 'top_left'
     qq_plot.toolbar_location = 'above'
