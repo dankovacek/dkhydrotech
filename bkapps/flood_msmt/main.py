@@ -220,7 +220,6 @@ def update():
     print("Time for {:.0f} simulations = {:0.2f} s".format(
         n_simulations, time_end - time0))
 
-    # df = df.sort_values('PEAK')
     # update the data sources  
     peak_source.data = peak_source.from_df(df)
     peak_sim_source.data = peak_sim_source.from_df(df)
