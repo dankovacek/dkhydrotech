@@ -291,11 +291,10 @@ def update_pv(attr, old, new):
         vhist1, _ = np.histogram(data[inds], bins=vedges)
         vhist2, _ = np.histogram(data[neg_inds], bins=vedges)
 
-    vh1.data_source.data["right"] =  vhist1
+    vh1.data_source.data["right"] = vhist1
     vh2.data_source.data["right"] = -vhist2
 
     if len(inds) > 2:
-
         stats = [round(e, 2) for e in calculate_sample_statistics(data[inds])]
 
         datatable_source.data['value_selection'] = [stats[0], stats[2], stats[3]]
@@ -376,7 +375,7 @@ ts_plot = create_ts_plot(peak_source, peak_sim_source, peak_flagged_source)
 
 vedges, vzeros, vh1, vh2, pv = create_vhist(peak_source, ts_plot)
 
-peak_source.selected.on_change('indices', update_pv)
+# peak_source.selected.on_change('indices', update_pv)
 
 ffa_plot = create_ffa_plot(peak_source, peak_sim_source, peak_flagged_source,
                             distribution_source, sim_distribution_source)
