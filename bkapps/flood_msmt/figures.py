@@ -4,8 +4,6 @@ import pandas as pd
 from bokeh.plotting import figure
 from bokeh.models import Band 
 
-from bokeh.models import BoxSelectTool, LassoSelectTool
-
 def create_vhist(peak_source, p):
     # create the vertical histogram
     LINE_ARGS = dict(color="#3A5785", line_color=None)
@@ -55,8 +53,6 @@ def create_ts_plot(peak_source, peak_sim_source, peak_flagged_source):
 
     ts_plot.legend.location = "top_left"
     ts_plot.legend.click_policy = 'hide'
-    # ts_plot.select(BoxSelectTool).select_every_mousemove = False
-    # ts_plot.select(LassoSelectTool).select_every_mousemove = False
     return ts_plot
 
 def create_ffa_plot(peak_source, peak_sim_source, peak_flagged_source, 
@@ -65,8 +61,8 @@ def create_ffa_plot(peak_source, peak_sim_source, peak_flagged_source,
     ffa_plot = figure(title="Flood Frequency Analysis Explorer",
                     x_range=(0.9, 2E2),
                     x_axis_type='log',
-                    width=600,
-                    height=550,
+                    width=800,
+                    height=500,
                     output_backend="webgl")
 
     ffa_plot.xaxis.axis_label = "Return Period (Years)"
@@ -114,52 +110,37 @@ def create_ffa_plot(peak_source, peak_sim_source, peak_flagged_source,
 
     return ffa_plot
 
-def get_unity_line_bounds(x1, x2):
-    min_x1, max_x1 = np.min(x1), np.max(x1)
-    min_x2, max_x2 = np.min(x2), np.max(x2)
-    return [min(min_x1, min_x2), max(max_x1, max_x2)]
 
-def create_qq_plot(source):    
-    """
-    Take the sample data and create a quantile-quantile plot.
-    """
-
+def create_qq_plot(peak_source):    
     # prepare a Q-Q plot
     qq_plot = figure(title="Q-Q Plot",
-                     width=275,
-                     height=275,
-                     output_backend="webgl")
+                    width=400,
+                    height=300,
+                    output_backend="webgl")
 
     qq_plot.xaxis.axis_label = "Empirical Flow [m³/s]"
     qq_plot.yaxis.axis_label = "Theoretical Flow [m³/s]"
 
-    qq_plot.circle('PEAK', 'lp3_quantiles_empirical', source=source)
-    # qq_plot.line(line_of_unity, line_of_unity, 
-    #              legend_label='1:1', color='green',
-    #              line_dash='dashed')
-    qq_plot.line('lp3_quantiles_empirical', 
-                'lp3_quantiles_empirical', 
-                source=source,
-                legend_label='1:1', color='green',
-                line_dash='dashed')
+    qq_plot.circle('PEAK', 'lp3_quantiles_theoretical', source=peak_source)
+    qq_plot.line('PEAK', 'PEAK', source=peak_source, legend_label='1:1',
+                color='green')
 
     qq_plot.legend.location = 'top_left'
     return qq_plot
 
-def create_pp_plot(source):
+def create_pp_plot(peak_source):
     # prepare a P-P plot
     pp_plot = figure(title="P-P Plot",
-                    width=275,
-                    height=275,
+                    width=400,
+                    height=300,
                     output_backend="webgl")
 
     pp_plot.xaxis.axis_label = "Empirical P(x)"
     pp_plot.yaxis.axis_label = "Theoretical P(x)"
 
-    pp_plot.circle('empirical_cdf', 'theoretical_cdf', source=source)
-    pp_plot.line('empirical_cdf', 'empirical_cdf', source=source,
-                 legend_label='1:1', color='green',
-                 line_dash='dashed')
+    pp_plot.circle('empirical_cdf', 'theoretical_cdf', source=peak_source)
+    pp_plot.line('empirical_cdf', 'empirical_cdf', source=peak_source, legend_label='1:1',
+                color='green')
 
     pp_plot.legend.location = 'top_left'
     return pp_plot
