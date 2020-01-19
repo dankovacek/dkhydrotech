@@ -88,10 +88,10 @@ def create_ffa_plot(peak_source, peak_sim_source, peak_flagged_source,
                   source=distribution_source,
                   legend_label='Log-Pearson3 (Measured Data)')
 
-    ffa_plot.line('Tr', 'mean', color='navy',
-                  line_dash='dotted',
-                  source=distribution_source,
-                  legend_label='Mean Simulation')
+    # ffa_plot.line('Tr', 'mean', color='navy',
+    #               line_dash='dotted',
+    #               source=distribution_source,
+    #               legend_label='Mean Simulation')
 
     ffa_plot.line('Tr', 'expected_value', color='green',
                   source=distribution_source,

@@ -15,7 +15,7 @@ import scipy.stats as st
 from numba import jit
 
 from bokeh.layouts import row, column
-from bokeh.models import CustomJS, Slider, Band, Spinner
+from bokeh.models import CustomJS, Slider, Band, Spinner, RangeSlider
 from bokeh.plotting import figure, curdoc, ColumnDataSource
 from bokeh.models.widgets import AutocompleteInput, Div, Toggle
 from bokeh.models.widgets import DataTable, TableColumn
@@ -50,7 +50,9 @@ norm_ppf_vector_func = np.vectorize(norm_ppf)
 
 def update_UI_text_output(n_years):
     ffa_info.text = """
-    Coloured bands represent the 67 and 95 per cent confidence intervals, respectively.
+    Simulated measurement error is assumed to be a linear function of flow. 
+    Coloured bands represent the 67 and 95 % confidence intervals of the 
+    curve fit MCMC simulation, respectively.
     """.format()
     error_info.text = ""
 
@@ -60,14 +62,14 @@ def set_up_model(df):
     model = pd.DataFrame()
     model['Tr'] = np.linspace(1.01, 200, 500)
     model['theoretical_cdf'] = 1 / model['Tr']
-    log_q = st.pearson3.ppf(1 - model['theoretical_cdf'], skew,
+    log_q = st.pearson3.ppf(1 - model['theoretical_cdf'], abs(skew),
                             loc=mean, scale=stdev)
     model['theoretical_quantiles'] = np.power(10, log_q)
     return model
 
 
-def randomize_msmt_err(val):
-    msmt_error = msmt_error_input.value / 100.
+def randomize_msmt_err(val, msmt_err_params):
+    msmt_error = val * msmt_err_params[0] + msmt_err_params[1]
     return val * np.random.uniform(low=1. - msmt_error, 
                              high=1. + msmt_error)
 
@@ -77,6 +79,19 @@ def LP3_calc(data, exceedance):
     mean, variance, stdev, skew = calculate_sample_statistics(np.log10(data))
     lp3_model = st.pearson3.ppf(exceedance, abs(skew), loc=mean, scale=stdev)
     return np.power(10, lp3_model)
+
+
+def calculate_measurement_error_params(data):
+    """
+    Assume measurement error is a linear function
+    of magnitude of flow.
+    """
+    min_e, max_e = np.divide(msmt_error_input.value, 100.)
+    min_q, max_q = min(data), max(data)
+    m = (max_e - min_e) / (max_q - min_q)
+    b = min_e - m * min_q
+    print(m, b)
+    return (m, b)
 
 
 def run_ffa_simulation(data, n_simulations):
@@ -92,14 +107,16 @@ def run_ffa_simulation(data, n_simulations):
 
     simulation_matrix = np.tile(peak_values, (n_simulations, 1))
 
-    v_func = np.vectorize(randomize_msmt_err)
+    msmt_error_params = calculate_measurement_error_params(peak_values)
 
-    vectorized_random_value_matrix = v_func(simulation_matrix)
+    simulated_error = np.apply_along_axis(randomize_msmt_err, 1,
+                                          simulation_matrix,
+                                          msmt_err_params=msmt_error_params)
 
     exceedance = 1 - model['theoretical_cdf'].values.flatten()
 
     simulation = np.apply_along_axis(LP3_calc, 1,
-                                     vectorized_random_value_matrix,
+                                     simulated_error,
                                      exceedance=exceedance)
 
     # print(simulation)
@@ -112,7 +129,7 @@ def run_ffa_simulation(data, n_simulations):
     model['upper_2s_bound'] = np.apply_along_axis(np.percentile, 0, simulation, q=95)
     model['expected_value'] = np.apply_along_axis(np.percentile, 0, simulation, q=50.)
     model['mean'] = np.apply_along_axis(np.mean, 0, simulation)
-    print(model[['lower_2s_bound', 'upper_2s_bound', 'lower_1s_bound', 'upper_1s_bound']])
+    # print(model[['lower_2s_bound', 'upper_2s_bound', 'lower_1s_bound', 'upper_1s_bound']])
 
     return model
 
@@ -127,15 +144,17 @@ def calculate_distributions(peak_values, years, flags, correction_factor=None):
     data['SYMBOL'] = flags
     mean, variance, stdev, skew = calculate_sample_statistics(np.log10(peak_values))
     print('skew = {:.2f}'.format(skew))
+    skew = abs(skew)
 
     data['Tr'] = (n_sample + 1) / data['PEAK'].rank(ascending=False)
 
     data['empirical_pdf'] = st.pearson3.pdf(np.log10(peak_values), skew, loc=mean, scale=stdev)
     data['empirical_cdf'] = st.pearson3.cdf(np.log10(peak_values), skew, loc=mean, scale=stdev)
-    data['theoretical_cdf'] = (1 + n_sample) / data['PEAK'].rank(ascending=False, method='first')
-    data['theoretical_quantiles'] = st.pearson3.ppf(data['empirical_pdf'], 
-                                                    skew, loc=mean, scale=stdev)
+    data['theoretical_cdf'] = 1 - 1 / data['Tr']
+    data['theoretical_quantiles'] = np.power(10, st.pearson3.ppf(data['theoretical_cdf'], 
+                                                    skew, loc=mean, scale=stdev))
     data['mean'] = np.mean(peak_values)
+    data = data.sort_values('Tr', ascending=False)
 
     return data
 
@@ -213,12 +232,6 @@ def update_n_simulations(attr, old, new):
 
 
 def update_msmt_error(attr, old, new):
-    if new > 100:
-        msmt_error_input.value = 100
-        error_info.text = "Maximum measurement error is 100."
-    if new < 0:
-        msmt_error_input.value = 1
-        error_info.text = "Minimum measurement error is 0."
     update()
     update_sim(1)
 
@@ -230,7 +243,9 @@ def update_simulation_sample_size(attr, old, new):
 def update_sim(foo):
     data = get_data_and_initialize_dataframe()
 
-    peak_sim = [randomize_msmt_err(v) for v in data['PEAK']]
+    msmt_error_params = calculate_measurement_error_params(data['PEAK'])
+
+    peak_sim = [randomize_msmt_err(v, msmt_error_params) for v in data['PEAK']]
 
     data = calculate_distributions(peak_sim,
                         data['YEAR'].values.flatten(),
@@ -238,7 +253,7 @@ def update_sim(foo):
 
     # Fit LP3 to simulated data
     model = set_up_model(data)
-   
+  
     peak_sim_source.data = data
     sim_distribution_source.data = model
 
@@ -308,8 +323,10 @@ sample_size_input = Spinner(
     high=200, low=2, step=1, value=10, title="Sample Size for Simulations"
 )
 
-msmt_error_input = Spinner(
-    high=100, low=0., step = 5, value=20, title="Measurement Uncertainty [%]"
+msmt_error_input = RangeSlider(
+    start=0, end=100., value=(10, 35), 
+    step=2, title="Measurement Uncertainty [%]",
+    callback_policy="mouseup"
 )
 
 toggle_button = Toggle(label="Simulate Measurement Error", button_type="success")
@@ -328,7 +345,7 @@ datatable_columns = [
 ]
 
 data_table = DataTable(source=datatable_source, columns=datatable_columns,
-                       width=400, height=125, index_position=None)
+                       width=450, height=125, index_position=None)
 
 # callback for updating the plot based on a changes to inputs
 station_name_input.on_change('value', update_station)
@@ -360,16 +377,17 @@ pp_plot = create_pp_plot(peak_source)
 
 input_layout = row(column(simulation_number_input,
                           msmt_error_input,
+                          ffa_info, 
                           toggle_button),
                    column(station_name_input,
-                          ffa_info, data_table),
+                          data_table),
                    sizing_mode='scale_both')
 
 # create a page layout
 layout = column(input_layout,
                 error_info,
                 row(ts_plot, pv),
-                row(ffa_plot),#, column(qq_plot, pp_plot))
+                row(ffa_plot, column(pp_plot, qq_plot))
                 )
 
 curdoc().add_root(layout)
