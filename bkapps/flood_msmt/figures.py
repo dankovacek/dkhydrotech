@@ -134,8 +134,8 @@ def create_qq_plot(peak_source):
 def create_pp_plot(peak_source):
     # prepare a P-P plot
     pp_plot = figure(title="P-P Plot",
-                    width=400,
-                    height=300,
+                    width=275,
+                    height=275,
                     output_backend="webgl")
 
     pp_plot.xaxis.axis_label = "Empirical P(x)"
