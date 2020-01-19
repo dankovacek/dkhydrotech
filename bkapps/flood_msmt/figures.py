@@ -3,6 +3,7 @@ import pandas as pd
 
 from bokeh.plotting import figure
 from bokeh.models import Band 
+from bokeh.models import BoxSelectTool, LassoSelectTool
 
 def create_vhist(peak_source, p):
     # create the vertical histogram
@@ -53,6 +54,8 @@ def create_ts_plot(peak_source, peak_sim_source, peak_flagged_source):
 
     ts_plot.legend.location = "top_left"
     ts_plot.legend.click_policy = 'hide'
+    ts_plot.select(BoxSelectTool).select_every_mousemove = False
+    ts_plot.select(LassoSelectTool).select_every_mousemove = False
     return ts_plot
 
 def create_ffa_plot(peak_source, peak_sim_source, peak_flagged_source, 

@@ -31,12 +31,8 @@ from get_station_data import get_daily_UR, get_annual_inst_peaks
 from stations import IDS_AND_DAS, STATIONS_DF, IDS_TO_NAMES, NAMES_TO_IDS
 
 
-def get_stats(data, param):
-    mean = data[param].mean()
-    var = np.var(data[param])
-    stdev = data[param].std()
-    skew = st.skew(data[param])
-    return mean, var, stdev, skew
+def calculate_sample_statistics(x):
+    return (np.mean(x), np.var(x), np.std(x), st.skew(x))
 
 
 def norm_ppf(x):
@@ -168,17 +164,12 @@ def run_ffa_simulation(data, n_simulations):
 
     return model
 
-def calculate_sample_statistics(x):
-    pass
-    
 
 def get_data_and_initialize_dataframe():
     station_name = station_name_input.value.split(':')[-1].strip()
 
     df = get_annual_inst_peaks(
         NAMES_TO_IDS[station_name])
-
-    stats = calculate_sample_statistics(df['PEAK'].values.flatten())
 
     if len(df) < 2:
         error_info.text = "Error, insufficient data in record (n = {}).  Resetting to default.".format(
@@ -206,8 +197,6 @@ def update():
     # target_param = 'PEAK'
 
     n_years = len(df)
-    print('number of years of data = {}'.format(n_years))
-    print("")
 
     # prevent the sample size from exceeding the
     # length of record
@@ -297,11 +286,12 @@ def update_pv(attr, old, new):
         datatable_source.data['value_selection'] = [stats[0], stats[2], stats[3]]
 
 
-def update_data_table(stats):
+def update_data_table(data):
     """
     order of stats is mean, var, stdev, skew
     """
     df = pd.DataFrame()
+    stats = calculate_sample_statistics(data)
     df['parameter'] = ['Mean', 'Standard Deviation', 'Skewness']
     df['value_all'] = np.round([stats[0], stats[2], stats[3]], 2)
     df['value_selection'] = np.round([stats[0], stats[2], stats[3]], 2)
@@ -369,9 +359,9 @@ update_sim(1)
 # widgets
 ts_plot = create_ts_plot(peak_source, peak_sim_source, peak_flagged_source)
 
-vedges, vzeros, vh1, vh2, pv = create_vhist(peak_source, ts_plot)
+peak_source.selected.on_change('indices', update_pv)
 
-# peak_source.selected.on_change('indices', update_pv)
+vedges, vzeros, vh1, vh2, pv = create_vhist(peak_source, ts_plot)
 
 ffa_plot = create_ffa_plot(peak_source, peak_sim_source, peak_flagged_source,
                             distribution_source, sim_distribution_source)
@@ -379,7 +369,6 @@ ffa_plot = create_ffa_plot(peak_source, peak_sim_source, peak_flagged_source,
 qq_plot = create_qq_plot(peak_source)
 
 pp_plot = create_pp_plot(peak_source)
-
 
 input_layout = column(station_name_input, 
                       row(simulation_number_input, 
