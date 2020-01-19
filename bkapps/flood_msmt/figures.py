@@ -13,7 +13,7 @@ def create_vhist(peak_source, p):
     vzeros = np.zeros(len(vedges)-1)
     vmax = max(vhist)*1.1
 
-    pv = figure(toolbar_location=None, plot_width=150, plot_height=p.height, x_range=(0, vmax),
+    pv = figure(toolbar_location=None, plot_width=175, plot_height=p.height, x_range=(0, vmax),
             y_range=p.y_range, min_border=10, y_axis_location="right")
     pv.ygrid.grid_line_color = None
     pv.xaxis.major_label_orientation = np.pi/4
@@ -28,7 +28,7 @@ def create_vhist(peak_source, p):
 
 def create_ts_plot(peak_source, peak_sim_source, peak_flagged_source):
     ts_plot = figure(title="Annual Maximum Flood",
-                    width=700,
+                    width=800,
                     height=250,
                     output_backend="webgl",
                     tools='box_select,lasso_select,reset,box_zoom,pan')
@@ -61,8 +61,8 @@ def create_ffa_plot(peak_source, peak_sim_source, peak_flagged_source,
     ffa_plot = figure(title="Flood Frequency Analysis Explorer",
                     x_range=(0.9, 2E2),
                     x_axis_type='log',
-                    width=800,
-                    height=500,
+                    width=700,
+                    height=550,
                     output_backend="webgl")
 
     ffa_plot.xaxis.axis_label = "Return Period (Years)"
@@ -114,8 +114,8 @@ def create_ffa_plot(peak_source, peak_sim_source, peak_flagged_source,
 def create_qq_plot(peak_source):    
     # prepare a Q-Q plot
     qq_plot = figure(title="Q-Q Plot",
-                    width=400,
-                    height=300,
+                    width=275,
+                    height=275,
                     output_backend="webgl")
 
     qq_plot.xaxis.axis_label = "Empirical Flow [m³/s]"
@@ -131,8 +131,8 @@ def create_qq_plot(peak_source):
 def create_pp_plot(peak_source):
     # prepare a P-P plot
     pp_plot = figure(title="P-P Plot",
-                    width=400,
-                    height=300,
+                    width=275,
+                    height=275,
                     output_backend="webgl")
 
     pp_plot.xaxis.axis_label = "Empirical P(x)"

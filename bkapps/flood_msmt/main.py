@@ -38,7 +38,6 @@ def get_stats(data, param):
     skew = st.skew(data[param])
     return mean, var, stdev, skew
 
-
 def norm_ppf(x):
     if x == 1.0:
         x += 0.001
@@ -68,7 +67,6 @@ def randomize_msmt_err(val):
     msmt_error = msmt_error_input.value / 100.
     return val * np.random.uniform(low=1. - msmt_error, 
                              high=1. + msmt_error)
-
 
 def log_mapper(val):
     return math.log(val)
@@ -199,6 +197,8 @@ def update():
     
     df = get_data_and_initialize_dataframe()
 
+    update_data_table(df['PEAK'].values.flatten())
+
     ###
     # Now simulate error on the measured data
     # set the target param to PEAK to extract peak annual values 
@@ -303,7 +303,7 @@ def update_data_table(stats):
     """
     df = pd.DataFrame()
     df['parameter'] = ['Mean', 'Standard Deviation', 'Skewness']
-    df['value_all_data'] = np.round([stats[0], stats[2], stats[3]], 2)
+    df['value_all'] = np.round([stats[0], stats[2], stats[3]], 2)
     df['value_selection'] = np.round([stats[0], stats[2], stats[3]], 2)
     datatable_source.data = dict(df)
 
@@ -344,12 +344,13 @@ error_info = Div(text="", style={'color': 'red'})
 
 
 # Set up data table for summary statistics
-columns = [
+datatable_columns = [
     TableColumn(field="parameter", title="Parameter"),
-    TableColumn(field="value", title="Value"),
-    TableColumn(field="units", title="Units"),
+    TableColumn(field="value_all", title="Value (All Data)"),
+    TableColumn(field="value_selection", title="Value (Selection)"),
 ]
-data_table = DataTable(source=datatable_source, columns=columns, width=400, height=280, index_position=None)
+data_table = DataTable(source=datatable_source, columns=datatable_columns, 
+                        width=400, height=100, index_position=None)
 
 # callback for updating the plot based on a changes to inputs
 station_name_input.on_change('value', update_station)
@@ -379,15 +380,19 @@ qq_plot = create_qq_plot(peak_source)
 
 pp_plot = create_pp_plot(peak_source)
 
+
+input_layout = column(station_name_input, 
+                      row(simulation_number_input, 
+                          msmt_error_input, 
+                          toggle_button),
+                    )
+
 # create a page layout
-layout = column(station_name_input,
-                # sample_size_input,
-                row(simulation_number_input, msmt_error_input, toggle_button),
+layout = column(input_layout,
+                row(data_table, ffa_info),
                 error_info,
                 row(ts_plot, pv),
-                ffa_info,
-                ffa_plot,
-                row(qq_plot, pp_plot)
+                row(ffa_plot, column(qq_plot, pp_plot)),                
                 )
 
 curdoc().add_root(layout)
