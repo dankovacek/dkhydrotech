@@ -33,7 +33,7 @@ def create_vhist(peak_source, p):
     return vedges, vzeros, vh1, vh2, pv
 
 
-def create_ts_plot(peak_source, peak_sim_source, peak_flagged_source):
+def create_ts_plot(peak_source, peak_flagged_source):
     ts_plot = figure(title="Annual Maximum Flood",
                      width=750,
                      height=250,
@@ -45,7 +45,7 @@ def create_ts_plot(peak_source, peak_sim_source, peak_flagged_source):
 
 
     # add the simulated measurement error points
-    ts_plot.triangle('YEAR', 'PEAK', source=peak_sim_source, 
+    ts_plot.triangle('YEAR', 'PEAK_SIM', source=peak_source, 
                      legend_label='Sim. Msmt. Error', size=3, 
                      color='red', alpha=0.5)
 
@@ -62,8 +62,8 @@ def create_ts_plot(peak_source, peak_sim_source, peak_flagged_source):
     return ts_plot
 
 
-def create_ffa_plot(peak_source, peak_sim_source, peak_flagged_source, 
-                    distribution_source, sim_distribution_source):
+def create_ffa_plot(peak_source, peak_flagged_source, 
+                    distribution_source):
     # create a plot for the Flood Frequency Values and style its properties
     ffa_plot = figure(title="Flood Frequency Analysis Explorer",
                       x_range=(0.9, 2E2),
@@ -77,7 +77,7 @@ def create_ffa_plot(peak_source, peak_sim_source, peak_flagged_source,
     ffa_plot.yaxis.axis_label = "Flow (m³/s)"
 
     # add the simulated measurement error points
-    ffa_plot.triangle('Tr', 'PEAK', source=peak_sim_source, 
+    ffa_plot.triangle('Tr_sim', 'PEAK_SIM', source=peak_source, 
                       legend_label='Sim. Msmt. Error', size=3, 
                       color='red', alpha=0.5)
 
@@ -88,18 +88,13 @@ def create_ffa_plot(peak_source, peak_sim_source, peak_flagged_source,
                   source=distribution_source,
                   legend_label='Log-Pearson3 (Measured Data)')
 
-    # ffa_plot.line('Tr', 'mean', color='navy',
-    #               line_dash='dotted',
-    #               source=distribution_source,
-    #               legend_label='Mean Simulation')
-
     ffa_plot.line('Tr', 'expected_value', color='green',
                   source=distribution_source,
                   legend_label='Expected Value')
-
-    ffa_plot.line('Tr', 'theoretical_quantiles', color='red',
+    # simulated error
+    ffa_plot.line('Tr', 'theoretical_quantiles_sim', color='red',
                   line_dash='dotted',
-                  source=sim_distribution_source,
+                  source=distribution_source,
                   legend_label='Simulated Error Fit')
 
     # plot the error bands as shaded areas

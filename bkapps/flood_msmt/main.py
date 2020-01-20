@@ -37,35 +37,14 @@ def calculate_sample_statistics(x):
     return (np.mean(x), np.var(x), np.std(x), st.skew(x))
 
 
-def norm_ppf(x):
-    if x == 1.0:
-        x += 0.001
-    if x < 0.001:
-        x = 0.001
-    return st.norm.ppf(1-(1/x))
-
-
-norm_ppf_vector_func = np.vectorize(norm_ppf)
-
-
 def update_UI_text_output(n_years):
     ffa_info.text = """
     Simulated measurement error is assumed to be a linear function of flow. 
     Coloured bands represent the 67 and 95 % confidence intervals of the 
-    curve fit MCMC simulation.  The LP3 shape parameter is the generalized skew.
+    curve fit MCMC simulation.  The LP3 shape parameter is the generalized skew,
+    note how poor the fit when the skew is negative, common for small samples.
     """.format()
     error_info.text = ""
-
-
-def set_up_model(df):
-    mean, variance, stdev, skew = calculate_sample_statistics(np.log10(df['PEAK']))
-    model = pd.DataFrame()
-    model['Tr'] = np.linspace(1.01, 200, 500)
-    model['theoretical_cdf'] = 1 / model['Tr']
-    log_q = st.pearson3.ppf(1 - model['theoretical_cdf'], abs(skew),
-                            loc=mean, scale=stdev)
-    model['theoretical_quantiles'] = np.power(10, log_q)
-    return model
 
 
 def randomize_msmt_err(val, msmt_err_params):
@@ -90,13 +69,31 @@ def calculate_measurement_error_params(data):
     min_q, max_q = min(data), max(data)
     m = (max_e - min_e) / (max_q - min_q)
     b = min_e - m * min_q
-    print(m, b)
     return (m, b)
 
 
+def set_up_model(df):
+    mean, variance, stdev, skew = calculate_sample_statistics(np.log10(df['PEAK']))
+    model = pd.DataFrame()
+    model['Tr'] = np.linspace(1.01, 200, 500)
+    model['theoretical_cdf'] = 1 / model['Tr']
+    log_q = st.pearson3.ppf(1 - model['theoretical_cdf'], abs(skew),
+                            loc=mean, scale=stdev)
+    model['theoretical_quantiles'] = np.power(10, log_q)
+
+    mean, variance, stdev, skew = calculate_sample_statistics(np.log10(df['PEAK_SIM']))
+    log_q_sim = st.pearson3.ppf(1 - model['theoretical_cdf'], abs(skew),
+                        loc=mean, scale=stdev)
+    model['theoretical_quantiles_sim'] = np.power(10, log_q_sim)
+    return model
+
+
 def run_ffa_simulation(data, n_simulations):
-    # reference:
-    # https://nbviewer.jupyter.org/github/demotu/BMC/blob/master/notebooks/CurveFitting.ipynb
+    """
+    Monte Carlo simulation of measurement error.
+    Reference:
+    https://nbviewer.jupyter.org/github/demotu/BMC/blob/master/notebooks/CurveFitting.ipynb
+    """
 
     peak_values = data[['PEAK']].to_numpy().flatten()
     years = data[['YEAR']].to_numpy().flatten
@@ -118,52 +115,58 @@ def run_ffa_simulation(data, n_simulations):
     simulation = np.apply_along_axis(LP3_calc, 1,
                                      simulated_error,
                                      exceedance=exceedance)
-
-    # print(simulation)
-    # print(simulation.shape)
-    # print('')
-    
+  
     model['lower_1s_bound'] = np.apply_along_axis(np.percentile, 0, simulation, q=33)
     model['upper_1s_bound'] = np.apply_along_axis(np.percentile, 0, simulation, q=67)
     model['lower_2s_bound'] = np.apply_along_axis(np.percentile, 0, simulation, q=5)
     model['upper_2s_bound'] = np.apply_along_axis(np.percentile, 0, simulation, q=95)
     model['expected_value'] = np.apply_along_axis(np.percentile, 0, simulation, q=50.)
     model['mean'] = np.apply_along_axis(np.mean, 0, simulation)
-    # print(model[['lower_2s_bound', 'upper_2s_bound', 'lower_1s_bound', 'upper_1s_bound']])
 
     return model
 
+def calc_theoretical_quantiles(data):
+    
+    return 
+
+
+def calc_simulated_msmt_error(data):
+    msmt_error_params = calculate_measurement_error_params(data['PEAK'])
+    return [randomize_msmt_err(v, msmt_error_params) for v in data['PEAK']]
+
 
 def calculate_distributions(peak_values, years, flags, correction_factor=None):
-   
+    """
+    Calculate return period, and empirical and theoretical CDF series.
+    """   
     n_sample = len(peak_values)
     data = pd.DataFrame()
     data['PEAK'] = peak_values
-    data['log_Q'] = np.log10(peak_values)
+    data['PEAK_SIM'] = calc_simulated_msmt_error(data)
     data['YEAR'] = years
     data['SYMBOL'] = flags
-    mean, variance, stdev, skew = calculate_sample_statistics(np.log10(peak_values))
-    print('skew = {:.2f}'.format(skew))
-    skew = abs(skew)
 
+    mean, variance, stdev, skew = calculate_sample_statistics(np.log10(data['PEAK']))
     data['Tr'] = (n_sample + 1) / data['PEAK'].rank(ascending=False)
-
-    data['empirical_pdf'] = st.pearson3.pdf(np.log10(peak_values), skew, loc=mean, scale=stdev)
-    data['empirical_cdf'] = st.pearson3.cdf(np.log10(peak_values), skew, loc=mean, scale=stdev)
+    data['empirical_cdf'] = st.pearson3.cdf(np.log10(data['PEAK']), abs(skew), loc=mean, scale=stdev)
     data['theoretical_cdf'] = 1 - 1 / data['Tr']
     data['theoretical_quantiles'] = np.power(10, st.pearson3.ppf(data['theoretical_cdf'], 
-                                                    skew, loc=mean, scale=stdev))
-    data['mean'] = np.mean(peak_values)
+                                            abs(skew), loc=mean, scale=stdev))
     data = data.sort_values('Tr', ascending=False)
 
+    mean, variance, stdev, skew = calculate_sample_statistics(np.log10(data['PEAK_SIM'])) 
+    data['Tr_sim'] = (n_sample + 1) / data['PEAK_SIM'].rank(ascending=False)
+    data['empirical_cdf_sim'] = st.pearson3.cdf(np.log10(data['PEAK_SIM']), 
+                                                abs(skew), loc=mean, scale=stdev) 
+    data['theoretical_cdf_sim'] = 1 - 1 / data['Tr_sim']    
+    data['theoretical_quantiles_sim'] = np.power(10, st.pearson3.ppf(data['theoretical_cdf_sim'], 
+                                                 abs(skew), loc=mean, scale=stdev))   
     return data
 
 
 def get_data_and_initialize_dataframe():
     station_name = station_name_input.value.split(':')[-1].strip()
-
-    peak_source.selected.indices = []
-    
+   
     df = get_annual_inst_peaks(
         NAMES_TO_IDS[station_name])
 
@@ -171,55 +174,44 @@ def get_data_and_initialize_dataframe():
         error_info.text = "Error, insufficient data in record (n = {}).  Resetting to default.".format(
             len(df))
         station_name_input.value = IDS_TO_NAMES['08MH016']
-        update_sim(1)
         return update()
-
     df = calculate_distributions(df['PEAK'].values.flatten(),
-                      df['YEAR'].values.flatten(),
-                      df['SYMBOL'].values.flatten())
-
+                                 df['YEAR'].values.flatten(),
+                                 df['SYMBOL'].values.flatten())
     return df
 
 def update():
     
     df = get_data_and_initialize_dataframe()
-
-    update_data_table(df['PEAK'].values.flatten())
-
-    # prevent the sample size from exceeding the length of record
     n_years = len(df)
-    if n_years < sample_size_input.value:
-        sample_size_input.value = n_years - 1
 
     # Run the FFA fit simulation on a sample of specified size
     # number of times to run the simulation
-    n_simulations = simulation_number_input.value
-
     time0 = time.time()
-    model = run_ffa_simulation(df, n_simulations)
+    model = run_ffa_simulation(df, simulation_number_input.value)
     time_end = time.time()
 
     # print(model[['Tr', 'theoretical_quantiles', 'theoretical_cdf']].head())
     # print(model.columns)
 
     print("Time for {:.0f} simulations = {:0.2f} s".format(
-        n_simulations, time_end - time0))
+        simulation_number_input.value, time_end - time0))
 
     # update the data sources  
     peak_source.data = peak_source.from_df(df)
-    peak_source.selected
-    peak_sim_source.data = peak_sim_source.from_df(df)
+    # peak_sim_source.data = peak_sim_source.from_df(df)
     data_flag_filter = df[~df['SYMBOL'].isin([None, ' '])]
     peak_flagged_source.data = peak_flagged_source.from_df(data_flag_filter)
 
     distribution_source.data = model
     
     update_UI_text_output(n_years)
+    update_data_table(df['PEAK'], df['PEAK'])
 
 
 def update_station(attr, old, new):
+    peak_source.selected.indices = []
     update()
-    update_sim(1)
 
 
 def update_n_simulations(attr, old, new):
@@ -228,34 +220,14 @@ def update_n_simulations(attr, old, new):
         error_info.text = "Max simulation size is 500"
     
     update()
-    update_sim(1)
 
 
 def update_msmt_error(attr, old, new):
     update()
-    update_sim(1)
 
 
 def update_simulation_sample_size(attr, old, new):
     update()
-
-
-def update_sim(foo):
-    data = get_data_and_initialize_dataframe()
-
-    msmt_error_params = calculate_measurement_error_params(data['PEAK'])
-
-    peak_sim = [randomize_msmt_err(v, msmt_error_params) for v in data['PEAK']]
-
-    data = calculate_distributions(peak_sim,
-                        data['YEAR'].values.flatten(),
-                        data['SYMBOL'].values.flatten())
-
-    # Fit LP3 to simulated data
-    model = set_up_model(data)
-  
-    peak_sim_source.data = data
-    sim_distribution_source.data = model
 
 
 def update_pv_plot(data, inds):
@@ -271,42 +243,55 @@ def update_pv_plot(data, inds):
     vh2.data_source.data["right"] = -vhist2
 
 
-def update_ffa_plot(data, inds):
-    if len(inds) > 2:
-        pass
-
-
-def update_figs(attr, old, new):
+def update_UI(attr, old, new):
     inds = new
-
     # update the datatable only if at least three points are selected
     if len(inds) > 2:
-        data = peak_source.data['PEAK']
-        update_pv_plot(data, inds)
-        update_ffa_plot(data, inds)
-        stats = [round(e, 2) for e in calculate_sample_statistics(data[inds])]
-        datatable_source.data['value_selection'] = [stats[0], stats[2], stats[3], len(data[inds])]
+        # retrieve the entire dataset and filter for 
+        # the selected points
+        years = peak_source.data['YEAR'][inds]
+        df = get_data_and_initialize_dataframe()
+        selected = df[df['YEAR'].isin(years)]
+
+        selected = calculate_distributions(selected['PEAK'].values.flatten(),
+                        selected['YEAR'].values.flatten(),
+                        selected['SYMBOL'].values.flatten())
+
+        model = run_ffa_simulation(selected, simulation_number_input.value)
+
+        data = selected['PEAK'].values.flatten()
+
+        update_pv_plot(df['PEAK'], inds)
+        stats = [round(e, 2) for e in calculate_sample_statistics(data)]
+        datatable_source.data['value_selection'] = [stats[0], stats[2], stats[3], len(data)]
+        distribution_source.data = distribution_source.from_df(model)
+        update_data_table(df['PEAK'], selected['PEAK'])
 
 
-def update_data_table(data):
+def update_data_table(data, sample):
     """
     order of stats is mean, var, stdev, skew
     """
     df = pd.DataFrame()
-    stats = calculate_sample_statistics(data)
+    stats_all = calculate_sample_statistics(np.log(data))
+    selected = calculate_sample_statistics(np.log(sample))
     df['parameter'] = ['Mean', 'Standard Deviation', 'Skewness', 'Sample Size']
-    df['value_all'] = np.round([stats[0], stats[2], stats[3], len(data)], 2)
-    df['value_selection'] = np.round([stats[0], stats[2], stats[3], len(data)], 2)
+    df['value_all'] = np.round([stats_all[0], stats_all[2], 
+                                stats_all[3], len(data)], 2)
+    df['value_selection'] = np.round([selected[0], selected[2], 
+                                     selected[3], len(selected)], 2)
     datatable_source.data = dict(df)
 
+def update_simulated_msmt_error(val):
+    update()
 
 # configure Bokeh Inputs, data sources, and plots
 autocomplete_station_names = list(STATIONS_DF['Station Name'])
 peak_source = ColumnDataSource(data=dict())
 peak_flagged_source = ColumnDataSource(data=dict())
-peak_sim_source = ColumnDataSource(data=dict())
+# peak_sim_source = ColumnDataSource(data=dict())
 distribution_source = ColumnDataSource(data=dict())
-sim_distribution_source = ColumnDataSource(data=dict())
+# sim_distribution_source = ColumnDataSource(data=dict())
 qq_source = ColumnDataSource(data=dict())
 datatable_source = ColumnDataSource(data=dict())
 
@@ -326,7 +311,6 @@ sample_size_input = Spinner(
 msmt_error_input = RangeSlider(
     start=0, end=100., value=(10, 35), 
     step=2, title="Measurement Uncertainty [%]",
-    callback_policy="mouseup"
 )
 
 toggle_button = Toggle(label="Simulate Measurement Error", button_type="success")
@@ -353,23 +337,22 @@ simulation_number_input.on_change('value', update_n_simulations)
 msmt_error_input.on_change('value', update_msmt_error)
 sample_size_input.on_change(
     'value', update_simulation_sample_size)
-toggle_button.on_click(update_sim)
+toggle_button.on_click(update_simulated_msmt_error)
 
 # see documentation for threading information
 # https://docs.bokeh.org/en/latest/docs/user_guide/server.html
 
 update()
-update_sim(1)
 
 # widgets
-ts_plot = create_ts_plot(peak_source, peak_sim_source, peak_flagged_source)
+ts_plot = create_ts_plot(peak_source, peak_flagged_source)
 
-peak_source.selected.on_change('indices', update_figs)
+peak_source.selected.on_change('indices', update_UI)
 
 vedges, vzeros, vh1, vh2, pv = create_vhist(peak_source, ts_plot)
 
-ffa_plot = create_ffa_plot(peak_source, peak_sim_source, peak_flagged_source,
-                           distribution_source, sim_distribution_source)
+ffa_plot = create_ffa_plot(peak_source, peak_flagged_source,
+                           distribution_source)
 
 qq_plot = create_qq_plot(peak_source)
 
