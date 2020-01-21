@@ -206,11 +206,12 @@ def update():
     distribution_source.data = model
     
     update_UI_text_output(n_years)
-    update_data_table(df['PEAK'], df['PEAK'])
+    update_data_table()
 
 
 def update_station(attr, old, new):
     peak_source.selected.indices = []
+    update_data_table()
     update()
 
 
@@ -265,21 +266,32 @@ def update_UI(attr, old, new):
         stats = [round(e, 2) for e in calculate_sample_statistics(data)]
         datatable_source.data['value_selection'] = [stats[0], stats[2], stats[3], len(data)]
         distribution_source.data = distribution_source.from_df(model)
-        update_data_table(df['PEAK'], selected['PEAK'])
+        update_data_table()
 
 
-def update_data_table(data, sample):
+def update_data_table():
     """
     order of stats is mean, var, stdev, skew
     """
+
+    indices = peak_source.selected.indices
+    data = peak_source.data['PEAK']
+    years = peak_source.data['YEAR'][indices]
+    selection = data[indices]
+
     df = pd.DataFrame()
     stats_all = calculate_sample_statistics(np.log(data))
-    selected = calculate_sample_statistics(np.log(sample))
+
+    if len(selection) > 1:
+        selected_stats = calculate_sample_statistics(np.log(selection))
+    else:
+        selected_stats = stats_all
+
     df['parameter'] = ['Mean', 'Standard Deviation', 'Skewness', 'Sample Size']
     df['value_all'] = np.round([stats_all[0], stats_all[2], 
                                 stats_all[3], len(data)], 2)
-    df['value_selection'] = np.round([selected[0], selected[2], 
-                                     selected[3], len(selected)], 2)
+    df['value_selection'] = np.round([selected_stats[0], selected_stats[2], 
+                                     selected_stats[3], len(selection)], 2)
     datatable_source.data = dict(df)
 
 def update_simulated_msmt_error(val):
@@ -289,9 +301,7 @@ def update_simulated_msmt_error(val):
 autocomplete_station_names = list(STATIONS_DF['Station Name'])
 peak_source = ColumnDataSource(data=dict())
 peak_flagged_source = ColumnDataSource(data=dict())
-# peak_sim_source = ColumnDataSource(data=dict())
 distribution_source = ColumnDataSource(data=dict())
-# sim_distribution_source = ColumnDataSource(data=dict())
 qq_source = ColumnDataSource(data=dict())
 datatable_source = ColumnDataSource(data=dict())
 
