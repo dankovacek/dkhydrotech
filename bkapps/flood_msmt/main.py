@@ -174,7 +174,8 @@ def get_data_and_initialize_dataframe():
         error_info.text = "Error, insufficient data in record (n = {}).  Resetting to default.".format(
             len(df))
         station_name_input.value = IDS_TO_NAMES['08MH016']
-        return update()
+        return get_data_and_initialize_dataframe()
+
     df = calculate_distributions(df['PEAK'].values.flatten(),
                                  df['YEAR'].values.flatten(),
                                  df['SYMBOL'].values.flatten())
@@ -183,6 +184,7 @@ def get_data_and_initialize_dataframe():
 def update():
     
     df = get_data_and_initialize_dataframe()
+
     n_years = len(df)
 
     # Run the FFA fit simulation on a sample of specified size
