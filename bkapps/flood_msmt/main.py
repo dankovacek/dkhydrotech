@@ -43,6 +43,9 @@ def update_UI_text_output(n_years):
     Coloured bands represent the 67 and 95 % confidence intervals of the 
     curve fit MCMC simulation.  The LP3 shape parameter is the generalized skew,
     note how poor the fit when the skew is negative, common for small samples.
+    For information on this application,\
+    see <a href="https://www.dkhydrotech.com/entry/5/" target="_blank">this 
+    writeup.</a>
     """.format()
     error_info.text = ""
 
@@ -370,15 +373,17 @@ qq_plot = create_qq_plot(peak_source)
 
 pp_plot = create_pp_plot(peak_source)
 
-input_layout = row(column(simulation_number_input,
+# create page layout
+info_input_block = column(simulation_number_input,
                           msmt_error_input,
-                          ffa_info, 
-                          toggle_button),
+                          ffa_info,
+                          toggle_button)
+
+input_layout = row(info_input_block,
                    column(station_name_input,
                           data_table),
                    sizing_mode='scale_both')
 
-# create a page layout
 layout = column(input_layout,
                 error_info,
                 row(ts_plot, pv),

@@ -24,6 +24,11 @@ class BokehView(TemplateView):
         context = super().get_context_data(**kwargs)
     
         app_ID = self.kwargs['app_ID']
+
+        if app_ID == 'flood_msmt':
+            header_info = 'Flood Measurement Explorer'
+        elif app_ID == 'sliders':
+            header_info = 'Bokeh Demo App'
         
         try:
             if settings.DEBUG:
@@ -40,6 +45,7 @@ class BokehView(TemplateView):
                                            )
 
             context['bk_script'] = bk_script
+            context['header_info'] = header_info
 
         except Exception as e:
             msg = "Uh oh.  Richard, whatja do??: {}".format(e)

@@ -14,9 +14,10 @@
     <script type="text/javascript" src="{% static 'js/bokeh-tables-1.4.0.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/bokeh-widgets-1.4.0.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/bokeh-gl.min.js' %}"></script>
-
+    
     <div id="background-image">
         <div class="container">
+          <h2 class="light-green-text text-darken-3">{{ header_info }}</h2>
             <div class="row">
                 {% if bk_script %}
                   <div class="col s12" style='margin-top: 1em;'>
