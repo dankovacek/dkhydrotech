@@ -9,15 +9,33 @@
 
 {% block content %}
     {{ block.super }}
+    <script>
+      oldLog = console.log;
+      console.log = function (message) {
+        // wait until bokeh items load
+          if(message.localeCompare('Bokeh items were rendered successfully') == 0){
+              $(".progress").slideToggle();
+              // Initialize materialize css tooltips
+            $('.tooltipped').tooltip({delay: 50});
+              console.log = oldLog;
+          }
+          oldLog.apply(console, arguments);
+      };
+
+    </script>
     <script type="text/javascript" src="{% static 'js/bokeh-1.4.0.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/bokeh-api-1.4.0.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/bokeh-tables-1.4.0.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/bokeh-widgets-1.4.0.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/bokeh-gl.min.js' %}"></script>
-
+    <div class="progress">
+      <div class="indeterminate"></div>
+    </div>
     <div id="background-image">
-        <div class="container">
-            <div class="row">
+
+        <div class="container" id="wrapper">
+          <h2 class="light-green-text text-darken-3">{{ header_info }}</h2>
+            <div class="row" id="bokeh-container">
                 {% if bk_script %}
                   <div class="col s12" style='margin-top: 1em;'>
                     {{ bk_script|safe }}
