@@ -4,33 +4,44 @@ import pandas as pd
 from bokeh.plotting import figure
 from bokeh.models import Band 
 from bokeh.models import BoxSelectTool, LassoSelectTool
+from bokeh.models.glyphs import Quad
+from bokeh.plotting import ColumnDataSource
 
 
 def create_vhist(peak_source, p):
     # create the vertical histogram
-    LINE_ARGS = dict(color="#3A5785", line_color=None)
+    # LINE_ARGS = dict(color="#3A5785", line_color=None)
 
     data = peak_source.data['PEAK']
-    vhist, vedges = np.histogram(data, bins='auto')
+    vhist, vedges = np.histogram(data, bins=10)
     vzeros = np.zeros(len(vedges)-1)
     vmax = max(vhist)*1.1
 
-    pv = figure(toolbar_location=None, plot_width=175, 
-                plot_height=p.height, x_range=(0, vmax),
-                y_range=p.y_range, min_border=10, 
+    hist_source = ColumnDataSource({'top': vedges[1:],
+                                    'right': vhist,
+                                    'bottom': vedges[:-1],
+                                    'left': np.zeros_like(vhist)
+                                })
+
+    pv = figure(toolbar_location=None, plot_width=175,
+                plot_height=p.height, min_border=10,
                 y_axis_location="right")
+
     pv.ygrid.grid_line_color = None
     pv.xaxis.major_label_orientation = np.pi/4
     pv.background_fill_color = "#fafafa"
 
-    pv.quad(left=0, bottom=vedges[:-1], top=vedges[1:], right=vhist, 
-            color="blue", alpha=0.25, line_color="#3A5785")
-    vh1 = pv.quad(left=0, bottom=vedges[:-1], top=vedges[1:], 
-                  right=vzeros, alpha=0.5, **LINE_ARGS)
-    vh2 = pv.quad(left=0, bottom=vedges[:-1], top=vedges[1:], 
-                  right=vzeros, alpha=0.1, **LINE_ARGS)
+    glyph = Quad(left="left", bottom="bottom", top="top",
+                 right="right", fill_color='blue',
+                 fill_alpha=0.3)
 
-    return vedges, vzeros, vh1, vh2, pv
+    pv.add_glyph(hist_source, glyph)
+
+    vh1 = pv.quad(left=0, bottom=vedges[:-1], top=vedges[1:],
+                  right=vzeros, alpha=0.7)
+    # vh2 = pv.quad(left=0, bottom=vedges[:-1], top=vedges[1:],
+    #               right=vzeros, alpha=0.6)
+    return vh1, pv, hist_source
 
 
 def create_ts_plot(peak_source, peak_flagged_source):
@@ -42,7 +53,6 @@ def create_ts_plot(peak_source, peak_flagged_source):
 
     ts_plot.xaxis.axis_label = "Year"
     ts_plot.yaxis.axis_label = "Flow [m³/s]"
-
 
     # add the simulated measurement error points
     ts_plot.triangle('YEAR', 'PEAK_SIM', source=peak_source, 

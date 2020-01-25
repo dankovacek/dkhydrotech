@@ -19,6 +19,7 @@ from bokeh.models import CustomJS, Slider, Band, Spinner, RangeSlider
 from bokeh.plotting import figure, curdoc, ColumnDataSource
 from bokeh.models.widgets import AutocompleteInput, Div, Toggle
 from bokeh.models.widgets import DataTable, TableColumn
+from bokeh.models import Range1d
 
 from figures import *
 
@@ -129,7 +130,6 @@ def run_ffa_simulation(data, n_simulations):
     return model
 
 def calc_theoretical_quantiles(data):
-    
     return 
 
 
@@ -209,13 +209,13 @@ def update():
     peak_flagged_source.data = peak_flagged_source.from_df(data_flag_filter)
 
     distribution_source.data = model
-    
     update_UI_text_output(n_years)
     update_data_table()
 
 
 def update_station(attr, old, new):
     peak_source.selected.indices = []
+    refresh_histogram()
     update_data_table()
     update()
 
@@ -224,7 +224,6 @@ def update_n_simulations(attr, old, new):
     if new > simulation_number_input.high:
         simulation_number_input.value = 500
         error_info.text = "Max simulation size is 500"
-    
     update()
 
 
@@ -235,18 +234,53 @@ def update_msmt_error(attr, old, new):
 def update_simulation_sample_size(attr, old, new):
     update()
 
+def refresh_histogram():
+    df = get_data_and_initialize_dataframe()
+    selection = df['PEAK']
 
-def update_pv_plot(data, inds):
-    if len(inds) == 0 or len(inds) == len(data):
+    pv.y_range = Range1d(selection.min(), selection.max())
+
+    vhist, vedges = np.histogram(selection, bins=10)
+    vzeros = np.zeros(len(vedges)-1)
+    vmax = max(vhist)*1.1
+
+    hist_source.data["bottom"] = vedges[:-1]
+    hist_source.data["top"] = vedges[1:]
+    hist_source.data["right"] = vhist
+    hist_source.data["left"] = np.zeros_like(vhist)
+    update_pv_plot()
+
+def update_pv_plot():
+    indices = peak_source.selected.indices
+
+    if len(indices) > 0:
+        data = peak_source.data['PEAK']
+        years = peak_source.data['YEAR'][indices]
+        selection = data[indices]
+    else:
+        df = get_data_and_initialize_dataframe()
+        selection = df['PEAK'].values.flatten()
+
+    vhist, vedges = np.histogram(selection, bins=10)
+    vzeros = np.zeros(len(vedges)-1)
+    vmax = max(vhist)*1.1
+
+    if len(indices) == 0 or len(indices) == len(data):
         vhist1, vhist2 = vzeros, vzeros
     else:
         neg_inds = np.ones_like(data, dtype=np.bool)
-        neg_inds[inds] = False
-        vhist1, _ = np.histogram(data[inds], bins=vedges)
-        vhist2, _ = np.histogram(data[neg_inds], bins=vedges)
+        neg_inds[indices] = False
+        vhist1, _ = np.histogram(data[indices], bins=vedges)
+        # vhist2, _ = np.histogram(data[neg_inds], bins=vedges)
 
     vh1.data_source.data["right"] = vhist1
-    vh2.data_source.data["right"] = -vhist2
+    # vh2.data_source.data["right"] = -vhist2
+    vh1.data_source.data["bottom"] = vedges[:-1]
+    # vh2.data_source.data["bottom"] = vedges[:-1]
+    vh1.data_source.data["top"] = vedges[1:]
+    # vh2.data_source.data["top"] = vedges[1:]
+    vh1.data_source.data["left"] = np.zeros_like(vhist1)
+    # vh2.data_source.data["left"] = np.zeros_like(vhist2)
 
 
 def update_UI(attr, old, new):
@@ -267,7 +301,7 @@ def update_UI(attr, old, new):
 
         data = selected['PEAK'].values.flatten()
 
-        update_pv_plot(df['PEAK'], inds)
+        update_pv_plot()
         stats = [round(e, 2) for e in calculate_sample_statistics(data)]
         datatable_source.data['value_selection'] = [stats[0], stats[2], stats[3], len(data)]
         distribution_source.data = distribution_source.from_df(model)
@@ -278,7 +312,6 @@ def update_data_table():
     """
     order of stats is mean, var, stdev, skew
     """
-
     indices = peak_source.selected.indices
     data = peak_source.data['PEAK']
     years = peak_source.data['YEAR'][indices]
@@ -299,6 +332,7 @@ def update_data_table():
                                      selected_stats[3], len(selection)], 2)
     datatable_source.data = dict(df)
 
+
 def update_simulated_msmt_error(val):
     update()
 
@@ -309,7 +343,7 @@ peak_flagged_source = ColumnDataSource(data=dict())
 distribution_source = ColumnDataSource(data=dict())
 qq_source = ColumnDataSource(data=dict())
 datatable_source = ColumnDataSource(data=dict())
-
+hist_source = ColumnDataSource(data=dict())
 
 station_name_input = AutocompleteInput(
     completions=autocomplete_station_names, title='Enter Station Name (ALL CAPS)',
@@ -364,7 +398,7 @@ ts_plot = create_ts_plot(peak_source, peak_flagged_source)
 
 peak_source.selected.on_change('indices', update_UI)
 
-vedges, vzeros, vh1, vh2, pv = create_vhist(peak_source, ts_plot)
+vh1, pv, hist_source = create_vhist(peak_source, ts_plot)
 
 ffa_plot = create_ffa_plot(peak_source, peak_flagged_source,
                            distribution_source)
