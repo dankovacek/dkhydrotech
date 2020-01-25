@@ -346,7 +346,8 @@ datatable_source = ColumnDataSource(data=dict())
 hist_source = ColumnDataSource(data=dict())
 
 station_name_input = AutocompleteInput(
-    completions=autocomplete_station_names, title='Enter Station Name (ALL CAPS)',
+    completions=autocomplete_station_names, 
+    title='Enter Water Survey of Canada STATION NAME (USE ALL CAPS)',
     value=IDS_TO_NAMES['08MH016'], min_characters=3)
 
 simulation_number_input = Spinner(

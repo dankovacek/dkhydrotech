@@ -81,7 +81,7 @@ def create_ffa_plot(peak_source, peak_flagged_source,
                       width=700,
                       height=550,
                       output_backend="webgl",
-                      tools="pan,box_zoom,wheel_zoom,reset,lasso_select")
+                      tools="pan,box_zoom,wheel_zoom,reset")
 
     ffa_plot.xaxis.axis_label = "Return Period (Years)"
     ffa_plot.yaxis.axis_label = "Flow (m³/s)"
