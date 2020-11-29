@@ -29,6 +29,8 @@ class BokehView(TemplateView):
             header_info = 'Flood Measurement Explorer'
         elif app_ID == 'sliders':
             header_info = 'Bokeh Demo App'
+        elif app_ID == 'recognition_heuristic':
+            header_info = 'Recognition Heuristic Visualization'
         
         try:
             if settings.DEBUG:

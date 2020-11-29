@@ -74,8 +74,7 @@ class EntryList(ListView):
 
 class EntryCreate(LoginRequiredMixin, CreateView):
     """
-    Will need to change implementation of stations once
-    organization and user are incorporated.
+
     """
     model = Entry
     fields = ['post_type', 'title', 'byline',
