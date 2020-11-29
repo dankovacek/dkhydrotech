@@ -27,7 +27,7 @@ packaging==20.0
 pandas==0.25.3
 panel==0.7.0
 param==1.9.2
-Pillow==7.0.0
+Pillow==7.1.0
 pkg-resources==0.0.0
 psycopg2-binary==2.8.4
 pyct==0.4.6
