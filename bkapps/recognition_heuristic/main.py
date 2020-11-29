@@ -2,7 +2,7 @@ from os.path import join, dirname
 import datetime
 
 import pandas as pd
-from scipy.signal import savgol_filter
+# from scipy.signal import savgol_filter
 
 from bokeh.io import curdoc
 from bokeh.layouts import row, column
@@ -102,4 +102,4 @@ main_row = row(plot, column(controls, notes_div))
 layout = column(title_div, main_row, reference_div)
 
 curdoc().add_root(layout)
-curdoc().title = "Expected Recall"
+curdoc().title = "Expected Recall by the Recognition Heuristic"
