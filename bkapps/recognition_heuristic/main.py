@@ -118,7 +118,7 @@ def update_plot(attrname, old, new):
     b = beta.value    
 
     title_var_string = f'N={N_objects_total}, α={a:.2f}, β={b:.2f}'
-    plot.title.text = 'Expected Proportion of Correct Inferences ({})'.format(title_var_string)
+    main_plot.title.text = 'Expected Proportion of Correct Inferences ({})'.format(title_var_string)
 
     expected_recall = update_df(N_objects_total, a, b)
 
