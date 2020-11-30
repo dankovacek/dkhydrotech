@@ -24,6 +24,7 @@
 
 # check the bokeh server log
 `sudo journalctl -u bokehserver`
+
 # restart the bokeh server
 `sudo systemctl restart bokehserver`
 
@@ -35,4 +36,4 @@
 
 `sudo systemctl daemon-reload`
 
-`sudo nano /etc/nginx/sites-available/mainsite `
+`sudo nano /etc/nginx/sites-available/mainsite`
