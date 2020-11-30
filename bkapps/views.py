@@ -22,6 +22,8 @@ class BokehView(TemplateView):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(**kwargs)
+
+        helper_image = None
     
         app_ID = self.kwargs['app_ID']
 
@@ -31,6 +33,7 @@ class BokehView(TemplateView):
             header_info = 'Bokeh Demo App'
         elif app_ID == 'recognition_heuristic':
             header_info = 'Recognition Heuristic Visualization'
+            helper_image = 'static/gigenrenzer_fn.jpg'
         
         try:
             if settings.DEBUG:
@@ -48,6 +51,7 @@ class BokehView(TemplateView):
 
             context['bk_script'] = bk_script
             context['header_info'] = header_info
+            context['helper_image'] = helper_image
 
         except Exception as e:
             msg = "Uh oh.  Richard, whatja do??: {}".format(e)

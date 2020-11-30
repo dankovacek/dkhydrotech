@@ -1,8 +1,27 @@
-from bokeh.models import Div
+from bokeh.models import Div, Label
+from bokeh.plotting import figure
+# from bokeh.util.compiler import TypeScript
 
+import numpy as np
+
+x_range = (-20,-10) # could be anything - e.g.(0,1)
+y_range = (20,30)
+p = figure(x_range=x_range, y_range=y_range, width=900, height=100,
+    toolbar_location=None)
+p.axis.visible = False
+p.outline_line_color = None
+
+img_path = 'http://localhost:5006/recognition_heuristic/static/gigenrenzer_fn.jpg'
+p.image_url(url=[img_path],x=x_range[0],y=y_range[1],w=x_range[1]-x_range[0],h=y_range[1]-y_range[0])
+
+
+title_div = Div(text="""
+<h4> How Ignorance Makes Us Smart (Goldstein & Gigerenzer, 1999)</h4>
+""",
+width=1000, height=100)
 
 notes_div = Div(text="""
-<h2>The Recognition Heuristic</h2>
+<h4>The Recognition Heuristic</h4>
 
 <em>If one of two objects is recognized, infer that the recognized object is more likely to be the correct answer.</em>
 
@@ -26,7 +45,7 @@ Where <em>City A</em> and <em>City B</em> are selected randomly from a sample of
 """, width=400)
 
 reference_div = Div(text="""
-<h2>References</h2>
+<h4>References</h4>
 <ol>
 <li>Gigerenzer, Gerd, Peter M. Todd. <em>Simple Heuristics that make Us Smart.</em> Ebsco Publishing, Ipswich, 1999;2000;.</li>
 </ol>

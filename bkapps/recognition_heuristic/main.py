@@ -11,7 +11,7 @@ from bokeh.models import (ColumnDataSource, DataRange1d,
 from bokeh.palettes import Blues4, brewer
 from bokeh.plotting import figure
 
-from content import title_div, notes_div, reference_div
+from content import title_div, notes_div, reference_div, p
 
 
 def make_plot(source, title):
@@ -94,12 +94,11 @@ plot = make_plot(source, 'Expected Proportion of Correct Inferences ({})'.format
 alpha.on_change('value', update_plot)
 beta.on_change('value', update_plot)
 
-
 controls = column(alpha, beta)
 
 main_row = row(plot, column(controls, notes_div))
 
-layout = column(title_div, main_row, reference_div)
+layout = column(title_div, p, main_row, reference_div)
 
 curdoc().add_root(layout)
 curdoc().title = "Expected Recall by the Recognition Heuristic"
