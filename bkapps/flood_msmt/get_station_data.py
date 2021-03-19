@@ -21,7 +21,8 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 # is saved two levels up in the file directory\
 
 DB_PRODUCTION_DIR = os.path.join(os.path.dirname(os.path.dirname(BASE_DIR)), 'db/hydat_db/')
-DB_DEV_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(BASE_DIR)))), 'hydat_db/')
+DB_DEV_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(BASE_DIR)))), 'hydat_db/Hydat_sqlite3_20210116/')
+
 
 day_labels = {}
 flag_labels = {}

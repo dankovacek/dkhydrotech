@@ -129,8 +129,8 @@ def run_ffa_simulation(data, n_simulations):
 
     return model
 
-def calc_theoretical_quantiles(data):
-    return 
+# def calc_theoretical_quantiles(data):
+#     return None
 
 
 def calc_simulated_msmt_error(data):
@@ -153,8 +153,7 @@ def calculate_distributions(peak_values, years, flags, correction_factor=None):
     data['Tr'] = (n_sample + 1) / data['PEAK'].rank(ascending=False)
     data['empirical_cdf'] = st.pearson3.cdf(np.log10(data['PEAK']), abs(skew), loc=mean, scale=stdev)
     data['theoretical_cdf'] = 1 - 1 / data['Tr']
-    data['theoretical_quantiles'] = np.power(10, st.pearson3.ppf(data['theoretical_cdf'], 
-                                            abs(skew), loc=mean, scale=stdev))
+    data['theoretical_quantiles'] = np.power(10, st.pearson3.ppf(data['theoretical_cdf'], abs(skew), loc=mean, scale=stdev))
     data = data.sort_values('Tr', ascending=False)
 
     mean, variance, stdev, skew = calculate_sample_statistics(np.log10(data['PEAK_SIM'])) 
@@ -162,8 +161,8 @@ def calculate_distributions(peak_values, years, flags, correction_factor=None):
     data['empirical_cdf_sim'] = st.pearson3.cdf(np.log10(data['PEAK_SIM']), 
                                                 abs(skew), loc=mean, scale=stdev) 
     data['theoretical_cdf_sim'] = 1 - 1 / data['Tr_sim']    
-    data['theoretical_quantiles_sim'] = np.power(10, st.pearson3.ppf(data['theoretical_cdf_sim'], 
-                                                 abs(skew), loc=mean, scale=stdev))   
+    data['theoretical_quantiles_sim'] = np.power(10, st.pearson3.ppf(data['theoretical_cdf_sim'], abs(skew), loc=mean, scale=stdev))
+
     return data
 
 
@@ -173,9 +172,10 @@ def get_data_and_initialize_dataframe():
     df = get_annual_inst_peaks(
         NAMES_TO_IDS[station_name])
 
-    if len(df) < 2:
-        error_info.text = "Error, insufficient data in record (n = {}).  Resetting to default.".format(
-            len(df))
+    len_df = len(df)
+
+    if len_df < 2:
+        error_info.text = f"Error, insufficient data in record (n = {len_df}).  Resetting to default."
         station_name_input.value = IDS_TO_NAMES['08MH016']
         return get_data_and_initialize_dataframe()
 
@@ -183,6 +183,7 @@ def get_data_and_initialize_dataframe():
                                  df['YEAR'].values.flatten(),
                                  df['SYMBOL'].values.flatten())
     return df
+
 
 def update():
     
@@ -384,7 +385,7 @@ data_table = DataTable(source=datatable_source, columns=datatable_columns,
 # callback for updating the plot based on a changes to inputs
 station_name_input.on_change('value', update_station)
 simulation_number_input.on_change('value', update_n_simulations)
-msmt_error_input.on_change('value', update_msmt_error)
+msmt_error_input.on_change('value_throttled', update_msmt_error)
 sample_size_input.on_change(
     'value', update_simulation_sample_size)
 toggle_button.on_click(update_simulated_msmt_error)
@@ -414,10 +415,12 @@ info_input_block = column(simulation_number_input,
                           ffa_info,
                           toggle_button)
 
+station_input_block = column(station_name_input,
+                          data_table)
+
 input_layout = row(info_input_block,
-                   column(station_name_input,
-                          data_table),
-                   sizing_mode='scale_both')
+                   station_input_block,
+                   )
 
 layout = column(input_layout,
                 error_info,
