@@ -16,7 +16,7 @@ from django.forms.models import inlineformset_factory
 from io import StringIO
 
 from bokeh.embed import server_session, server_document
-from bokeh.util.session_id import generate_session_id
+from bokeh.util.token import generate_session_id
 from bokeh.client import pull_session
 from bokeh.server.server import Server
 
