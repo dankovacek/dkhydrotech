@@ -37,3 +37,10 @@
 `sudo systemctl daemon-reload`
 
 `sudo nano /etc/nginx/sites-available/mainsite`
+
+
+# To serve images from bokeh apps
+
+Url must be in the form:
+
+`http://dkhydrotech.com/bokeh/[appname]/static/[filename]`
