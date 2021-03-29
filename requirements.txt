@@ -23,7 +23,7 @@ patsy==0.5.1
 Pillow==8.1.2
 pycodestyle==2.7.0
 pycparser==2.20
-Pygments==2.3.1
+Pygments==2.7.4
 PyJWT==1.7.1
 pyparsing==2.3.1
 python-dateutil==2.7.5
