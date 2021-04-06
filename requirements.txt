@@ -41,5 +41,5 @@ statsmodels==0.12.1
 stripe==2.55.0
 tornado==5.1.1
 typing-extensions==3.7.4.3
-urllib3==1.26.3
+urllib3==1.26.4
 utm==0.7.0
