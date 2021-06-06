@@ -15,7 +15,8 @@ from bokeh.io import curdoc
 
 from time import time
 
-raw_img = Image.open('img/ada_lovelace.jpg')
+# raw_img = Image.open('img/ada_lovelace.jpg')
+raw_img = Image.open('static/ada_lovelace.jpg')
 
 raw_img = ImageOps.flip(raw_img)
 
