@@ -29,12 +29,13 @@ class BokehView(TemplateView):
 
         if app_ID == 'flood_msmt':
             header_info = 'Flood Measurement Explorer'
+        elif app_ID == 'ndimensions':
+            header_info = 'N-Dimensional Space'
         elif app_ID == 'sliders':
             header_info = 'Bokeh Demo App'
         elif app_ID == 'recognition_heuristic':
             header_info = 'Recognition Heuristic Visualization'
-            helper_image = 'static/gigenrenzer_fn.jpg'
-        
+            helper_image = 'static/gigenrenzer_fn.jpg'        
         try:
             if settings.DEBUG:
                 bk_url = 'http://127.0.0.1:5006/' + app_ID
