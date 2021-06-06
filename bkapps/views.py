@@ -40,9 +40,8 @@ class BokehView(TemplateView):
             if settings.DEBUG:
                 bk_url = 'http://127.0.0.1:5006/' + app_ID
                 bk_script = server_session(url=bk_url,
-                                            relative_urls=False,
-                                            session_id=generate_session_id(),
-                                            )
+                relative_urls=False,
+                session_id=generate_session_id(),)
             else:
                 bk_script = server_session(url='/bokeh/' + app_ID,
                                            relative_urls=True,
