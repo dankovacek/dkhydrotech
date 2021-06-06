@@ -246,7 +246,6 @@ intro_div = Div(width=600, height=300,
                 style={'font-size': '1.2em', 'font-family': 'Helvetica'})
 
 intro_div.text = f"""
-<h2>N-Dimensional Space</h2>
 <h3>The Curse of Dimensionality and the Density of Structure of Nature</h3>
 
 <p>This interactive application was inspired by Richard Hamming's<a href="https://en.wikipedia.org/wiki/Richard_Hamming"><em>"Art of Doing Science and Engineering"</em></a> </p>
