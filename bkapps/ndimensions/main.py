@@ -246,7 +246,7 @@ intro_div = Div(width=600, height=300,
                 style={'font-size': '1.2em', 'font-family': 'Helvetica'})
 
 intro_div.text = f"""
-<h3>The Curse of Dimensionality and the Density of Structure of Nature</h3>
+<h3>The Curse of Dimensionality and Density in the Structure of Nature</h3>
 
 <p>This interactive application was inspired by Richard Hamming's<a href="https://en.wikipedia.org/wiki/Richard_Hamming"><em>"Art of Doing Science and Engineering"</em></a> </p>
 <p>The <a href="https://blogs.scientificamerican.com/observations/ada-lovelace-day-honors-the-first-computer-programmer/">iconic image</a> below at left is {original_dims[0]} pixels wide by {original_dims[1]} pixels high in the original file.  Since the image is in greyscale, the colour of each pixel is represented by an integer value in the range [0, 255].</p> 
